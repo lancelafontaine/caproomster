@@ -1,0 +1,117 @@
+<div id="modal1" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title text-center"><span style="color: #93DC69;">Modify Reservation</span></h2>
+            </div>
+            <div class="modal-body">
+                <div id="rider" class="container-fluid">
+                    <br><br><br>
+                    <!-- <div class="row-fluid">&nbsp;</div> not used for now-->
+                    <!-- <div class="row-fluid">&nbsp;</div> not used for now-->
+                    <form id="search_form" method="POST">
+                        <div class="row-fluid">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+                                <h2 class="modal-title text-center"><span style="color: #93DC69;">Room {{ rooms[0] }}</span></h2>
+                                <p style="color: #333; font-weight: bold;">Please select the availability to change your reservation.</p><br>
+                            </div>
+                        </div>
+                        <br>
+                        <!-- AGAIN TIMES ARE HARD CODED, WE NEED TO GET THE TIME FROM HERE TO SAVE IT IN THE DB -->
+
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 09:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{  rooms[1]}}</p><input type="checkbox" name="chosenTime" value="9">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 10:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{  rooms[2]}}</p><input type="checkbox" name="chosenTime" value="10">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 11:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[3] }}</p><input type="checkbox" name="chosenTime" value="11">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 12:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[4] }}</p><input type="checkbox" name="chosenTime" value="12">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 13:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[5] }}</p><input type="checkbox" name="chosenTime" value="13">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 14:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[6] }}</p><input type="checkbox" name="chosenTime" value="14">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 15:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[7] }}</p><input type="checkbox" name="chosenTime" value="15">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 16:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[8] }}</p><input type="checkbox" name="chosenTime" value="16">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 17:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[9] }}</p><input type="checkbox" name="chosenTime" value="17">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 18:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[10] }}</p><input type="checkbox" name="chosenTime" value="18">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 19:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[11] }}</p><input type="checkbox" name="chosenTime" value="19">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" >Times 20:00</p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="Greenies col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" >{{ rooms[12] }}</p><input type="checkbox" name="chosenTime" value="20">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold;" > </p>
+                        </div>
+                        <div style="transition: background 1s, color 0.75s;" class="col-xs-6 col-sm-6 col-md-6 col-lg-6 divider-spec text-center">
+                            <p style="color: #333; font-weight: bold; float: left;" ></p><input type="checkbox" name="room" value="1" style="visibility: hidden; display: none" checked>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 col-md-offset-5">
+                                <input type="submit" name="sub" onclick="form_submit() ">
+                            </div>
+                        </div>
+                    </form>
+                    <script type="text/javascript">
+                        function form_submit() {
+                            document.getElementById("search_form").submit();
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

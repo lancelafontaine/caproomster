@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+        <link rel="stylesheet" href="../static/styles/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/styles/font-awesome.min.css">
+
+    <link rel="stylesheet" href="../static/styles/Content.css">
+
+    <!--[for IE9 support]-->
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <!--[endif]-->
+</head>
+<body>
+         {% for r in rTime %}
+            {{ r }}
+         {% endfor %}
+
+{% include 'modal (6).html' %}
+
+ <script src="../static/javascript/jquery.min.js"></script>
+    <script src="../static/javascript/bootstrap.min.js"></script>
+    <!-- Javascript function for the effect and the clicking -->
+    <script type="text/javascript">
+        var clicking = false;
+        $(document).ready(function(){
+            $('#modal1').modal('show');
+        });
+        $('#modal1').on('hidden.bs.modal', function () {
+            window.location.href = "{{ url_for('dashboard',user=session['user']) }}" ;
+            });
+        $(function(){
+            $("#rider .Greenies").mouseenter(function(){
+                if(!$(this).hasClass("clicked"))
+                {
+                    $(this).css("background", "#93DC69");
+                    $(this).css("color", "white");
+                    $(this).css("cursor", "pointer");
+                }
+            });
+            $("#rider .Greenies").mouseleave(function(){
+                if(!$(this).hasClass("clicked"))
+                {
+                    $(this).css("background", "#FFFFFF");
+                    $(this).css("color", "#333333");
+                }
+            });
+        });
+        $("#rider .Greenies p").click(function(){
+            if(!$(this).parent().hasClass("clicked"))
+            {
+                $(this).parent().addClass("clicked");
+                $(this).parent().css("background", "#93DC69");
+            }
+            else
+            {
+                $(this).parent().removeClass("clicked");
+                $(this).parent().css("background", "#FFFFFF");
+            }
+        });
+        $("span").click(function() {
+            if(!$(this).parent().hasClass("clicked"))
+            {
+                $(this).parent().addClass("clicked");
+                $(this).parent().css("background", "#FF4242");
+            }
+            else
+            {
+                $(this).parent().removeClass("clicked");
+                $(this).parent().css("background", "#FFFFFF");
+            }
+        });
+        $(function(){
+            $("#month .clickable").mouseenter(function(){
+                $(this).css("background", "#93DC69");
+                $(this).css("color", "white");
+                $(this).css("cursor", "pointer");
+            });
+            $("#month .clickable").mouseleave(function(){
+                $(this).css("background", "#FFFFFF");
+                $(this).css("color", "#333333");
+            });
+        });
+
+        $('div.number').click(function() {
+            var number = parseInt($('.number').text());
+        });
+        var s, m, i;
+        var interval
+        $("#month .clickable").on("click", function(){
+            $("span").parent().css("background", "#FFFFFF");
+            $("p").parent().css("background", "#FFFFFF");
+            clearInterval(interval);
+            s = 60;
+            m = 1;
+            $(".defaultCountdown").html("02 : 00");
+            interval = setInterval(function(){
+                if(s == 0)
+                {
+                    m--;
+                    s= 59;
+                }
+                else
+                {
+                    s--;
+                }
+                if(m == -1)
+                {
+                    clearInterval(interval);
+                }
+                if(s < 10 && m != -1)
+                {
+                    $(".defaultCountdown").html("0" + m + " : 0" + s);
+                }
+                else if(m != -1)
+                {
+                    $(".defaultCountdown").html("0" + m + " : " + s);
+                }
+                if(m == 0 && s == 0 && $(".modal").hasClass("in"))
+                {
+                    $(".defaultCountdown").html("00 : 00");
+                    alert("You Ran Out Of Time!");
+                    $(".close").trigger('click');
+                }
+            }, 1000);
+        });
+
+    //$(window).load(function(){
+     //   $('#modal1').modal('show');
+   // });
+</script>
+</body>
+</html>
+
+
