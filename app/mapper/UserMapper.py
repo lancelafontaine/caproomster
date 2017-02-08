@@ -51,10 +51,17 @@ def done():
     UnitOfWork.commit()
 
 def save(user):
-    UserTDG.insert(user)
+    UserTDG.insert(
+        user.getName(),
+        user.getPassword()
+    )
 
 def update(user):
-    UserTDG.update(user)
+    UserTDG.update(
+        user.getId(),
+        user.getName(),
+        user.getPassword()
+    )
 
 def erase(userId):
     UserTDG.delete(userId)

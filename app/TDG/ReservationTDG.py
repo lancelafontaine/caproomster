@@ -1,26 +1,23 @@
 #ReservationTDG
 import psycopg2
+import os
 from psycopg2.extensions import AsIs
 
-postgreSQLpass = "Intel1234"
+postgreSQLpass = os.environ['POSTGRES_PASSWORD']
 def find(id):
 	conn = psycopg2.connect(database="development", user="postgres", password=postgreSQLpass, host="127.0.0.1", port="5432")
 	cur = conn.cursor()
-	
+
 	cur.execute("""SELECT * FROM reservationTable WHERE reservationId = %s;""", (id,))
 	data = cur.fetchall()
 	conn.close()
 	#returns row as list
 	return data
 
-def insert(reservation):
+def insert(room, description, holder, timeslot):
 	conn = psycopg2.connect(database="development", user="postgres", password=postgreSQLpass, host="127.0.0.1", port="5432")
 	cur = conn.cursor()
-	
-	room = reservation.getRoom().getId()
-	description = reservation.getDescription()
-	holder = reservation.getUser().getId()
-	timeslot = reservation.getTimeslot().getId()
+
 	print(timeslot)
 	cur.execute("""INSERT INTO reservationTable(room, description, holder, timeslot) VALUES
 		(%s, %s, %s, %s);""", (room, description, holder, timeslot))
@@ -32,7 +29,7 @@ def update(id, roomId, userId, description, timeslot):
 	conn = psycopg2.connect(database="development", user="postgres", password=postgreSQLpass, host="127.0.0.1", port="5432")
 	cur = conn.cursor()
 
-	cur.execute("""UPDATE reservationTable SET room = %s, holder = %s, 
+	cur.execute("""UPDATE reservationTable SET room = %s, holder = %s,
 		 description = %s, timeslot = %s WHERE reservationId = %s;""",
 		  (roomId, userId, description, timeslot, id))
 	conn.commit()

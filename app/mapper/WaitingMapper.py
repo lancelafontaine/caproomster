@@ -67,7 +67,12 @@ def delete(waiting):
 
 
 def save(waiting):
-    WaitingTDG.insert(waiting)
+    WaitingTDG.insert(
+        waiting.getRoom().getId(),
+        waiting.getUser().getId(),
+        waiting.getDescription(),
+        waiting.getTimeslot().getId()
+    )
 
 def update(waiting):
     WaitingTDG.update(waiting)

@@ -47,7 +47,12 @@ def delete(timeslot):
 
 
 def save(timeslot):
-    TimeslotTDG.insert(timeslot)
+    TimeslotTDG.insert(timeslot.getStartTime(),
+        timeslot.getEndTime(),
+        timeslot.getDate(),
+        timeslot.getBlock(),
+        timeslot.getId()
+    )
 
 
 # remove waiting instance from database
