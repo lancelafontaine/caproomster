@@ -1,0 +1,4 @@
+venv/
+app/**/*.pyc
+config.pyc
+config.py
