@@ -82,12 +82,25 @@ def delete(reservationId):
 #save all work
 def done():
     UnitOfWork.commit()
-#adds room object
+
+# Saves reservation
 def save(reservation):
-    ReservationTDG.insert(reservation)
+    ReservationTDG.insert(reservation.getRoom().getId(),
+        reservation.getDescription(),
+        reservation.getUser().getId(),
+        reservation.getTimeslot().getId()
+    )
+
 #updates room Object
 def update(reservation):
-    ReservationTDG.update(reservation)
+    ReservationTDG.update(
+        reservation.getId(),
+        reservation.getRoom().getId(),
+        reservation.getUser().getId(),
+        reservation.getDescription(),
+        reservation.getTimeslot().getId()
+    )
+
 #deletes room object
 def erase(reservationid):
     ReservationTDG.delete(reservationid)

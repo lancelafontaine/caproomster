@@ -35,7 +35,7 @@ def findAll():
             room = RoomIdMap.find(r[0])
             if room == None:
                 room = Room(r[0], r[1])
-                RoomIdMap.addTo(room) 
+                RoomIdMap.addTo(room)
                 rooms.append(room)
     return rooms
 
@@ -54,10 +54,11 @@ def done():
     UnitOfWork.commit()
 #adds room object
 def save(room):
-    RoomTDG.insert(room)
+    RoomTDG.insert(room.getLock())
+
 #updates room Object
 def update(room,availability):
     RoomTDG.update(room, availability)
 #deletes room object
 def erase(room):
-    RoomTDG.delete(room)
+    RoomTDG.delete(room.getId())

@@ -1,7 +1,8 @@
 #UserTDG
 import psycopg2
+import os
 
-postgreSQLpass = "Intel1234"
+postgreSQLpass = os.environ['POSTGRES_PASSWORD']
 def find(id):
 	conn = psycopg2.connect(database="development", user="postgres", password=postgreSQLpass, host="127.0.0.1", port="5432")
 	cur = conn.cursor()
@@ -11,11 +12,11 @@ def find(id):
 	#returns table row as list
 	return data
 
-def insert(user):
+def insert(name, pw):
 	conn = psycopg2.connect(database="development", user="postgres", password=postgreSQLpass, host="127.0.0.1", port="5432")
+
 	cur = conn.cursor()
-	name = user.getName()
-	pw = user.getPassword()
+
 	cur.execute("""INSERT INTO userTable(password, name) VALUES
   		(%s, %s);""", (pw, name))
 	conn.commit()
@@ -41,4 +42,3 @@ def delete(id):
 
 
 
-	
