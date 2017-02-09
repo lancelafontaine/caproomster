@@ -1,7 +1,0 @@
-###########
-##congig###
-###########
-
-config.py
-config.pyc
-flask
