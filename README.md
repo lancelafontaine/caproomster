@@ -22,8 +22,12 @@ $ brew install postgresql<br />
 
 -Create a database named development <br />
 -Copy the sql script under bookMeDB.sql from the root directory and paste in the query tools <br />
--Change the passwords inside of the TDGs to the password of your postgresql chosen password <br />
--In the config python file insert your password where it says sqlPass<br />
+ 
+- **Important:** Before Running the application, run the following command: 
+
+<code>
+export POSTGRES_PASSWORD={your postgres password here}
+</code>
 
 <h2>To start server</h2>
 $ python run.py <br />
@@ -33,6 +37,7 @@ $ python run.py <br />
  UserId: 2, Username: Emily, Password:pass <br />
  UserId: 3, Username: Rudy, Password:pass <br />
  UserId: 4, Username: Jackie, Password:pass <br />
+
 
 ## Team Members
 
