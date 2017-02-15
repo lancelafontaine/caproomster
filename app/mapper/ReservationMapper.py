@@ -1,7 +1,6 @@
 import UnitOfWork
 import ReservationIdMap
 
-from app.mapper import ReservationMapper
 from app.mapper import TimeslotMapper
 from app.mapper import RoomMapper
 from app.mapper import UserMapper
