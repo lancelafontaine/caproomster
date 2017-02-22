@@ -1,6 +1,11 @@
+general:
+  build_dir: client
+
+dependencies:
+  override:
+    - npm config set registry http://registry.npmjs.org/
+    - npm run setup
+
 test:
   override:
-    - pytest
-    - COVERALLS_REPO_TOKEN=$COVERALLS_TOKEN coveralls
-
-
+    - npm run test

@@ -1,0 +1,43 @@
+{
+  "name": "Caproomster",
+  "version": "1.0.0",
+  "description": "SOEN 344 Caproomster",
+  "author": "Zhipeng Bruce Cai <https://github.com/choitwao>",
+  "scripts": {
+    "setup": "npm install && bower install && npm install rimraf -g",
+    "reset": "rimraf node_modules bower_components coverage .temp dist",
+    "start": "gulp",
+    "test": "karma start test/test.conf.js",
+    "package": "gulp",
+    "clean": "gulp clean"
+  },
+  "dependencies": {
+    "gulp": "^3.5.6",
+    "gulp-concat": "^2.2.0",
+    "gulp-minify-css": "^0.3.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^2.0.4"
+  },
+  "devDependencies": {
+    "bower": "^1.3.3",
+    "eslint": "^3.14.1",
+    "eslint-config-angular": "^0.5.0",
+    "eslint-plugin-angular": "^1.6.1",
+    "eslint-plugin-jasmine": "^2.2.0",
+    "gulp-connect": "^5.0.0",
+    "gulp-filter": "^5.0.0",
+    "gulp-main-bower-files": "^1.6.1",
+    "gulp-uglify": "^2.0.1",
+    "gulp-util": "^2.2.14",
+    "jasmine": "^2.5.3",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.4.0",
+    "karma-cli": "^1.0.1",
+    "karma-coverage": "^1.1.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-junit-reporter": "^1.2.0",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "phantomjs": "^2.1.7",
+    "shelljs": "^0.3.0"
+  }
+}
