@@ -1,0 +1,43 @@
+{
+  "name": "caproomster",
+  "description": "SOEN 344 Caproomster",
+  "authors": [
+    "Zhipeng Bruce Cai <https://github.com/choitwao>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.5.7",
+    "bootstrap": "~3.3.5",
+    "font-awesome": "~4.6.3",
+    "lodash": "~4.13.1",
+    "angular-messages": "~1.5.0",
+    "angular-resource": "~1.5.0",
+    "angular-sanitize": "~1.5.0",
+    "angular-bootstrap": "2.0.1",
+    "angular-animate": "~1.5.7",
+    "angular-ui-router": "1.0.0-beta.1",
+    "angular-utf8-base64": "~0.0.5",
+    "angular-load": "~0.4.1",
+    "angular-validation-match": "~1.9.0",
+    "ngstorage": "~0.3.11",
+    "angular-loading-bar": "^0.9.0"
+  },
+  "overrides": {
+    "font-awesome": {
+      "main": [
+        "./css/font-awesome.css",
+        "./fonts/*"
+      ]
+    }
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.5.0"
+  }
+}
