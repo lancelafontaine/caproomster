@@ -4,3 +4,7 @@ config.pyc
 config.py
 .DS_Store
 .idea/
+node_modules/
+bower_components/
+dist/
+temp/
