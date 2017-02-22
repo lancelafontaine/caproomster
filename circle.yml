@@ -1,0 +1,6 @@
+test:
+  override:
+    - pytest
+    - COVERALLS_REPO_TOKEN=$COVERALLS_TOKEN coveralls
+
+
