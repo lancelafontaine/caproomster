@@ -1,5 +1,5 @@
 from app.mapper import RoomMapper
-from app.TDG import RoomTDG
+
 # Registry Object
 class Registry:
 
@@ -20,10 +20,10 @@ class Registry:
 
     # Method to end an action
     def endAction(self,roomId):
-        room = RoomTDG.find(roomId)
-        if (room[0][1] == True):
+        room = self.directory.getRoom(roomId)
+        if (room.getLock() == True):
             print("Room was set False")
-            RoomTDG.update(roomId, False)
+            RoomMapper.update(roomId, False)
 
 
     # Method to make a reservation
