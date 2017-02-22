@@ -2,9 +2,10 @@ import UnitOfWork
 import ReservationIdMap
 
 from app.TDG import ReservationTDG
-from app.TDG import TimeslotTDG
-from app.TDG import RoomTDG
-from app.TDG import UserTDG
+
+from app.mapper import TimeslotMapper
+from app.mapper import RoomMapper
+from app.mapper import UserMapper
 
 from app.core.room import Room
 from app.core.user import User
@@ -27,12 +28,9 @@ def find(reservationId):
             return
         else:
             #must make a reference to timeslottable and create a timeslot object
-            room = RoomTDG.find(result[0][1])
-            room = Room(room[0][0],room[0][1])
-            holder = UserTDG.find(result[0][3])
-            holder = User(holder[0][0],holder[0][1],holder[0][2])
-            timeslot = TimeslotTDG.find(result[0][4])
-            timeslot = Timeslot(timeslot[0][1],timeslot[0][2],timeslot[0][3],timeslot[0][4],timeslot[0][0])
+            room = RoomMapper.find(result[0][1])
+            holder = UserMapper.find(result[0][3])
+            timeslot = TimeslotMapper.find(result[0][4])
             reservation = Reservation(room, holder,timeslot,result[0][2],timeslot.getId())
             ReservationIdMap.addTo(reservation)
     return reservation
@@ -46,12 +44,9 @@ def findAll():
         for index, r in enumerate(result):
             reservation = ReservationIdMap.find(r[0])
             if reservation == None:
-                room = RoomTDG.find(result[0][1])
-                room = Room(room[0][0], room[0][1])
-                holder = UserTDG.find(result[0][3])
-                holder = User(holder[0][0], holder[0][1], holder[0][2])
-                timeslot = TimeslotTDG.find(result[0][4])
-                timeslot = Timeslot(timeslot[0][1], timeslot[0][2], timeslot[0][3],timeslot[0][4], timeslot[0][0])
+                room = RoomMapper.find(result[0][1])
+                holder = UserMapper.find(result[0][3])
+                timeslot = TimeslotMapper.find(result[0][4])
                 reservation = Reservation(room, holder, timeslot, result[0][2], timeslot.getId())
                 allReservations.append(reservation)
                 ReservationIdMap.addTo(reservation)
