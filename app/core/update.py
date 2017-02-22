@@ -9,7 +9,7 @@ from app.mapper import WaitingMapper
 def updateWaiting(roomId, date, availabilityList):
     i = 0
     print(availabilityList)
-    waitingList = WaitingTDG.findByRoom(roomId, date)
+    waitingList = WaitingMapper.findRoomOnDate(roomId, date)
     if waitingList is None:
         return
     else:
