@@ -1,48 +1,73 @@
-# SOEN 343 Project - Capstone Room Reservation
+# CapRoomster
 
-This is the repository that contains the code, documentation, issues and much more related to reserving a classroom for a school project.
-<br />
+[![CircleCI](https://img.shields.io/circleci/project/github/lancelafontaine/caproomster.svg)](https://circleci.com/gh/lancelafontaine/caproomster) [![CodeCov](https://img.shields.io/codecov/c/github/lancelafontaine/caproomster.svg)](https://codecov.io/gh/lancelafontaine/caproomster)
 
-<h1>Instructions to setup the environment</h1>
--Checkout and pull master
--Download and install <a href="https://www.python.org/download/releases/2.7/">python2.7</a> version 2.7.12 under the downloads tab<br />
--Follow the instructions at the following <a href="http://flask.pocoo.org/docs/0.11/installation/">link</a> to succesfully download and install Flask</a><br/> 
+This is a project done within the context of the SOEN 343 and SOEN 344 courses at Concordia University.
 
--pip install the necessary modules mentionned in the requirements text file <br />
-<h3>Instruction to install modules</h3>
-$ pip install flask flask-security flask-sqlalchemy psycopg2 ... <br />
+This repository was received from another team and ultimately refactored, maintained, and added to.
 
-<h3>Instructions to setup database</h3>
-<h6>Directly from their website</h6>
-Download and install the latest version of <a href="https://www.postgresql.org/download/">postgresql</a><br />
-<h6>Using the terminal for Mac</h6>
-install <a href="http://brew.sh/">brew</a>
-insert the following command on your terminal: <br />
-$ brew install postgresql<br />
+CapRoomster is a web application that allows Concordia students to reserve a CAPSTONE room for their projects.
 
--Create a database named development <br />
--Copy the sql script under bookMeDB.sql from the root directory and paste in the query tools <br />
- 
-- **Important:** Before Running the application, run the following command: 
+# Documentation
 
-<code>
-export POSTGRES_PASSWORD={your postgres password here}
-</code>
+TBD
 
-<h2>To start server</h2>
-$ python run.py <br />
+# Installation and Development
 
-<h6>The following are the credentials to login:</h6>
- UserId: 1, Username: John, Password:pass <br />
- UserId: 2, Username: Emily, Password:pass <br />
- UserId: 3, Username: Rudy, Password:pass <br />
- UserId: 4, Username: Jackie, Password:pass <br />
+## Client
+
+See [client-side README](https://github.com/lancelafontaine/caproomster/tree/master/client) for further instructions.
+
+## Server
+
+### Installation
+- Make sure you have Python 2.7 installed.
+- Setup a [virtualenv](https://virtualenv.pypa.io/en/stable/) if you don't want to install packages globally on your system.
+- `pip2 install -r requirements.txt`
+
+### Development
+- `python2 -B run.py`
+
+### Running automated tests
+- `pytest`
+
+## Database
+- Install `postgresql`.
+  - If on Linux, more instructions [here](https://wiki.archlinux.org/index.php/PostgreSQL).
+- Start your `postgresql` server.
+- Create a database called `development`.
+- Initialize the database with the `bookMeDB.sql` script.
+- **IMPORTANT**: Before running the application, run `export postgres_password={your postgres password here}`
+
+# Additional Information
+
+## Login Credentials
+- UserId: `1`, Username: `John`, Password: `pass`
+- UserId: `2`, Username: `Emily`, Password: `pass`
+- UserId: `3`, Username: `Rudy`, Password: `pass`
+- UserId: `4`, Username: `Jackie`, Password: `pass`
+
+## Assumptions and Constraints
+
+TBD
 
 
-## Team Members
+# Team Members
 
-Ahmad Hyjaz Loudin - @PuzzlePuzzling<br />
-Emir Bozer @emrbzr<br />
-Leo Yu @yleo<br />
-Nikolas De vigne Blanchet @ndvb <br />
-Mary Psaroudis @mary86<br />
+## SOEN 344 Team Members
+Zhipeng Cai - [choitwao](https://github.com/choitwao) <br/>
+Adrianna Diaz - [adriannadiaz](https://github.com/adriannadiaz) <br/>
+Lance Lafontaine - [lancelafontaine](https://github.com/lancelafontaine) <br/>
+Arek Manoukian - [arekmano](https://github.com/arekmano) <br/>
+Taimoor Rana - [Taimoorrana1](https://github.com/Taimoorrana1) <br/>
+Lenz Petion - [MonsieurPetion](https://github.com/MonsieurPetion) <br/>
+Benny Zhao - [softwarebrah](https://github.com/softwarebrah) <br/>
+
+
+## SOEN 343 Team Members
+
+Ahmad Hyjaz Loudin - @PuzzlePuzzling <br/>
+Emir Bozer @emrbzr <br/>
+Leo Yu @yleo <br/>
+Nikolas De vigne Blanchet @ndvb <br/>
+Mary Psaroudis @mary86
