@@ -1,0 +1,11 @@
+general:
+  build_dir: client
+
+dependencies:
+  override:
+    - npm config set registry http://registry.npmjs.org/
+    - npm run setup
+
+test:
+  override:
+    - npm run test
