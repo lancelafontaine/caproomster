@@ -111,6 +111,7 @@
   gulp.task('clean', function() {
     del('dist');
     del('.temp');
+    del('coverage');
   });
 
   /** Terminal tasks **/

@@ -5,10 +5,8 @@
   "author": "Zhipeng Bruce Cai <https://github.com/choitwao>",
   "scripts": {
     "setup": "npm install && bower install && npm install rimraf -g",
-    "reset": "rimraf node_modules bower_components",
+    "reset": "rimraf node_modules bower_components coverage .temp dist",
     "start": "gulp",
-    "check": "eslint *.js app/**/*.js",
-    "check:fix": "eslint *.js app/**/*.js --fix",
     "test": "karma start test/test.conf.js",
     "package": "gulp",
     "clean": "gulp clean"
