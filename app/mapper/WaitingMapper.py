@@ -30,6 +30,13 @@ def find(waitingId):
 
     return waiting
 
+def findRoomOnDate(roomId,date):
+    waitingList = WaitingIdMap.getRoomOnDate(roomId,date)
+    if waitingList == None:
+        waitingList = WaitingTDG.findByRoom(roomId,date)
+    return waitingList
+
+
 def findAll():
     return WaitingTDG.findAll()
 
