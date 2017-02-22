@@ -11,6 +11,7 @@
   var karma = require('karma').server;
   var del = require('del');
   var filter = require('gulp-filter');
+  var connect = require('gulp-connect');
 
   // ============================
   // Default Tasks
@@ -19,7 +20,7 @@
   /** HTML tasks **/
 
   gulp.task('html', function(done) {
-    return gulp.src(['application/**/*.html', '!application/index.html'])
+    return gulp.src(['application/**/*.html'])
     .pipe(gulp.dest('dist/'));
   });
 
@@ -43,7 +44,7 @@
     .pipe(gulp.dest('.temp/css/'));
   });
 
-  gulp.task('css', ['app_css', 'vendor_css'], function(done) {
+  gulp.task('css', ['vendor_css', 'app_css'], function(done) {
     return gulp.src(['.temp/css/vendor.css', '.temp/css/app.css'])
     .pipe(concat('application.css'))
     .pipe(minifyCss({
@@ -72,8 +73,8 @@
     .pipe(gulp.dest('.temp/js/'));
   });
 
-  gulp.task('js', ['app_js', 'vendor_js'], function(done) {
-    return gulp.src(['.temp/js/vendor.js', '.temp/js/www.js'])
+  gulp.task('js', ['vendor_js', 'app_js'], function(done) {
+    return gulp.src(['.temp/js/vendor.js', '.temp/js/app.js'])
     .pipe(concat('application.js'))
     .pipe(uglify().on('error', gutil.log))
     .pipe(gulp.dest('dist/js/'));
@@ -85,6 +86,11 @@
     gulp.watch('application/**/*.html', ['html']);
     gulp.watch('application/**/*.js', ['app_js', 'js']);
     gulp.watch('application/**/*.scss', ['app_css', 'css']);
+    connect.server({
+      livereload: true,
+      directoryListing: true,
+      root: ['dist']
+    });
   });
 
   /** Unit test tasks **/
@@ -103,10 +109,6 @@
     del('dist');
     del('.temp');
   });
-
-  /** Live load **/
-
-  gulp.task('serve:before', ['default']);
 
   /** Terminal tasks **/
   gulp.task('scripts', ['app_js', 'vendor_js', 'js']);

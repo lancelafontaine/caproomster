@@ -7,4 +7,5 @@ config.py
 node_modules/
 bower_components/
 dist/
-temp/
+.temp/
+coverage/
