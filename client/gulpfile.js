@@ -68,7 +68,7 @@
     return gulp.src(mainBowerFiles(), {
       base: './bower_components'
     })
-    .pipe(filter('**/*.min.js'))
+    .pipe(filter('**/*.js'))
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('.temp/js/'));
   });
@@ -77,6 +77,9 @@
     return gulp.src(['.temp/js/vendor.js', '.temp/js/app.js'])
     .pipe(concat('application.js'))
     .pipe(uglify().on('error', gutil.log))
+    .pipe(rename({
+      extname: '.min.js'
+    }))
     .pipe(gulp.dest('dist/js/'));
   });
 
