@@ -1,19 +1,29 @@
 userList = []
-#constructor
+
+
+# constructor
 def __init__(self):
-	pass
+    pass
 
-#add user to list
+
+# add user to list
 def addTo(user):
-	userList.append(user)
+    userList.append(user)
 
-#remove user from list
+
+# remove user from list
 def removeFrom(user):
-	userList.remove(user)
+    userList.remove(user)
 
-#find user from list
+
+# find user from list
 def find(userId):
-	for i in range(len(userList)):
-		if userId == userList[i].getId():
-			return userList[i]
-	return
+    for i in range(len(userList)):
+        if userId == userList[i].getId():
+            return userList[i]
+    return
+
+
+# Clear the ID Map
+def clear():
+    del userList[:]

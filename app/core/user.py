@@ -2,9 +2,10 @@
 class User:
 
     # Constructor
-    def  __init__(self):
+    def __init__(self):
         pass
-    def __init__(self,userId, name,password):
+
+    def __init__(self, userId, name, password):
         self.name = name
         self.password = password
         self.userId = userId
@@ -13,7 +14,7 @@ class User:
     def getName(self):
         return self.name
 
-    def setName(self,name):
+    def setName(self, name):
         self.name = name
 
     def getPassword(self):
@@ -28,4 +29,5 @@ class User:
     def setId(self, userId):
         self.userId = userId
 
-
+    def __str__(self):
+        return '<Id: ' + str(self.userId) + ', Name:' + self.name + '>'
