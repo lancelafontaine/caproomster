@@ -4,7 +4,7 @@ from app.mapper import UserIdMap
 
 def test_clear():
     assert(len(UserIdMap.userList) is 0)
-    user = UserMapper.find(1)
+    UserIdMap.userList.append('a')
     assert(len(UserIdMap.userList) is 1)
     UserIdMap.clear()
     assert(len(UserIdMap.userList) is 0)

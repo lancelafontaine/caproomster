@@ -8,17 +8,6 @@ def teardown_module(module):
     UserIdMap.clear()
 
 
-def test_find():
-    assert(UserIdMap.find(1) is None)
-
-    user = UserMapper.find(1)
-
-    assert(user.getName() == 'John')
-    assert(user.getPassword() == 'pass')
-    assert(user.getId() == 1)
-    assert(UserIdMap.find(1) is user)
-
-
 def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
     # Mock
     def no_find(_):
