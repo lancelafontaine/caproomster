@@ -61,7 +61,6 @@ Lance Lafontaine - [lancelafontaine](https://github.com/lancelafontaine) <br/>
 Arek Manoukian - [arekmano](https://github.com/arekmano) <br/>
 Taimoor Rana - [Taimoorrana1](https://github.com/Taimoorrana1) <br/>
 Lenz Petion - [MonsieurPetion](https://github.com/MonsieurPetion) <br/>
-Benny Zhao - [softwarebrah](https://github.com/softwarebrah) <br/>
 
 
 ## SOEN 343 Team Members
