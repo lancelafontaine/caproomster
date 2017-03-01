@@ -1,13 +1,16 @@
 import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-#create app
+# create app
 app = Flask(__name__)
-#connect to config.py
+# connect to config.py
 app.config.from_object('config')
-#secret key
+# secret key
 app.secret_key = os.urandom(24)
-#create db instance
+# create db instance
 db = SQLAlchemy(app)
 #import views
 from app import views, decorators
+
+import mapper.UserAspect
