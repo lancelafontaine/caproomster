@@ -2,8 +2,6 @@ from app.mapper import UserMapper
 from app.mapper import UserIdMap
 from app.core.user import User
 from app.TDG import UserTDG
-import pytest
-import pdb
 
 
 def teardown_module(module):

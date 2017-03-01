@@ -1,8 +1,7 @@
 import UserIdMap
 import UnitOfWork
-import pdb
-from app.TDG import UserTDG
 
+from app.TDG import UserTDG
 from app.core.user import User
 
 
