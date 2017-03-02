@@ -30,41 +30,41 @@ def registerDeleted(object):
 
 
 def commit():
-
+    print('cmmitting')
     for index, object in enumerate(newList):
-        if type(object) is User:
+        if isinstance(object, User):
             UserMapper.save(object)
-        if type(object) is Room:
+        if isinstance(object, Room):
             RoomMapper.save(object)
-        if type(object) is Reservation:
+        if isinstance(object, Reservation):
             ReservationMapper.save(object)
-        if type(object) is Waiting:
+        if isinstance(object, Waiting):
             WaitingMapper.save(object)
-        if type(object) is Timeslot:
+        if isinstance(object, Timeslot):
             TimeslotMapper.save(object)
 
     for index, object in enumerate(changedList):
-        if type(object) is User:
+        if isinstance(object, User):
             UserMapper.update(object)
-        if type(object) is Room:
+        if isinstance(object, Room):
             RoomMapper.update(object)
-        if type(object) is Reservation:
+        if isinstance(object, Reservation):
             ReservationMapper.update(object)
-        if type(object) is Waiting:
+        if isinstance(object, Waiting):
             WaitingMapper.update(object)
-        if type(object) is Timeslot:
+        if isinstance(object, Timeslot):
             TimeslotMapper.update(object)
 
     for index, object in enumerate(deletedList):
-        if type(object) is User:
+        if isinstance(object, User):
             UserMapper.erase(object)
-        if type(object) is Room:
+        if isinstance(object, Room):
             RoomMapper.erase(object)
-        if type(object) is Reservation:
+        if isinstance(object, Reservation):
             ReservationMapper.erase(object.getId())
-        if type(object) is Waiting:
+        if isinstance(object, Waiting):
             WaitingMapper.erase(object)
-        if type(object) is Timeslot:
+        if isinstance(object, Timeslot):
             TimeslotMapper.erase(object.getId())
 
     del newList[:]

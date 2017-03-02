@@ -30,4 +30,4 @@ class User:
         self.userId = userId
 
     def __str__(self):
-        return '<Id: ' + str(self.userId) + ', Name:' + self.name + '>'
+        return '<Id: ' + str(self.userId) + ', Name:' + str(self.name) + '>'
