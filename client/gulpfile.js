@@ -56,6 +56,46 @@
     .pipe(gulp.dest('dist/css/'));
   });
 
+  /** Font tasks **/
+
+  gulp.task('vendor_fonts', function(done) {
+    return gulp.src(mainBowerFiles(), {
+      base: './bower_components'
+    })
+      .pipe(filter([
+        '**/*.eot',
+        '**/*.woff',
+        '**/*.ttf',
+        '**/*.svg'
+      ]))
+    .pipe(gulp.dest('dist/'));
+  });
+
+  gulp.task('app_fonts', function(done) {
+    return gulp.src([
+      'application/**/*.eot',
+      'application/**/*.woff',
+      'application/**/*.ttf',
+      'application/**/*.svg'
+    ])
+    .pipe(gulp.dest('dist/fonts'));
+  });
+
+  gulp.task('fonts', ['ionic_fonts', 'app_fonts']);
+
+  /** Image tasks **/
+
+  gulp.task('images', function(done) {
+    return gulp.src([
+      'application/**/*.png',
+      'application/**/*.jpg',
+      'application/**/*.jpeg',
+      'application/**/*.svg',
+      'application/**/*.ico'
+    ])
+    .pipe(gulp.dest('dist/'));
+  });
+
   /** JS tasks **/
 
   gulp.task('app_js', function(done) {
@@ -116,7 +156,8 @@
 
   /** Terminal tasks **/
   gulp.task('scripts', ['app_js', 'vendor_js', 'js']);
-  gulp.task('styles', ['app_css', 'vendor_css', 'css']);
+  gulp.task('styles', ['app_css', 'vendor_css', 'css', 'fonts', 'images']);
+  gulp.task('pack', ['html', 'scripts', 'styles']);
   gulp.task('default', ['html', 'scripts', 'styles', 'test', 'watch']);
     
 })();

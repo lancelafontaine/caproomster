@@ -12,8 +12,12 @@ module.exports = function(config) {
     files: [
       //Angular source
       'bower_components/angular/angular.js',
+      'bower_components/angular-animate/angular-animate.js',
+      'bower_components/angular-resource/angular-resource.js',
+      'bower_components/angular-sanitize/angular-sanitize.js',
+      'bower_components/angular-ui-router/release/angular-ui-router.js',
       //AngularMock source
-      'bower_components/angular-mocks/angular-mocks.js',
+      'node_modules/angular-mocks/angular-mocks.js',
       //App code
       'application/**/*.module.js',
       'application/**/*.js',
@@ -43,6 +47,7 @@ module.exports = function(config) {
       reporters: [
         {type:'lcovonly', subdir: '.'},
         {type:'json', subdir: '.'},
+        {type:'html', subdir: '.'}
       ]
     },
     // web server port
