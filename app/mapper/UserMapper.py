@@ -2,9 +2,7 @@ import UserIdMap
 import UnitOfWork
 
 from app.TDG import UserTDG
-
 from app.core.user import User
-
 
 
 def __init__():
@@ -19,21 +17,18 @@ def makeNew(name, password):
 
 
 def find(userId):
-    user = UserIdMap.find(userId)
-
     result = []
-    if user is None:
-        result = UserTDG.find(userId)
-        if not result:
-            return
-        else:
-            user = User(result[0][0], result[0][1], result[0][2])
-            UserIdMap.addTo(user)
-    return user
+    result = UserTDG.find(userId)
+    if not result:
+        return
+    else:
+        return User(result[0][0], result[0][1], result[0][2])
+
 
 def getUser(userId):
     user = UserIdMap.find(userId)
     return user
+
 
 def setUser(userId):
     user = find(userId)
@@ -47,8 +42,10 @@ def delete(userId):
         UserIdMap.removeFrom(user)
     UnitOfWork.registerDeleted(user)
 
+
 def done():
     UnitOfWork.commit()
+
 
 def save(user):
     UserTDG.insert(
@@ -56,12 +53,14 @@ def save(user):
         user.getPassword()
     )
 
+
 def update(user):
     UserTDG.update(
         user.getId(),
         user.getName(),
         user.getPassword()
     )
+
 
 def erase(userId):
     UserTDG.delete(userId)

@@ -1,29 +1,28 @@
-#UserTDG
-import psycopg2
-import os
+from app.db import connect_db
 
-postgreSQLpass = os.environ['POSTGRES_PASSWORD']
 def find(id):
-	conn = psycopg2.connect(database="development", user="postgres", password=postgreSQLpass, host="127.0.0.1", port="5432")
+    conn = connect_db()
+    if conn:
 	cur = conn.cursor()
 	cur.execute("""SELECT * FROM userTable WHERE userId = %s;""", (id,))
 	data = cur.fetchall()
 	conn.close()
-	#returns table row as list
 	return data
+    else:
+        return []
 
 def insert(name, pw):
-	conn = psycopg2.connect(database="development", user="postgres", password=postgreSQLpass, host="127.0.0.1", port="5432")
-
+    conn = connect_db()
+    if conn:
 	cur = conn.cursor()
-
 	cur.execute("""INSERT INTO userTable(password, name) VALUES
   		(%s, %s);""", (pw, name))
 	conn.commit()
 	conn.close()
 
 def update(id, name, password):
-	conn = psycopg2.connect(database="development", user="postgres", password=postgreSQLpass, host="127.0.0.1", port="5432")
+    conn = connect_db()
+    if conn:
 	cur = conn.cursor()
 	cur.execute("""UPDATE userTable SET name = %s,
   		password = %s WHERE userId = %s;""", (name, password, id))
@@ -31,14 +30,10 @@ def update(id, name, password):
 	conn.close()
 
 def delete(id):
-	conn = psycopg2.connect(database="development", user="postgres", password=postgreSQLpass, host="127.0.0.1", port="5432")
+    conn = connect_db()
+    if conn:
 	cur = conn.cursor()
 	cur.execute("""DELETE FROM userTable WHERE userId = %s;""", (id,))
 	conn.commit()
 	conn.close()
-
-
-
-
-
 
