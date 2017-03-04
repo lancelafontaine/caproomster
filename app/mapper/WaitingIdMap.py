@@ -12,12 +12,5 @@ def get(waitingId):
             return idMapList[i]
     return
 
-def getRoomOnDate(room,date):
-    waitingList = []
-    for waiting in idMapList:
-        if waiting[1] == room and waiting[2] == date:
-            waitingList.append(waiting)
-    return waitingList
-
 
 
