@@ -7,7 +7,6 @@ from app.mapper import WaitingMapper
 from app.mapper import TimeslotMapper
 from app.core.room import Room
 from app.core.registry import *
-from app.core.directory import *
 from app.core import update
 from app.core.reservationbook import ReservationBook
 from app.core import checkAvailabilities
@@ -23,12 +22,8 @@ for index, rId in enumerate(rListDb):
 	reservationList.append(ReservationMapper.find(rId.getId()))
 reservationBook = ReservationBook(reservationList, waitingList)
 
-# create directory
-roomList = []
-directory = Directory(roomList)
-
 # create registry
-registry = Registry(directory, reservationBook)
+registry = Registry(reservationBook)
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -120,7 +115,6 @@ def dashboard(user):
 @login_required
 @nocache
 def cancel(reservationId):
-	registry.getDirectory().setRoomList(RoomMapper.findAll())
 	registry.getReservationBook().setReservationList(ReservationMapper.findAll())
 	registry.getReservationBook().setWaitingList(WaitingMapper.findAll())
 	reservation = ReservationTDG.find(reservationId)
@@ -160,7 +154,6 @@ def canceWaiting(waitingId):
 @login_required
 @nocache
 def modify(reservationId):
-	registry.getDirectory().setRoomList(RoomMapper.findAll())
 	registry.getReservationBook().setReservationList(ReservationMapper.findAll())
 	registry.getReservationBook().setWaitingList(WaitingMapper.findAll())
 	reservation = ReservationTDG.find(reservationId)
