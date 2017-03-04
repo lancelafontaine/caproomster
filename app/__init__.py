@@ -13,4 +13,4 @@ db = SQLAlchemy(app)
 #import views
 from app import views, decorators
 
-import mapper.UserAspect
+import mapper.Aspect

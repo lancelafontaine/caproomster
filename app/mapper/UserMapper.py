@@ -1,4 +1,3 @@
-import UserIdMap
 import UnitOfWork
 
 from app.TDG import UserTDG
@@ -9,9 +8,8 @@ def __init__():
     pass
 
 
-def makeNew(name, password):
-    user = User(name, password)
-    UserIdMap.addTo(user)
+def makeNew(userId, name, password):
+    user = User(userId, name, password)
     UnitOfWork.registerNew(user)
     return user
 
@@ -25,22 +23,14 @@ def find(userId):
         return User(result[0][0], result[0][1], result[0][2])
 
 
-def getUser(userId):
-    user = UserIdMap.find(userId)
-    return user
-
-
 def setUser(userId):
     user = find(userId)
-    user.setName(userId.getName())
+    user.setName(user.getName())
     UnitOfWork.registerDirty(user)
 
 
 def delete(userId):
-    user = UserIdMap.find(userId)
-    if user is not None:
-        UserIdMap.removeFrom(user)
-    UnitOfWork.registerDeleted(user)
+    UnitOfWork.registerDeleted( User(userId,None,None) )
 
 
 def done():
@@ -62,5 +52,5 @@ def update(user):
     )
 
 
-def erase(userId):
-    UserTDG.delete(userId)
+def erase(user):
+    UserTDG.delete(user.getId())
