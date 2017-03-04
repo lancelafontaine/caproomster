@@ -10,7 +10,6 @@ def test_valid_registry_init():
 
     registry = Registry(reservationBook)
 
-    assert(type(registry.directory.roomList) is list)
     assert(type(registry.reservationBook.reservationList) is list)
     assert(type(registry.reservationBook.waitingList) is list)
 
