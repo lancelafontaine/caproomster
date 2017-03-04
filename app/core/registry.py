@@ -4,14 +4,14 @@ from app.mapper import RoomMapper
 class Registry:
 
     # Constructor
-    def __init__(self,directory, reservationBook):
-        self.directory = directory
+    def __init__(self, reservationBook):
         self.reservationBook = reservationBook
 
     # Method to initiate an action
     def initiateAction(self,roomId):
-        room = self.directory.getRoom(roomId)
-        if(room.getLock() == False):
+        room = RoomMapper.find(roomId)
+
+        if room.getLock() == False:
             RoomMapper.setRoom(roomId,True)
             return True
         else:
@@ -20,8 +20,8 @@ class Registry:
 
     # Method to end an action
     def endAction(self,roomId):
-        room = self.directory.getRoom(roomId)
-        if (room.getLock() == True):
+        room = RoomMapper.find(roomId)
+        if room.getLock() == True:
             print("Room was set False")
             RoomMapper.update(roomId, False)
 
@@ -30,11 +30,11 @@ class Registry:
     def makeNewReservation(self,roomId,holder,time,description):
         # Verifiy if there is any restrictions
         if self.isRestricted(holder,time) == False:
-            self.reservationBook.makeReservation(self.directory.getRoom(roomId),holder,time,description)
+            self.reservationBook.makeReservation(RoomMapper.find(roomId),holder,time,description)
 
     # Method to add to the waiting list
     def addToWaitingList(self,roomId,holder,time,description):
-        self.reservationBook.addToWaitingList(self.directory.getRoom(roomId),holder,time,description)
+        self.reservationBook.addToWaitingList(RoomMapper.find(roomId),holder,time,description)
 
     # Method to modify a reservation
     def modifyReservation(self,reservationId, time):
@@ -69,12 +69,6 @@ class Registry:
         return self.reservationBook.isRestricted(user,time)
 
     # Accessors and Mutators
-    def getDirectory(self):
-        return self.directory
-
-    def setDirectory(self,directory):
-        self.directory = directory
-
     def getReservationBook(self):
         return self.reservationBook
 
