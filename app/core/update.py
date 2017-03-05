@@ -1,7 +1,7 @@
-from mapper import ReservationMapper
-from reservation import Reservation
-from mapper import WaitingMapper
-from waiting import Waiting
+from app.mapper import ReservationMapper
+from app.core.reservation import Reservation
+from app.mapper import WaitingMapper
+from app.core.waiting import Waiting
 
 
 # waitingList: list containing (waitingId, room, reservee, description, timeslotid, starttime, endtime) entries
