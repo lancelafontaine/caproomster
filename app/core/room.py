@@ -1,4 +1,3 @@
-
 # Room Object
 class Room:
 
