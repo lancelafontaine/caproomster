@@ -30,6 +30,11 @@ def find(waitingId):
 
     return waiting
 
+def findRoomOnDate(roomId,date):
+    waitingList = WaitingTDG.findByRoom(roomId,date)
+    return waitingList
+
+
 def findAll():
     return WaitingTDG.findAll()
 
