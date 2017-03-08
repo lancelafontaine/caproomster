@@ -1,0 +1,17 @@
+@import "../caproomster.scss";
+
+.header {
+    height: 100vh !important;
+}
+.hide {
+    background-image: white;
+    display: flex;
+    height: 100%;
+}
+
+.login {
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    vertical-align: middle;
+    height: 100%;
+}

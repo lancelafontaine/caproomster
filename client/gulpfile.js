@@ -19,32 +19,31 @@
 
   /** HTML tasks **/
 
-  gulp.task('html', function(done) {
+  gulp.task('html', function() {
     return gulp.src(['application/**/*.html'])
     .pipe(gulp.dest('dist/'));
   });
 
   /** CSS tasks **/
 
-  gulp.task('app_css', function(done) {
+  gulp.task('app_css', function() {
     gulp.src('application/**/*.scss')
     .pipe(sass())
     .pipe(concat('app.css'))
     .on('error', sass.logError)
     .pipe(gulp.dest('.temp/css/'))
-    .on('end', done);
   });
 
-  gulp.task('vendor_css', function(done) {
+  gulp.task('vendor_css', function() {
     return gulp.src(mainBowerFiles(), {
       base: './bower_components'
     })
-    .pipe(filter('**/*.min.css'))
+    .pipe(filter('**/*.css'))
     .pipe(concat('vendor.css'))
     .pipe(gulp.dest('.temp/css/'));
   });
 
-  gulp.task('css', ['vendor_css', 'app_css'], function(done) {
+  gulp.task('css', ['vendor_css', 'app_css'], function() {
     return gulp.src(['.temp/css/vendor.css', '.temp/css/app.css'])
     .pipe(concat('application.css'))
     .pipe(minifyCss({
@@ -58,7 +57,7 @@
 
   /** Font tasks **/
 
-  gulp.task('vendor_fonts', function(done) {
+  gulp.task('vendor_fonts', function() {
     return gulp.src(mainBowerFiles(), {
       base: './bower_components'
     })
@@ -71,7 +70,7 @@
     .pipe(gulp.dest('dist/'));
   });
 
-  gulp.task('app_fonts', function(done) {
+  gulp.task('app_fonts', function() {
     return gulp.src([
       'application/**/*.eot',
       'application/**/*.woff',
@@ -81,11 +80,11 @@
     .pipe(gulp.dest('dist/fonts'));
   });
 
-  gulp.task('fonts', ['ionic_fonts', 'app_fonts']);
+  gulp.task('fonts', ['vendor_fonts', 'app_fonts']);
 
   /** Image tasks **/
 
-  gulp.task('images', function(done) {
+  gulp.task('images', function() {
     return gulp.src([
       'application/**/*.png',
       'application/**/*.jpg',
@@ -98,13 +97,13 @@
 
   /** JS tasks **/
 
-  gulp.task('app_js', function(done) {
-    return gulp.src(['application/**/*.module.js', 'application/**/*.js'])
+  gulp.task('app_js', function() {
+    return gulp.src(['application/**/*.module.js', 'application/**/*.component.js', 'application/**/*.js'])
     .pipe(concat('app.js'))
     .pipe(gulp.dest('.temp/js/'));
   });
 
-  gulp.task('vendor_js', function(done) {
+  gulp.task('vendor_js', function() {
     return gulp.src(mainBowerFiles(), {
       base: './bower_components'
     })
@@ -113,7 +112,7 @@
     .pipe(gulp.dest('.temp/js/'));
   });
 
-  gulp.task('js', ['vendor_js', 'app_js'], function(done) {
+  gulp.task('js', ['vendor_js', 'app_js'], function() {
     return gulp.src(['.temp/js/vendor.js', '.temp/js/app.js'])
     .pipe(concat('application.js'))
     .pipe(uglify().on('error', gutil.log))
@@ -132,7 +131,8 @@
     connect.server({
       livereload: true,
       directoryListing: true,
-      root: ['dist']
+      root: ['dist'],
+      port: 3000
     });
   });
 
