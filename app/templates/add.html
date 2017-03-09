@@ -31,7 +31,6 @@
       <div id="textcolorcorrector" class="row-fluid">
         <div class="text-center">Please Select the Room You Wish To Reserve</div>
           <br>
-          <div class="text-center">Warning: After you select the room, you have 2 minutes to complete your reservation.</div>
           <div class="text-center" style="color:red;">{{ allowed }}</div>
       </div>
       <br>
@@ -210,7 +209,7 @@
         clearInterval(interval);
         s = 60;
         m = 1;
-        $(".defaultCountdown").html("02 : 00");
+        /*$(".defaultCountdown").html("02 : 00");
         interval = setInterval(function(){
           if(s == 0)
           {
@@ -239,7 +238,7 @@
             alert("You Ran Out Of Time!");
             $(".close").trigger('click');
           }
-        }, 1000);
+        }, 1000);*/
       });
       $(function(){
         $("#relax").mouseenter(function(){
