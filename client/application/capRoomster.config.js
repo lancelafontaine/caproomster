@@ -22,6 +22,9 @@
 			$stateProvider.state('home', {
 				url: '/home',
 				views: {
+					'header': {
+						templateUrl: 'header/header.template.html'
+					},
 					'main': {
 						templateUrl: 'home/home.template.html'
 					}
