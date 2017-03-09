@@ -9,15 +9,24 @@
 
 		function($stateProvider, $urlRouterProvider) {
 
-			$stateProvider.state('home', {
+			$stateProvider.state('login', {
 				url: '/',
 				views: {
-					'header@': {
+					'header': {
 						templateUrl: 'login/login.template.html',
 						controller: 'LoginController'
 					}
 				}
 			});
+
+			$stateProvider.state('home', {
+				url: '/home',
+				views: {
+					'main': {
+						templateUrl: 'home/home.template.html'
+					}
+				}
+			})
 			
 			$urlRouterProvider.otherwise('/');
 

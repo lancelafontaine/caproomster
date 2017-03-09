@@ -34,7 +34,7 @@
         console.log("here");
         $scope.loginError = true;
         // do something here
-        //$state.go('calendar');
+        //$state.go('home');
       }
     }
 
