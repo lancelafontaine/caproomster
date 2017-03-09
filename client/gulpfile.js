@@ -38,13 +38,13 @@
     return gulp.src(mainBowerFiles(), {
       base: './bower_components'
     })
-    .pipe(filter('**/*.css'))
+    .pipe(filter('/**/*.css'))
     .pipe(concat('vendor.css'))
     .pipe(gulp.dest('.temp/css/'));
   });
 
   gulp.task('css', ['vendor_css', 'app_css'], function() {
-    return gulp.src(['.temp/css/vendor.css', '.temp/css/app.css'])
+    return gulp.src(['.temp/css/vendor.css', '.temp/css/app.css', 'bower_components/bootstrap/dist/css/bootstrap.css'])
     .pipe(concat('application.css'))
     .pipe(minifyCss({
       keepSpecialComments: 0

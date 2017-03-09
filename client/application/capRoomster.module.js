@@ -4,7 +4,13 @@
 
     angular.module('caproomster', [
     'ui.router',
-    'angularVideoBg'
+    'angularVideoBg',
+    'ui.bootstrap',
+    'ngMessages',
+    'ngResource',
+    'ngSanitize',
+    'ngStorage',
+    'ngAnimate'
     ]);
   
 })(angular);

@@ -4,29 +4,40 @@
 
   angular.module('caproomster').controller('LoginController', LoginController);
 
-  LoginController.$inject = ['$scope'];
+  LoginController.$inject = ['$scope', '$state'];
 
-  function LoginController($scope) {
+  function LoginController($scope, $state) {
 
     init();
+    $scope.login = login;
 
     function init() {
       loadVideo();
+      $scope.userInfo = {};
     }
 
     function loadVideo() {
       $scope.videos = [{
         videoId: 'JDl0AhqHF_s',
-        mute: true,
-        start: 3
+        start: 3,
+        end: 30,
+        loop: true
       }];
-      $scope.slowShow = true;
-      setTimeout(function() {
-        $scope.$apply(function(){
-          $scope.slowShow = false;
-        });
-      }, 3000);
     }
+
+    function login() {
+      $scope.loginError = false;
+      if (!$scope.userInfo.username || !$scope.userInfo.password) {
+        $scope.loginError = true;
+      }
+      else {
+        console.log("here");
+        $scope.loginError = true;
+        // do something here
+        //$state.go('calendar');
+      }
+    }
+
   }
 
 })(angular);
