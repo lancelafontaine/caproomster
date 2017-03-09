@@ -10,6 +10,8 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
     // list of files / patterns to load in the browser
     files: [
+      //Test files
+      'test/**/*.test.js',
       //Angular source
       'bower_components/angular/angular.js',
       'bower_components/angular-animate/angular-animate.js',
@@ -21,9 +23,7 @@ module.exports = function(config) {
       //App code
       'application/**/*.module.js',
       'application/**/*.js',
-      'application/*.js',
-      //Test files
-      'test/**/*.test.js'
+      'application/*.js'
     ],
     // list of files to exclude
     exclude: [

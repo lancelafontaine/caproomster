@@ -158,6 +158,6 @@
   gulp.task('scripts', ['app_js', 'vendor_js', 'js']);
   gulp.task('styles', ['app_css', 'vendor_css', 'css', 'fonts', 'images']);
   gulp.task('pack', ['html', 'scripts', 'styles']);
-  gulp.task('default', ['html', 'scripts', 'styles', 'test', 'watch']);
+  gulp.task('default', ['html', 'scripts', 'styles', 'watch']);
     
 })();

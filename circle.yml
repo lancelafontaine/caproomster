@@ -6,6 +6,5 @@ dependencies:
 
 test:
   override:
-    - cd client && npm run test
     - pytest
     - codecov
