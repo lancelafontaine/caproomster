@@ -26,7 +26,8 @@
 						templateUrl: 'header/header.template.html'
 					},
 					'main': {
-						templateUrl: 'home/home.template.html'
+						templateUrl: 'home/home.template.html',
+						controller: 'HomeController'
 					}
 				}
 			})

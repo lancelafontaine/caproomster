@@ -30,21 +30,17 @@
     gulp.src('application/**/*.scss')
     .pipe(sass())
     .pipe(concat('app.css'))
-    .on('error', sass.logError)
     .pipe(gulp.dest('.temp/css/'))
   });
 
   gulp.task('vendor_css', function() {
-    return gulp.src(mainBowerFiles(), {
-      base: './bower_components'
-    })
-    .pipe(filter('/**/*.css'))
+    return gulp.src('bower_components/**/*.css')
     .pipe(concat('vendor.css'))
     .pipe(gulp.dest('.temp/css/'));
   });
 
   gulp.task('css', ['vendor_css', 'app_css'], function() {
-    return gulp.src(['.temp/css/vendor.css', '.temp/css/app.css', 'bower_components/bootstrap/dist/css/bootstrap.css'])
+    return gulp.src(['.temp/css/vendor.css', '.temp/css/app.css'])
     .pipe(concat('application.css'))
     .pipe(minifyCss({
       keepSpecialComments: 0
@@ -58,15 +54,12 @@
   /** Font tasks **/
 
   gulp.task('vendor_fonts', function() {
-    return gulp.src(mainBowerFiles(), {
-      base: './bower_components'
-    })
-      .pipe(filter([
-        '**/*.eot',
-        '**/*.woff',
-        '**/*.ttf',
-        '**/*.svg'
-      ]))
+    return gulp.src([
+      'bower_components/**/*.eot',
+      'bower_components/**/*.woff',
+      'bower_components/**/*.ttf',
+      'bower_components/**/*.svg'
+    ])
     .pipe(gulp.dest('dist/'));
   });
 
@@ -107,7 +100,7 @@
     return gulp.src(mainBowerFiles(), {
       base: './bower_components'
     })
-    .pipe(filter('**/*.js'))
+    .pipe(filter(['**/*.js']))
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('.temp/js/'));
   });
@@ -115,7 +108,7 @@
   gulp.task('js', ['vendor_js', 'app_js'], function() {
     return gulp.src(['.temp/js/vendor.js', '.temp/js/app.js'])
     .pipe(concat('application.js'))
-    .pipe(uglify().on('error', gutil.log))
+    //.pipe(uglify().on('error', gutil.log))
     .pipe(rename({
       extname: '.min.js'
     }))
@@ -155,8 +148,8 @@
   });
 
   /** Terminal tasks **/
-  gulp.task('scripts', ['app_js', 'vendor_js', 'js']);
-  gulp.task('styles', ['app_css', 'vendor_css', 'css', 'fonts', 'images']);
+  gulp.task('scripts', ['js']);
+  gulp.task('styles', ['css', 'fonts', 'images']);
   gulp.task('pack', ['html', 'scripts', 'styles']);
   gulp.task('default', ['html', 'scripts', 'styles', 'watch']);
     

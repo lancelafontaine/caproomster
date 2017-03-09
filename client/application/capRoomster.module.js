@@ -10,7 +10,8 @@
     'ngResource',
     'ngSanitize',
     'ngStorage',
-    'ngAnimate'
+    'ngAnimate',
+    'ui.calendar'
     ]);
   
 })(angular);
