@@ -1,7 +1,13 @@
 <div class="login-page">
+    <!-- video background -->
     <video-bg playlist="videos"></video-bg>
+    <!-- end video background -->
+    <!-- content -->
     <div class="login-content">
+        <!-- title -->
         <h1>Caproomster</h1>
+        <!-- end title -->
+        <!-- sign in form -->
         <form autocomplete="off" class="form-horizontal" ng-submit="login()">
             <div class="form-group">
                 <input id="login-username" type="text" ng-model="userInfo.username" placeholder="Username" value="" required/>
@@ -14,5 +20,7 @@
             </div>
             <p ng-if="loginError" class="errorMessage">Login failed, please check your credential.</p>
         </form>
+        <!-- end sign in form -->
     </div>
+    <!-- end content -->
 </div>
