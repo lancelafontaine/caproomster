@@ -5,7 +5,7 @@
   "author": "Zhipeng Bruce Cai <https://github.com/choitwao>",
   "scripts": {
     "postinstall": "bower install && npm install rimraf -g",
-    "reset": "rimraf node_modules bower_components coverage .temp dist",
+    "uninstall": "rimraf node_modules bower_components coverage .temp dist",
     "start": "gulp",
     "check": "eslint *.js application/**/*.js",
     "check:fix": "eslint *.js application/**/*.js --fix",
