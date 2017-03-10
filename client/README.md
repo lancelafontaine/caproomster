@@ -35,7 +35,7 @@
 
 ### Project Setup
 
-- `npm run install` to set up the project
+- `npm install` to set up the project
 - `npm run uninstall` to reset the project
 
 ### Build Application
