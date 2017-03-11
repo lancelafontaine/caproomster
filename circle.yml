@@ -1,11 +1,10 @@
 dependencies:
   override:
     - npm config set registry http://registry.npmjs.org/
-    - cd client && npm run setup
+    - cd client && npm install
     - pip2 install -r requirements.txt
 
 test:
   override:
-    - cd client && npm run test
     - pytest
     - codecov
