@@ -1,7 +1,7 @@
 describe('test', function() {
 
   beforeEach(function() {
-  	module('capRoomster');
+  	module('caproomster');
   });
 
   it('should be true', function() {

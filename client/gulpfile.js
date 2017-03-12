@@ -19,32 +19,27 @@
 
   /** HTML tasks **/
 
-  gulp.task('html', function(done) {
+  gulp.task('html', function() {
     return gulp.src(['application/**/*.html'])
     .pipe(gulp.dest('dist/'));
   });
 
   /** CSS tasks **/
 
-  gulp.task('app_css', function(done) {
+  gulp.task('app_css', function() {
     gulp.src('application/**/*.scss')
     .pipe(sass())
     .pipe(concat('app.css'))
-    .on('error', sass.logError)
     .pipe(gulp.dest('.temp/css/'))
-    .on('end', done);
   });
 
-  gulp.task('vendor_css', function(done) {
-    return gulp.src(mainBowerFiles(), {
-      base: './bower_components'
-    })
-    .pipe(filter('**/*.min.css'))
+  gulp.task('vendor_css', function() {
+    return gulp.src('bower_components/**/*.css')
     .pipe(concat('vendor.css'))
     .pipe(gulp.dest('.temp/css/'));
   });
 
-  gulp.task('css', ['vendor_css', 'app_css'], function(done) {
+  gulp.task('css', ['vendor_css', 'app_css'], function() {
     return gulp.src(['.temp/css/vendor.css', '.temp/css/app.css'])
     .pipe(concat('application.css'))
     .pipe(minifyCss({
@@ -56,27 +51,64 @@
     .pipe(gulp.dest('dist/css/'));
   });
 
+  /** Font tasks **/
+
+  gulp.task('vendor_fonts', function() {
+    return gulp.src([
+      'bower_components/**/*.eot',
+      'bower_components/**/*.woff',
+      'bower_components/**/*.ttf',
+      'bower_components/**/*.svg'
+    ])
+    .pipe(gulp.dest('dist/'));
+  });
+
+  gulp.task('app_fonts', function() {
+    return gulp.src([
+      'application/**/*.eot',
+      'application/**/*.woff',
+      'application/**/*.ttf',
+      'application/**/*.svg'
+    ])
+    .pipe(gulp.dest('dist/fonts'));
+  });
+
+  gulp.task('fonts', ['vendor_fonts', 'app_fonts']);
+
+  /** Image tasks **/
+
+  gulp.task('images', function() {
+    return gulp.src([
+      'application/**/*.png',
+      'application/**/*.jpg',
+      'application/**/*.jpeg',
+      'application/**/*.svg',
+      'application/**/*.ico'
+    ])
+    .pipe(gulp.dest('dist/'));
+  });
+
   /** JS tasks **/
 
-  gulp.task('app_js', function(done) {
-    return gulp.src(['application/**/*.module.js', 'application/**/*.js'])
+  gulp.task('app_js', function() {
+    return gulp.src(['application/**/*.module.js', 'application/**/*.component.js', 'application/**/*.js'])
     .pipe(concat('app.js'))
     .pipe(gulp.dest('.temp/js/'));
   });
 
-  gulp.task('vendor_js', function(done) {
+  gulp.task('vendor_js', function() {
     return gulp.src(mainBowerFiles(), {
       base: './bower_components'
     })
-    .pipe(filter('**/*.js'))
+    .pipe(filter(['**/*.js']))
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('.temp/js/'));
   });
 
-  gulp.task('js', ['vendor_js', 'app_js'], function(done) {
+  gulp.task('js', ['vendor_js', 'app_js'], function() {
     return gulp.src(['.temp/js/vendor.js', '.temp/js/app.js'])
     .pipe(concat('application.js'))
-    .pipe(uglify().on('error', gutil.log))
+    //.pipe(uglify().on('error', gutil.log))
     .pipe(rename({
       extname: '.min.js'
     }))
@@ -92,7 +124,8 @@
     connect.server({
       livereload: true,
       directoryListing: true,
-      root: ['dist']
+      root: ['dist'],
+      port: 8080
     });
   });
 
@@ -115,8 +148,9 @@
   });
 
   /** Terminal tasks **/
-  gulp.task('scripts', ['app_js', 'vendor_js', 'js']);
-  gulp.task('styles', ['app_css', 'vendor_css', 'css']);
-  gulp.task('default', ['html', 'scripts', 'styles', 'test', 'watch']);
+  gulp.task('scripts', ['js']);
+  gulp.task('styles', ['css', 'fonts', 'images']);
+  gulp.task('pack', ['html', 'scripts', 'styles']);
+  gulp.task('default', ['html', 'scripts', 'styles', 'watch']);
     
 })();

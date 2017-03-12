@@ -1,0 +1,48 @@
+@import "../caproomster.scss";
+
+.login-page {
+    height: 100vh;
+    background-image: none !important;
+    background-color: #fff !important;
+    .login-content {
+        background-color: rgba(0,0,0,0.5);
+        text-align: center;
+        vertical-align: middle;
+        height: 100%;
+        h1 {
+            margin: auto;
+            padding-top: 18%;
+            color: #fff;
+            font-size: 40px;
+            font-weight: 900;
+        }
+        form {
+            margin-top: 2%;
+            input {
+                margin-left: 20px;
+                margin-right: 20px;
+                border: 2px solid #fff;
+                background-color: transparent;
+                width: 300px;
+                height: 40px;
+                font-size: 19px;
+                text-align: center;
+                color: #fff;
+            }
+            button {
+                border: 2px solid #fff;
+                outline: 0;
+                color: #fff;
+                background-color: transparent;
+                font-weight: 900;
+                margin: 30px;
+                height: 45px;
+                width: 130px;   
+            }
+            .errorMessage {
+                color: #fff;
+                text-align: center;
+            }
+        }
+    }
+}
