@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS userTable (
 	userId SERIAL NOT NULL,
 	name VARCHAR(30)  NOT NULL DEFAULT ' ',
 	password VARCHAR(30) NOT NULL,
-    casptone BOOLEAN NOT NULL,
+  capstone BOOLEAN NOT NULL,
 	PRIMARY KEY (userId)
 );
 
