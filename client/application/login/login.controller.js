@@ -31,7 +31,7 @@
         $scope.loginError = true;
       }
       else {
-        console.log("here");
+        console.log('here');
         $scope.loginError = true;
         // do something here
         //$state.go('home');

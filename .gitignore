@@ -11,3 +11,6 @@ bower_components/
 dist/
 .temp/
 coverage/
+
+#Log files
+*.log
