@@ -17,20 +17,17 @@
     "bootstrap": "^3.3.7",
     "font-awesome": "~4.6.3",
     "lodash": "~4.13.1",
-    "angular-messages": "~1.5.0",
     "angular-resource": "~1.5.0",
     "angular-sanitize": "~1.5.0",
     "angular-bootstrap": "2.0.1",
     "angular-animate": "~1.5.7",
     "angular-ui-router": "1.0.0-beta.1",
-    "angular-load": "~0.4.1",
     "angular-validation-match": "~1.9.0",
     "ngstorage": "~0.3.11",
-    "angular-loading-bar": "^0.9.0",
     "angular-video-bg": "~0.3",
     "angular-ui-calendar": "latest"
   },
   "resolutions": {
-    "angular": "1.x.x"
+    "angular": "~1.5.x"
   }
 }
