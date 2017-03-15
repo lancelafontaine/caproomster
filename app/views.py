@@ -24,6 +24,7 @@ reservationBook = ReservationBook(reservationList, waitingList)
 registry = Registry(reservationBook)
 
 STATUS_CODE = {
+    'OK': 200,
     'UNAUTHORIZED': 401,
     'NOT_FOUND': 404,
     'UNPROCESSABLE': 422
@@ -39,13 +40,10 @@ def internal_error(error):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
-    # Login attempted
     if request.method == 'POST':
         data = request.get_json();
         return validate_login(data)
 
-    # Checking if current user is logged in
     if request.method == 'GET':
         return is_logged_in()
 
@@ -99,11 +97,8 @@ def is_logged_in():
 
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
     session.clear()
     return jsonify({'logout success': 'Successfully logged out.'})
-
-
 
 
 #reservation
