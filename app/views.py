@@ -83,7 +83,7 @@ def validate_login(data):
 
 
 def is_logged_in():
-    if 'logged_in' in session and 'userId' in session and session['logged_in'] and session['userId']:
+    if 'logged_in' in session and 'userId' in session and session['logged_in'] == True:
         response = {
             'success': {
                 'userId': session['userId']
