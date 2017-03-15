@@ -64,9 +64,15 @@
       'application/**/*.jpg',
       'application/**/*.jpeg',
       'application/**/*.svg',
-      'application/**/*.ico'
+      'bower_components/font-awesome/**/*.otf',
+      'bower_components/font-awesome/**/*.eot',
+      'bower_components/font-awesome/**/*.woff',
+      'bower_components/font-awesome/**/*.woff2',
+      'bower_components/font-awesome/**/*.ttf',
+      'bower_components/font-awesome/**/*.svg'
     ])
-    .pipe(gulp.dest('dist/'));
+    .pipe(rename({dirname: ''}))
+    .pipe(gulp.dest('dist/fonts/'));
   });
 
   /** CSS **/
@@ -117,8 +123,7 @@
     .pipe(order([
       'jquery.js',
       'moment.js',
-      'angular.js',
-      'fullcalendar.js'
+      'angular.js'
     ]))
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('.temp/js/'));
@@ -150,7 +155,7 @@
   /** Clean tasks **/
 
   gulp.task('clean', function() {
-    return del('.temp', 'dist');
+    return del(['.temp', 'dist']);
   });
 
 })();

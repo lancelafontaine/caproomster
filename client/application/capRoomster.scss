@@ -1,8 +1,17 @@
-html, body {
+html, body, .body-container, .main{
     width: 100%;
     height: 100%;
 }
 
 p, h1, h2, h3 {
-    font-family: "Open Sans", Arial, sans-serif;
+    font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('../fonts/fontawesome-webfont.eot');
+  src: url('../fonts/fontawesome-webfont.eot') format('embedded-opentype');
+  src: url('../fonts/fontawesome-webfont.woff') format('woff');
+  src: url('../fonts/fontawesome-webfont.ttf') format('truetype');
+  src: url('../fonts/fontawesome-webfont.svg') format('svg');
 }

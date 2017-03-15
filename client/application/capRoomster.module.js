@@ -10,7 +10,7 @@
     'ngSanitize',
     'ngStorage',
     'ngAnimate',
-    'ui.calendar'
+    'mwl.calendar'
   ]);
 
 })(angular);
