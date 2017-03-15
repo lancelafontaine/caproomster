@@ -1,6 +1,6 @@
 from app import app
 from .decorators import *
-from flask import render_template, request
+from flask import request, jsonify
 from app.mapper import ReservationMapper
 from app.mapper import UserMapper
 from app.mapper import WaitingMapper
@@ -19,236 +19,194 @@ reservationList = []
 waitingList = []
 waitingList = WaitingMapper.findAll()
 for index, rId in enumerate(rListDb):
-	reservationList.append(ReservationMapper.find(rId.getId()))
+    reservationList.append(ReservationMapper.find(rId.getId()))
 reservationBook = ReservationBook(reservationList, waitingList)
-
-# create registry
 registry = Registry(reservationBook)
+
+STATUS_CODE = {
+    'UNAUTHORIZED': 401,
+    'NOT_FOUND': 404,
+    'UNPROCESSABLE': 422
+}
 
 @app.errorhandler(404)
 def not_found_error(error):
-	return render_template('404.html')
+    return jsonify({'404': 'Not Found'})
 
-#if 500 error render 500.html
 @app.errorhandler(500)
 def internal_error(error):
-    #db.session.rollback()
-    return render_template('500.html'), 500
+    return jsonify({'500': 'Internal Server Error'})
 
-@app.route('/')
-def home():
-	return redirect(url_for('index'))
-#login
 @app.route('/login', methods=['GET', 'POST'])
-def index():
-	error = 'Invalid credentials. Please try again'
-	if request.method == 'POST':
-		if request.form['username'].isdigit():
-			user = UserMapper.find(request.form['username'])
-			if user:
-				if user.getId() is int(request.form['username']):
-					if user.getPassword() == request.form['password']:
-						session['logged_in'] = True
-						session['userId'] = user.getId()
-						#fetch all user reservation
-						#i.e from timeslottable
-						#reservationtable
-						#merge reservationdata with timeslottable then store in reservation[]
-						#waitingtable
-						#store the waitingtable in waiting[]
+def login():
 
-						return redirect(url_for('dashboard',user=user.getName()))
-					else:
-						return render_template('login.html',error=error)
-				else:
-					return render_template('login.html',error=error)
-			else:
-				return render_template('login.html', error=error)
-		else:
-			return render_template('login.html', error=error)
-	else:
-		return render_template('login.html', error="")
+    # Login attempted
+    if request.method == 'POST':
+        data = request.get_json();
 
-#logout
+        if 'userId' not in data or 'password' not in data:
+            response = jsonify({'login error': '`userId` and `password` fields are required.'})
+            response.status_code = STATUS_CODE['UNPROCESSABLE']
+            return response
+
+        if str(data['userId']).isdigit() == False:
+            response = jsonify({'login error': '`userId` must be an integer.'})
+            response.status_code = STATUS_CODE['UNPROCESSABLE']
+            return response
+
+        user = UserMapper.find(int(data['userId']))
+        if not user:
+            response = jsonify({'login error': 'That user does not exist.'})
+            response.status_code = STATUS_CODE['NOT_FOUND']
+            return response
+
+        if user.getPassword() != str(data['password']):
+            response = jsonify({'login error': 'Credentials refused for that user.'})
+            response.status_code = STATUS_CODE['UNAUTHORIZED']
+            return response
+
+        session['logged_in'] = True
+        session['userId'] = user.getId()
+
+        success = {
+            'login success': 'Successfully logged in',
+            'data': {
+                'userId': str(user.getId()),
+                'username': str(user.getName())
+            }
+        }
+        return jsonify(success)
+
+    # Checking if current user is logged in
+    if request.method == 'GET':
+        if 'logged_in' in session and 'userId' in session and session['logged_in'] and session['userId']:
+            response = {
+                'success': {
+                    'userId': session['userId']
+                }
+            }
+            return jsonify(response)
+        response = jsonify({'error': 'not logged in'})
+        response.status_code = STATUS_CODE['UNAUTHORIZED']
+        return response
+
+
 @app.route('/logout')
 def logout():
-	session.pop('logged_in', None)
-	session.clear()
-	return redirect(url_for('index'))
+    session.pop('logged_in', None)
+    session.clear()
+    return jsonify({'logout success': 'Successfully logged out.'})
+
+
+
 
 #reservation
 @app.route('/dashboard/<user>')
 @login_required
 @nocache
 def dashboard(user):
-	session['user'] = user
-	reservation1 = []
-	userReservation = ReservationTDG.findUserRes(session['userId'])
+    session['user'] = user
+    reservation1 = []
+    userReservation = ReservationTDG.findUserRes(session['userId'])
 
 
-	for reservation in userReservation:
-		print(reservation)
-		reservation1.append(reservation[1])
-		reservation1.append(reservation[6])
-		endTime = reservation[7] + 1
-		reservation1.append(endTime)
-		reservation1.append(reservation[8])
-		reservation1.append(reservation[2])
-		reservation1.append(reservation[0])
+    for reservation in userReservation:
+        print(reservation)
+        reservation1.append(reservation[1])
+        reservation1.append(reservation[6])
+        endTime = reservation[7] + 1
+        reservation1.append(endTime)
+        reservation1.append(reservation[8])
+        reservation1.append(reservation[2])
+        reservation1.append(reservation[0])
 
-	waitings1 = []
-	userWaiting = WaitingTDG.findByUser(session['userId'])
+    waitings1 = []
+    userWaiting = WaitingTDG.findByUser(session['userId'])
 
-	for waitingRes in userWaiting:
-		waitings1.append(waitingRes[1])
-		waitings1.append(waitingRes[6])
-		endTime = waitingRes[7] + 1
-		waitings1.append(endTime)
-		waitings1.append(waitingRes[8])
-		waitings1.append(waitingRes[3])
-		waitings1.append(waitingRes[0])
+    for waitingRes in userWaiting:
+        waitings1.append(waitingRes[1])
+        waitings1.append(waitingRes[6])
+        endTime = waitingRes[7] + 1
+        waitings1.append(endTime)
+        waitings1.append(waitingRes[8])
+        waitings1.append(waitingRes[3])
+        waitings1.append(waitingRes[0])
 
-	return render_template('index.html',user=user, reservation=reservation1, waitings=waitings1)
+    return render_template('index.html',user=user, reservation=reservation1, waitings=waitings1)
 
 
 @app.route('/cancel/<reservationId>')
 @login_required
 @nocache
 def cancel(reservationId):
-	registry.getReservationBook().setReservationList(ReservationMapper.findAll())
-	registry.getReservationBook().setWaitingList(WaitingMapper.findAll())
-	reservation = ReservationTDG.find(reservationId)
-	roomId = reservation[0][1]
-	print(reservation[0][4])
-	timeslot = TimeslotTDG.find(reservation[0][4])
-	print(timeslot[0][4])
-	registry.initiateAction(roomId)
-	registry.cancelReservation(reservationId)
-	registry.endAction(roomId)
-	ReservationTDG.delete(reservationId)
-	TimeslotTDG.delete(reservationId)
-	roomsAvailable = checkAvailabilities.checkAvailabilities(timeslot[0][3])
-	if(roomId == 1):
-		update.updateWaiting(roomId,timeslot[0][3],roomsAvailable[0])
-	if(roomId == 2):
-		update.updateWaiting(roomId, timeslot[0][3], roomsAvailable[1])
-	if(roomId == 3):
-		update.updateWaiting(roomId, timeslot[0][3], roomsAvailable[2])
-	if(roomId == 4):
-		update.updateWaiting(roomId, timeslot[0][3], roomsAvailable[3])
-	if(roomId == 5):
-		update.updateWaiting(roomId, timeslot[0][3], roomsAvailable[4])
-	return redirect(url_for('dashboard', user=session['user']))
+    registry.getReservationBook().setReservationList(ReservationMapper.findAll())
+    registry.getReservationBook().setWaitingList(WaitingMapper.findAll())
+    reservation = ReservationTDG.find(reservationId)
+    roomId = reservation[0][1]
+    print(reservation[0][4])
+    timeslot = TimeslotTDG.find(reservation[0][4])
+    print(timeslot[0][4])
+    registry.initiateAction(roomId)
+    registry.cancelReservation(reservationId)
+    registry.endAction(roomId)
+    ReservationTDG.delete(reservationId)
+    TimeslotTDG.delete(reservationId)
+    roomsAvailable = checkAvailabilities.checkAvailabilities(timeslot[0][3])
+    if(roomId == 1):
+        update.updateWaiting(roomId,timeslot[0][3],roomsAvailable[0])
+    if(roomId == 2):
+        update.updateWaiting(roomId, timeslot[0][3], roomsAvailable[1])
+    if(roomId == 3):
+        update.updateWaiting(roomId, timeslot[0][3], roomsAvailable[2])
+    if(roomId == 4):
+        update.updateWaiting(roomId, timeslot[0][3], roomsAvailable[3])
+    if(roomId == 5):
+        update.updateWaiting(roomId, timeslot[0][3], roomsAvailable[4])
+    return redirect(url_for('dashboard', user=session['user']))
 
 @app.route('/cancelWaiting/<waitingId>')
 @login_required
 @nocache
 def canceWaiting(waitingId):
-	timesslotId = WaitingTDG.findTimeslot(waitingId)
-	print(timesslotId[0][0])
-	WaitingTDG.delete(waitingId)
-	TimeslotTDG.delete(timesslotId[0][0])
-	return redirect(url_for('dashboard', user=session['user']))
+    timesslotId = WaitingTDG.findTimeslot(waitingId)
+    print(timesslotId[0][0])
+    WaitingTDG.delete(waitingId)
+    TimeslotTDG.delete(timesslotId[0][0])
+    return redirect(url_for('dashboard', user=session['user']))
 
 @app.route('/modify/<reservationId>',methods=['GET', 'POST'])
 @login_required
 @nocache
 def modify(reservationId):
-	registry.getReservationBook().setReservationList(ReservationMapper.findAll())
-	registry.getReservationBook().setWaitingList(WaitingMapper.findAll())
-	reservation = ReservationTDG.find(reservationId)
-	#fetch room
-	roomId = reservation[0][1]
-	#fetch date
-	timeslot = TimeslotTDG.find(reservation[0][4])
-	date = timeslot[0][3]
-	#query
-	allResDateRoom = ReservationTDG.findDateRoom(roomId,date)
-	rTime = checkAvailabilities.checkModifyAvail(allResDateRoom)
-	if request.method == 'POST':
-		allTime = request.form.getlist('chosenTime')
-		block = int(allTime[1]) + 1 - int(allTime[0])
-		starttime = int(allTime[0])
-		endtime = int(allTime[1])
-		block = endtime + 1 - starttime
-		if block < 3:
-			print(timeslot[0][0])
-			print(timeslot[0][3])
-			print(starttime)
-			print(endtime)
-			print(block)
-			TimeslotTDG.update(timeslot[0][0],starttime,endtime,timeslot[0][3],block)
-			return redirect(url_for('dashboard', user=session['user']))
-		else:
-			return redirect(url_for('dashboard', user=session['user'] ))
-	return render_template('modify.html', rooms=rTime)
+    registry.getReservationBook().setReservationList(ReservationMapper.findAll())
+    registry.getReservationBook().setWaitingList(WaitingMapper.findAll())
+    reservation = ReservationTDG.find(reservationId)
+    #fetch room
+    roomId = reservation[0][1]
+    #fetch date
+    timeslot = TimeslotTDG.find(reservation[0][4])
+    date = timeslot[0][3]
+    #query
+    allResDateRoom = ReservationTDG.findDateRoom(roomId,date)
+    rTime = checkAvailabilities.checkModifyAvail(allResDateRoom)
+    if request.method == 'POST':
+        allTime = request.form.getlist('chosenTime')
+        block = int(allTime[1]) + 1 - int(allTime[0])
+        starttime = int(allTime[0])
+        endtime = int(allTime[1])
+        block = endtime + 1 - starttime
+        if block < 3:
+            print(timeslot[0][0])
+            print(timeslot[0][3])
+            print(starttime)
+            print(endtime)
+            print(block)
+            TimeslotTDG.update(timeslot[0][0],starttime,endtime,timeslot[0][3],block)
+            return redirect(url_for('dashboard', user=session['user']))
+        else:
+            return redirect(url_for('dashboard', user=session['user'] ))
+    return render_template('modify.html', rooms=rTime)
 
-
-@app.route('/month')
-@login_required
-@nocache
-def month():
-	return render_template('month.html')
-
-@app.route('/<month>')
-@login_required
-@nocache
-def chooseMonth(month):
-	Cm = []
-	now = datetime.datetime.now()
-	if month == 'september':
-		Cm = 9
-	if month == 'october':
-		Cm = 10
-	if month == 'november':
-		Cm = 11
-	if month == 'december':
-		Cm = 12
-	if month == 'january':
-		Cm = 1
-	if month == 'february':
-		Cm = 2
-	if month == 'march':
-		Cm = 3
-	if month == 'april':
-		Cm = 4
-	if month == 'may':
-		Cm = 5
-	if month == 'june':
-		Cm = 6
-	if month == 'july':
-		Cm = 7
-	if month == 'august':
-		Cm = 8
-	if now.month is Cm:
-		if month == 'september':
-			return render_template('january.html')
-		if month == 'october':
-			return render_template('october.html')
-		if month == 'november':
-			return render_template('november.html')
-		if month == 'december':
-			return render_template('december.html')
-		if month == 'january':
-			return render_template('january.html')
-		if month == 'february':
-			return render_template('february.html')
-		if month == 'march':
-			return render_template('march.html')
-		if month == 'april':
-			return render_template('april.html')
-		if month == 'may':
-			return render_template('may.html')
-		if month == 'june':
-			return render_template('june.html')
-		if month == 'july':
-			return render_template('july.html')
-		if month == 'august':
-			return render_template('august.html')
-		else:
-			return render_template('month.html')
-	else:
-		return render_template('month.html', currentmonth="You can only reserve rooms for the current month")
 
 @app.route('/<month>/<day>',methods=['GET','POST'])
 @login_required
@@ -369,6 +327,3 @@ def addNewReservation(month,day):
 				return render_template('add.html', allowed="You can only reserve the room for 2 consecutive hours.", rooms=rooms)
 	return render_template('add.html',rooms=rooms, allowed="")
 
-
-# annee mois jour
-# fetch dans le timeslottable de ses meme temps
