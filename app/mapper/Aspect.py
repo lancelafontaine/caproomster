@@ -73,5 +73,3 @@ WaitingMapper.findAll = wrap_findAll(WaitingMapper.findAll, WaitingIdMap)
 
 
 print('--- Attached Aspects successfully ----')
-import pdb
-pdb.set_trace()
