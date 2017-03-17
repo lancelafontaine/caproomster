@@ -52,7 +52,7 @@ Login attempt. Returns a session token.
 }
 ```
 
-#### Possible Responses
+#### Success Response
 
 **200 - OK**
 ```json
@@ -65,35 +65,6 @@ Login attempt. Returns a session token.
 }
 ```
 
-**422 - UNPROCESSABLE ENTITY**
-```json
-{
-  "login error": "`userId` and `password` fields are required."
-}
-```
-
-**422 - UNPROCESSABLE ENTITY**
-```json
-{
-  "login error": "`userId` must be an integer."
-}
-```
-
-**404 - NOT FOUND**
-```json
-{
-  "login error": "That user does not exist."
-}
-```
-
-**401 - UNAUTHORIZED**
-```json
-{
-  "login error": "Credentials refused for that user."
-}
-```
-
-
 <hr/>
 
 ## Resource - `/logout`
@@ -102,7 +73,7 @@ Login attempt. Returns a session token.
 
 Allows the current user to log out.
 
-#### Possible Responses
+#### Success Response
 
 **200 - OK**
 ```json
@@ -120,7 +91,7 @@ Allows the current user to log out.
 Retrieves all CAPSTONE rooms in the system.
 
 
-#### Possible Responses
+#### Success Response
 
 **200 - OK**
 ```json
@@ -139,14 +110,13 @@ Creates a new reservation for a specific timeslot, user an room.
 
 #### Expected Request Payload
 
-#### Possible Responses
+#### Success Response
 
-**422 - Unprocessable Entity**
-```json
-{
-  "makeNewReservation error": "`roomId`, `userId`, `startTime`, `endTime`, `date` and `description` fields are required."
-}
-```
+
+
+
+
+
 
 
 

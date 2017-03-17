@@ -110,7 +110,7 @@ def test_invalid_get_all_rooms_no_login():
     with app.app_context():
         with app.test_request_context():
             views.session.clear()
-            response = views.getAllRooms()
+            response = views.get_all_rooms()
             assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
 
 def test_valid_get_all_rooms_with_login():
@@ -118,7 +118,7 @@ def test_valid_get_all_rooms_with_login():
         with app.test_request_context():
             views.session.clear()
             views.session.update({'logged_in': True, 'userId': 1})
-            response = views.getAllRooms()
+            response = views.get_all_rooms()
             assert(response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())
             assert(isinstance(response_data, dict))
