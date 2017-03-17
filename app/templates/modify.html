@@ -87,49 +87,8 @@
         $('div.number').click(function() {
             var number = parseInt($('.number').text());
         });
-        var s, m, i;
-        var interval
-        $("#month .clickable").on("click", function(){
-            $("span").parent().css("background", "#FFFFFF");
-            $("p").parent().css("background", "#FFFFFF");
-            clearInterval(interval);
-            s = 60;
-            m = 1;
-            $(".defaultCountdown").html("02 : 00");
-            interval = setInterval(function(){
-                if(s == 0)
-                {
-                    m--;
-                    s= 59;
-                }
-                else
-                {
-                    s--;
-                }
-                if(m == -1)
-                {
-                    clearInterval(interval);
-                }
-                if(s < 10 && m != -1)
-                {
-                    $(".defaultCountdown").html("0" + m + " : 0" + s);
-                }
-                else if(m != -1)
-                {
-                    $(".defaultCountdown").html("0" + m + " : " + s);
-                }
-                if(m == 0 && s == 0 && $(".modal").hasClass("in"))
-                {
-                    $(".defaultCountdown").html("00 : 00");
-                    alert("You Ran Out Of Time!");
-                    $(".close").trigger('click');
-                }
-            }, 1000);
-        });
 
-    //$(window).load(function(){
-     //   $('#modal1').modal('show');
-   // });
+
 </script>
 </body>
 </html>
