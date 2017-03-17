@@ -57,13 +57,13 @@ def commit():
 
     for index, object in enumerate(deletedList):
         if isinstance(object, User):
-            UserMapper.erase(object)
+            UserMapper.erase(object.getId())
         if isinstance(object, Room):
-            RoomMapper.erase(object)
+            RoomMapper.erase(object.getId())
         if isinstance(object, Reservation):
             ReservationMapper.erase(object.getId())
         if isinstance(object, Waiting):
-            WaitingMapper.erase(object)
+            WaitingMapper.erase(object.getId())
         if isinstance(object, Timeslot):
             TimeslotMapper.erase(object.getId())
 
