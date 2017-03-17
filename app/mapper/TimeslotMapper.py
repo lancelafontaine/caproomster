@@ -29,6 +29,13 @@ def findId(userId):
     result = TimeslotTDG.findUser(userId)
     return result[-1][0]
 
+def findTotalReservedTimeForUser(userID):
+    userTimeSlotList = TimeslotTDG.findUser(userID)
+    totalTime = 0
+    for timeSlot in userTimeSlotList:
+        totalTime += timeSlot[4] + 1
+    return totalTime
+
 
 def set(timeslotId):
     timeslot = find(timeslotId)
