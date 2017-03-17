@@ -21,6 +21,7 @@ def require_login(func):
         if not is_logged_in_bool():
             return unauthorized()
         return func(*args, **kwargs)
+    wrapper.func_name = func.func_name
     return wrapper
 
 ##########
@@ -62,6 +63,29 @@ def getAllRooms():
             'rooms':  rooms
         }
         return jsonify(roomdata)
+
+@app.route('/reservations/create', methods=['POST'])
+@nocache
+@require_login
+def makeNewReservation():
+    if request.method == 'POST':
+        data = request.get_json()
+
+        if 'roomId' not in data or \
+           'userId' not in data or \
+           'startTime' not in data or \
+           'endTime' not in data or \
+           'date' not in data or \
+           'description' not in data:
+            response = jsonify({'makeNewReservation error': '`roomId`, `userId`, `startTime`, `endTime`, `date` and `description` fields are required.'})
+            response.status_code = STATUS_CODE['UNPROCESSABLE']
+            return response
+
+
+
+
+
+        return jsonify({'ok':'ok'})
 
 
 ####################
