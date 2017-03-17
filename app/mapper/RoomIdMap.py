@@ -14,6 +14,10 @@ def removeFrom(room):
 #find user from list
 def find(roomId):
 	for i in range(len(roomList)):
-		if roomId in roomList:
+		if roomId == roomList[i].getId():
 			return roomList[i]
 	return
+
+# Clear the ID Map
+def clear():
+    del roomList[:]

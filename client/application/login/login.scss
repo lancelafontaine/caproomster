@@ -1,6 +1,7 @@
 @import "../caproomster.scss";
 
 .login-page {
+    font-family: "Open Sans", Arial, sans-serif;
     height: 100vh;
     background-image: none !important;
     background-color: #fff !important;
@@ -37,7 +38,7 @@
                 font-weight: 900;
                 margin: 30px;
                 height: 45px;
-                width: 130px;   
+                width: 130px;
             }
             .errorMessage {
                 color: #fff;

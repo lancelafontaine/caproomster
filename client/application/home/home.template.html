@@ -1,34 +1,128 @@
 <div class="container-fluid home-page">
+    <!-- Main view -->
     <div class="row home-page-upper">
-        <div class="room-list col-md-4">
-            <div class="room-name">
-            rn
-            </div>
-            <div class="room-spec">
-            rs
+        <!-- Toggle Room Select Menu -->
+        <div class="room-list">
+            <a ng-click="toggleMenu()">
+              {{ toggleText }}
+              <i class="fa fa-arrow-down" aria-hidden="true"></i>
+            </a>
+            <!-- TODO: populate rooms with ng-repeat -->
+            <div class="room-list-number" ng-if="isToggled">
+                <button type="button" class="btn" ng-click="changeRoom('H921')" ng-class="{'selected-room': roomNumber == 'H921'}">H921</button>
+                <button type="button" class="btn" ng-click="changeRoom('H922')" ng-class="{'selected-room': roomNumber == 'H922'}">H922</button>
+                <button type="button" class="btn" ng-click="changeRoom('H923')" ng-class="{'selected-room': roomNumber == 'H923'}">H923</button>
+                <button type="button" class="btn" ng-click="changeRoom('H924')" ng-class="{'selected-room': roomNumber == 'H924'}">H924</button>
+                <button type="button" class="btn" ng-click="changeRoom('H925')" ng-class="{'selected-room': roomNumber == 'H925'}">H925</button>
             </div>
         </div>
-        <div class="room-list col-md-8">
-            <div class="calendar" ui-calendar="uiConfig.calendar" ng-model="eventSources">
+        <!-- End Toggle Room Select Menu -->
+        <!-- Calendar View -->
+        <div class="calendar-view">
+          <!-- View Select Button Group 1-->
+          <div class="col-md-2 col-md-offset-8 calendar-buttons">
+            <div class="btn-group">
+              <button
+                class="btn btn-primary"
+                mwl-date-modifier
+                date="viewDate"
+                decrement="calendarView"
+                ng-click="cellIsOpen = false">
+                Previous
+              </button>
+              <button
+                class="btn btn-default"
+                mwl-date-modifier
+                date="viewDate"
+                set-to-today
+                ng-click="cellIsOpen = false">
+                Today
+              </button>
+              <button
+                class="btn btn-primary"
+                mwl-date-modifier
+                date="viewDate"
+                increment="calendarView"
+                ng-click="cellIsOpen = false">
+                Next
+              </button>
             </div>
+          </div>
+          <!-- End View Select Button Group 1-->
+          <!-- View Select Button Group 2-->
+          <div class="col-md-2 calendar-buttons">
+            <div class="btn-group">
+              <label class="btn btn-primary" ng-model="calendarView" uib-btn-radio="'week'" ng-click="cellIsOpen = false">Week</label>
+              <label class="btn btn-primary" ng-model="calendarView" uib-btn-radio="'day'" ng-click="cellIsOpen = false">Day</label>
+            </div>
+          </div>
+          <!-- End View Select Button Group 2-->
+          <!-- Calendar -->
+          <div class="col-md-12 calendar">
+              <mwl-calendar
+                  events="events"
+                  view="calendarView"
+                  view-title="calendarTitle"
+                  view-date="viewDate"
+                  on-event-click="eventClicked(calendarEvent)"
+                  on-event-times-changed="eventTimesChanged(calendarEvent); calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
+                  cell-is-open="cellIsOpen"
+                  day-view-start="08:00"
+                  day-view-end="23:00"
+                  day-view-split="30"
+                  day-view-event-chunk-size="30"
+                  cell-modifier="modifyCell(calendarCell)"
+                  cell-auto-open-disabled="true"
+                  on-timespan-click="timespanClicked(calendarDate, calendarCell)">
+                </mwl-calendar>
+          </div>
+          <!-- End Calendar -->
         </div>
+        <!-- End Calendar View -->
     </div>
+    <!-- End Main View -->
+    <!-- Info View -->
     <div class="row home-page-bottom">
-        <div class="reservation col-md-6">
+        <!-- User Reservation -->
+        <div class="col-md-4 reservation">
             <h2>Reservation</h2>
-            <ul class="reservation-list">
-                <li>sample 1</li>
-                <li>sample 2</li>
-                <li>sample 3</li>
-            </ul>
+            <p>
+              <!-- TODO: Populate user reservation with ng-repeat -->
+              <!-- TODO: Edit buttons for reservation modification -->
+              <p>H927 / March 28 / 11:00 to 12:00</p>
+              <p>H928 / March 31 / 11:00 to 12:00</p>
+              <p>H927 / April 2 / 11:00 to 12:00</p>
+              <p>H923 / April 5  / 11:00 to 12:00</p>
+            </p>
         </div>
-        <div class="reservation col-md-6">
+        <!-- End User Reservation -->
+        <!-- Room Specification Display -->
+        <div class="col-md-4 console">
+            <h2>{{ roomNumber }} - {{ calendarTitle }}</h2>
+            <!-- TODO: Populate room equipment list -->
+            <!-- TODO: Get time slot number -->
+            <p>Available Time Slot: 5</p>
+            <p>Available Equipments</p>
+            <div class="equipments">
+              <i class="fa fa-desktop" aria-hidden="true"></i>
+              <i class="fa fa-television" aria-hidden="true"></i>
+              <i class="fa fa-phone" aria-hidden="true"></i>
+            </div>
+        </div>
+        <!-- End Room Specification Display -->
+        <!-- User Wating List -->
+        <div class="col-md-4 reservation">
             <h2>Waiting List</h2>
-            <ul class="wait-list">
-                <li>sample 1</li>
-                <li>sample 2</li>
-                <li>sample 3</li>
-            </ul>
+            <p class="reservation-list">
+                <!-- TODO: Populate user waitinglist with ng-repeat -->
+                <!-- TODO: Edit buttons for waitinglist modification -->
+                <p>H922 / March 27 / 12:00 to 13:00</p>
+                <p>H921 / March 31 / 14:00 to 15:00</p>
+                <p>H920 / April 2 / 11:00 to 12:00</p>
+                <p>H922 / April 5  / 11:00 to 12:00</p>
+            </p>
         </div>
+        <!-- End User Wating List -->
     </div>
+    <!-- End Info View -->
 </div>

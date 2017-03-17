@@ -9,14 +9,12 @@ class Timeslot:
         self.block = endTime - startTime
         self.timeId = timeId
 
-    # Print method for debugging
-    def _print(self):
-        print("Timeslot Info")
-        print("StartTime: " + str(self.startTime))
-        print("EndTime: " + str(self.endTime))
-        print("Date: " + str(self.date))
-        print("Duration: " + str(self.block))
-        print("TID: " + str(self.timeId))
+    def __str__(self):
+        return "StartTime: " + str(self.startTime) +\
+          " EndTime: " + str(self.endTime) +\
+          " Date: " + str(self.date) +\
+          " Duration: " + str(self.block) +\
+          " TID: " + str(self.timeId)
 
     # Accessors and Mutators
     def getStartTime(self):
