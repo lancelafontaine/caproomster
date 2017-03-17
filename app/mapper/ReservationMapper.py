@@ -1,5 +1,4 @@
 import UnitOfWork
-import ReservationIdMap
 
 from app.TDG import ReservationTDG
 
@@ -13,44 +12,36 @@ from app.core.timeslot import Timeslot
 from app.core.reservation import Reservation
 
 
-def makeNewReservation(room,holder,time,description,reservationId):
-    reservation = Reservation(room, holder,time,description,reservationId)
-    ReservationIdMap.addTo(reservation)
+def makeNew(room,holder,time,description,reservationId):
+    reservation = Reservation(room, holder, time, description, reservationId)
     UnitOfWork.registerNew(reservation)
     return reservation
 
 def find(reservationId):
-    reservation = ReservationIdMap.find(reservationId)
     result = []
-    if reservation == None:
-        result = ReservationTDG.find(reservationId)
-        if result == None:
-            return
-        else:
-            #must make a reference to timeslottable and create a timeslot object
-            room = RoomMapper.find(result[0][1])
-            holder = UserMapper.find(result[0][3])
-            timeslot = TimeslotMapper.find(result[0][4])
-            reservation = Reservation(room, holder,timeslot,result[0][2],timeslot.getId())
-            ReservationIdMap.addTo(reservation)
-    return reservation
+    result = ReservationTDG.find(reservationId)
+    if not result:
+        return
+    else:
+        #must make a reference to timeslottable and create a timeslot object
+        room = RoomMapper.find(result[0][1])
+        holder = UserMapper.find(result[0][3])
+        timeslot = TimeslotMapper.find(result[0][4])
+        return Reservation(room, holder,timeslot,result[0][2],timeslot.getId())
 
 def findAll():
     result = ReservationTDG.findAll()
-    allReservations= []
-    if result == None:
+    allReservations = []
+    if not result:
         return
     else:
         for index, r in enumerate(result):
-            reservation = ReservationIdMap.find(r[0])
-            if reservation == None:
-                room = RoomMapper.find(result[0][1])
-                holder = UserMapper.find(result[0][3])
-                timeslot = TimeslotMapper.find(result[0][4])
-                reservation = Reservation(room, holder, timeslot, result[0][2], timeslot.getId())
-                allReservations.append(reservation)
-                ReservationIdMap.addTo(reservation)
-    return allReservations
+            room = RoomMapper.find(result[0][1])
+            holder = UserMapper.find(result[0][3])
+            timeslot = TimeslotMapper.find(result[0][4])
+            reservation = Reservation(room, holder, timeslot, result[0][2], timeslot.getId())
+            allReservations.append(reservation)
+        return allReservations
 
 def findByDate(date):
     return ReservationTDG.findByDate(date)
@@ -68,11 +59,7 @@ def setReservation(reservationId):
     UnitOfWork.registerDirty(reservationId)
 
 def delete(reservationId):
-    reservation = ReservationIdMap.find(reservationId)
-    if reservation is not None:
-        ReservationIdMap.removeFrom(reservation)
-    UnitOfWork.registerDeleted(reservation)
-    UnitOfWork.commit()
+    UnitOfWork.registerDeleted(Reservation(None, None, None, reservationId))
 
 #save all work
 def done():

@@ -2,11 +2,13 @@ import UserIdMap
 import TimeslotIdMap
 import RoomIdMap
 import WaitingIdMap
+import ReservationIdMap
 
 import UserMapper
 import TimeslotMapper
 import RoomMapper
 import WaitingMapper
+import ReservationMapper
 
 def wrap_find(func, id_map_object):
     def new_find(objectId):
@@ -71,5 +73,9 @@ WaitingMapper.makeNew = wrap_makeNew(WaitingMapper.makeNew, WaitingIdMap)
 WaitingMapper.delete = wrap_delete(WaitingMapper.delete, WaitingIdMap)
 WaitingMapper.findAll = wrap_findAll(WaitingMapper.findAll, WaitingIdMap)
 
+ReservationMapper.find = wrap_find(ReservationMapper.find, ReservationIdMap)
+ReservationMapper.makeNew = wrap_makeNew(ReservationMapper.makeNew, ReservationIdMap)
+ReservationMapper.delete = wrap_delete(ReservationMapper.delete, ReservationIdMap)
+ReservationMapper.findAll = wrap_findAll(ReservationMapper.findAll, ReservationIdMap)
 
 print('--- Attached Aspects successfully ----')

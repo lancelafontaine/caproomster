@@ -14,7 +14,11 @@ def removeFrom(reservation):
 #find user from list
 def find(reservationId):
 	for i in range(len(reservationList)):
-		if reservationId in reservationList:
+		if reservationId == reservationList[i].getId():
 			return reservationList[i]
 	return
 
+
+# Clear the ID Map
+def clear():
+    del reservationList[:]
