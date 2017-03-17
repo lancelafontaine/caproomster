@@ -1,6 +1,8 @@
 import UserIdMap
+import TimeslotIdMap
+
 import UserMapper
-import UnitOfWork
+import TimeslotMapper
 
 def wrap_find(func, id_map_object):
     def new_find(objectId):
@@ -38,5 +40,9 @@ def wrap_delete(func, id_map_object):
 UserMapper.find = wrap_find(UserMapper.find, UserIdMap)
 UserMapper.makeNew = wrap_makeNew(UserMapper.makeNew, UserIdMap)
 UserMapper.delete = wrap_delete(UserMapper.delete, UserIdMap)
+
+TimeslotMapper.find = wrap_find(TimeslotMapper.find, TimeslotIdMap)
+TimeslotMapper.makeNew = wrap_makeNew(TimeslotMapper.makeNew, TimeslotIdMap)
+TimeslotMapper.delete = wrap_delete(TimeslotMapper.delete, TimeslotIdMap)
 
 print('--- Attached Aspects successfully ----')
