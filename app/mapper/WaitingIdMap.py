@@ -1,16 +1,19 @@
 idMapList = []
 #add instance to list
-def add(waiting):
+def addTo(waiting):
     idMapList.append(waiting)
+
 #remove instance from list
-def delete(waiting):
+def removeFrom(waiting):
     idMapList.remove(waiting)
+
 #get instance from list
-def get(waitingId):
+def find(waitingId):
     for i in range(len(idMapList)):
-        if waitingId in idMapList:
+        if waitingId == idMapList[i].getId():
             return idMapList[i]
     return
 
-
-
+# Clear the ID Map
+def clear():
+    del idMapList[:]
