@@ -81,7 +81,7 @@ def save(waiting):
 
 def update(waiting):
     WaitingTDG.update(waiting)
+
 # remove waiting instance from database
-def erase(waiting):
-    waitingId = waiting.getId()
+def erase(waitingId):
     WaitingTDG.delete(waitingId)

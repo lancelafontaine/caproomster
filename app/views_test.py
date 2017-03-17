@@ -1,6 +1,8 @@
 from app import views, app
 from app.core.user import User
+from app.core.room import Room
 from app.mapper import UserMapper
+from app.mapper import RoomMapper
 from flask import request, jsonify
 import json
 
@@ -113,9 +115,13 @@ def test_invalid_get_all_rooms_no_login():
             response = views.getAllRooms()
             assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
 
-def test_valid_get_all_rooms_with_login():
+def test_valid_get_all_rooms_with_login(monkeypatch):
     with app.app_context():
         with app.test_request_context():
+            def rooms_found():
+                return [Room(1, False), Room(2, False), Room(3, False)]
+            monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
+
             views.session.clear()
             views.session.update({'logged_in': True, 'userId': 1})
             response = views.getAllRooms()
