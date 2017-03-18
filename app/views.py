@@ -181,8 +181,7 @@ def validate_make_new_reservation_times(startTime, endTime):
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
-    if (startTime > endTime and endTime - startTime + 24 > 3) or \
-       (endTime > startTime and endTime - startTime > 3):
+    if (endTime - startTime) % 24 > 3:
         response = jsonify({'makeNewReservation error': 'The reservation cannot last for longer than 3 hours.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
