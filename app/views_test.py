@@ -151,11 +151,13 @@ def test_unauthorized():
 
 def test_make_new_reservation():
     with app.app_context():
-        with app.test_request_context():
+        with app.test_request_context(method='POST'):
             assert(views.make_new_reservation() is not None)
 
-def test_login():
+def test_login_get():
     with app.app_context():
         with app.test_request_context():
             assert(views.login() is not None)
+
+
 
