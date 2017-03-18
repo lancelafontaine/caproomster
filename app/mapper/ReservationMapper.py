@@ -1,5 +1,8 @@
 import UnitOfWork
 import ReservationIdMap
+import time
+from datetime import datetime
+from datetime import timedelta
 
 from app.TDG import ReservationTDG
 
@@ -13,10 +16,28 @@ from app.core.timeslot import Timeslot
 from app.core.reservation import Reservation
 
 
-def makeNewReservation(room,holder,time,description,reservationId):
-    reservation = Reservation(room, holder,time,description,reservationId)
-    ReservationIdMap.addTo(reservation)
-    UnitOfWork.registerNew(reservation)
+
+def makeNewReservation(room,user,timeslot,description,repeatAmount):
+    if(repeatAmount < 3):
+        dateSplitList = timeslot.getDate().split('-')
+        year = int(dateSplitList[0])
+        month = int(dateSplitList[1])
+        day = int(dateSplitList[2])
+        reservationFirstDate = datetime(year,month,day)
+        reservationDate = reservationFirstDate
+        for i in range(repeatAmount + 1):
+            timeslot.setDate(reservationDate.strftime('%Y-%m-%d'))
+            timeSlot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), timeslot.getDate(), timeslot.getBlock(), user.getId())
+            TimeslotMapper.save(timeSlot)
+            timeslotId = TimeslotMapper.findId(user.getId())
+            timeSlot.setId(timeslotId)
+
+            reservation = Reservation(room, user,timeSlot,description,timeslotId)
+            ReservationIdMap.addTo(reservation)
+            UnitOfWork.registerNew(reservation)
+            reservationDate += timedelta(days=7)
+    else:
+        print("Invalid repeat amount")
     return reservation
 
 def find(reservationId):
