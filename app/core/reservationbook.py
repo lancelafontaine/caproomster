@@ -4,6 +4,7 @@ from collections import deque
 from datetime import datetime
 from app.mapper import ReservationMapper
 from app.mapper import WaitingMapper
+from app.mapper import UnitOfWork
 
 # ReservationBook object
 class ReservationBook:
@@ -24,18 +25,19 @@ class ReservationBook:
 		# Check if room is available at specifie time
 		if (self.available(room, time) == True):
 			r = Reservation(room, holder, time, description)
-			ReservationMapper.registerNew(r)
-			ReservationMapper.done()
 			self.reservationList.append(r)
+			UnitOfWork.registerNew(r)
+			ReservationMapper.done()
 
 	# Method to add to the waiting list
 	def addToWaitingList(self, room, holder, time, description):
 		w = Waiting(room, holder, time, description, self.genWid())
-		WaitingMapper.registerNew(w)
 		if w.getUser().isCapstone():
 			self.capstoneList.append(w)
 		else:
 			self.waitingList.append(w)
+		UnitOfWork.registerNew(w)
+		WaitingMapper.done()
 
 	# Method to modify reservation
 	def modifyReservation(self, reservationId, time):
