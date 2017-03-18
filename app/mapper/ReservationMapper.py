@@ -1,41 +1,50 @@
 import UnitOfWork
 import ReservationIdMap
-import time
+
 from datetime import datetime
 from datetime import timedelta
 
 from app.TDG import ReservationTDG
-
 from app.mapper import TimeslotMapper
 from app.mapper import RoomMapper
 from app.mapper import UserMapper
-
-from app.core.room import Room
-from app.core.user import User
-from app.core.timeslot import Timeslot
 from app.core.reservation import Reservation
 
 
 
-def makeNewReservation(room,user,timeslot,description,repeatAmount):
-    if(repeatAmount < 3):
-        dateSplitList = timeslot.getDate().split('-')
-        year = int(dateSplitList[0])
-        month = int(dateSplitList[1])
-        day = int(dateSplitList[2])
-        reservationFirstDate = datetime(year,month,day)
-        reservationDate = reservationFirstDate
-        for i in range(repeatAmount + 1):
-            timeslot.setDate(reservationDate.strftime('%Y-%m-%d'))
-            timeSlot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), timeslot.getDate(), timeslot.getBlock(), user.getId())
-            TimeslotMapper.save(timeSlot)
-            timeslotId = TimeslotMapper.findId(user.getId())
-            timeSlot.setId(timeslotId)
+def makeNewReservation(room,user,timeslot,description,repeat_amount):
+    max_repetition = 3
+    days_in_a_week = 7
+    if repeat_amount < max_repetition :
 
-            reservation = Reservation(room, user,timeSlot,description,timeslotId)
+        # filter date values
+        date_split_list = timeslot.getDate().split('-')
+        year = int(date_split_list[0])
+        month = int(date_split_list[1])
+        day = int(date_split_list[2])
+
+        # Create datetime object
+        reservation_date = datetime(year,month,day)
+
+        # repeatAmount + 1 : because at least 1 reservation should be made
+        for i in range(repeat_amount + 1):
+
+            # create and register a timeslot object
+            timeslot.setDate(reservation_date.strftime('%Y-%m-%d'))
+            timeslot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), timeslot.getDate(), timeslot.getBlock(), user.getId())
+            TimeslotMapper.save(timeslot)
+            timeslot_id = TimeslotMapper.findId(user.getId())
+            timeslot.setId(timeslot_id)
+
+            # create and register a reservation object
+            reservation = Reservation(room, user,timeslot,description,timeslot_id)
             ReservationIdMap.addTo(reservation)
             UnitOfWork.registerNew(reservation)
-            reservationDate += timedelta(days=7)
+
+            # add a week to the current reservation date
+            reservation_date += timedelta(days=days_in_a_week)
+
+            save(reservation)
     else:
         print("Invalid repeat amount")
     return reservation
