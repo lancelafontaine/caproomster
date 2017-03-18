@@ -6,6 +6,7 @@ class Waiting:
         self.time = time
         self.room = room
         self.description = description
+        self.waitingId = waitingId
 
     # Print method for debugging
     def _print(self):
