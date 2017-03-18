@@ -149,4 +149,16 @@ def test_unauthorized():
         with app.test_request_context():
             assert(views.unauthorized().status_code is views.STATUS_CODE['UNAUTHORIZED'])
 
+def test_make_new_reservation():
+    with app.app_context():
+        with app.test_request_context():
+            assert(views.make_new_reservation() is not None)
+
+def test_login():
+    with app.app_context():
+        with app.test_request_context():
+            request.method = 'POST'
+            assert(views.login() is not None)
+            request.method = 'GET'
+            assert(views.login() is not None)
 
