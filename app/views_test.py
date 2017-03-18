@@ -159,5 +159,158 @@ def test_login_get():
         with app.test_request_context():
             assert(views.login() is not None)
 
+def test_login_post(monkeypatch):
+    with app.app_context():
+        with app.test_request_context(method='POST'):
+            def mock_validate_login(_):
+                return jsonify({'success':'success'})
+            monkeypatch.setattr(views, 'validate_login', mock_validate_login)
+            assert(views.login() is not None)
 
+def test_valid_validate_new_reservation(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            data = {
+              'roomId': '1',
+              'userId': '1',
+              'startTime': '14',
+              'endTime': '15',
+              'date': '2017-03-19',
+              'description': 'cool meeting'
+            }
+            def mock_user_find(_):
+                return User(1, 'mr', 'pickles')
+            monkeypatch.setattr(UserMapper, 'find', mock_user_find)
+            assert(views.validate_new_reservation(data).status_code is views.STATUS_CODE['OK'])
+
+def test_valid_validate_make_new_reservation_payload_format():
+    with app.app_context():
+        with app.test_request_context():
+            data = {
+              'roomId': '1',
+              'userId': '1',
+              'startTime': '14',
+              'endTime': '15',
+              'date': '2017-03-19',
+              'description': 'cool meeting'
+            }
+            assert(views.validate_make_new_reservation_payload_format(data) is None)
+
+def test_invalid_validate_make_new_reservation_payload_format_missing_key():
+    with app.app_context():
+        with app.test_request_context():
+            data = {
+              'roomId': '1',
+              'userId': '1',
+              'startTime': '14',
+              'endTime': '15',
+              'date': '2017-03-19'
+            }
+            assert(views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_validate_make_new_reservation_payload_format_not_digits():
+    with app.app_context():
+        with app.test_request_context():
+            data = {
+              'roomId': '1',
+              'userId': '1',
+              'startTime': 'not a digit',
+              'endTime': '15',
+              'date': '2017-03-19',
+              'description': 'cool meeting'
+            }
+            assert(views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_valid_validate_make_new_reservation_times():
+    with app.app_context():
+        with app.test_request_context():
+            startTime = 1
+            endTime = 2
+            assert(views.validate_make_new_reservation_times(startTime, endTime) is None)
+            startTime = 23
+            endTime = 1
+            assert(views.validate_make_new_reservation_times(startTime, endTime) is None)
+
+def test_invalid_validate_make_new_reservation_times_no_24_hour_format():
+    with app.app_context():
+        with app.test_request_context():
+            startTime = 13456
+            endTime = 1
+            assert(views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+            startTime = 1
+            endTime = -12313
+            assert(views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_validate_make_new_reservation_times_more_than_3_hours_long():
+    with app.app_context():
+        with app.test_request_context():
+            startTime = 1
+            endTime = 23
+            assert(views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+            startTime = 5
+            endTime = 1
+            assert(views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+            startTime = 23
+            endTime = 4
+            assert(views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_valid_validate_make_new_reservation_date():
+    with app.app_context():
+        with app.test_request_context():
+            dateList = ["2040", "04", "04"]
+            assert(views.validate_make_new_reservation_date(dateList) is None)
+            dateList = ["2040", "4", "4"]
+            assert(views.validate_make_new_reservation_date(dateList) is None)
+
+def test_invalid_validate_make_new_reservation_date_more_than_3_elems():
+    with app.app_context():
+        with app.test_request_context():
+            dateList = ["2040", "04", "04", "04"]
+            assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+            dateList = ["2040", "04"]
+            assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_validate_make_new_reservation_date_elem_is_not_digit():
+    with app.app_context():
+        with app.test_request_context():
+            dateList = ["2040", "04", "not a digit"]
+            assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+            dateList = ["2040", "not a digit", "04"]
+            assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+            dateList = ["not a digit", "04", "04"]
+            assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_validate_make_new_reservation_date_impossible_date():
+    with app.app_context():
+        with app.test_request_context():
+            dateList = ["2040", "04", "90"]
+            assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+            dateList = ["2040", "49", "04"]
+            assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_validate_make_new_reservation_date_before_current_date():
+    with app.app_context():
+        with app.test_request_context():
+            dateList = ["1999", "04", "04"]
+            assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_valid_make_new_reservation_room_user_exists(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            roomId = "1"
+            userId = "5"
+            def mock_user_find(_):
+                return User(5, 'glorious', 'carpet')
+            monkeypatch.setattr(UserMapper, 'find', mock_user_find)
+            assert(views.validate_make_new_reservation_room_user_exists(roomId, userId) is None)
+
+def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            roomId = "1"
+            userId = "5"
+            def mock_user_not_found(_):
+                return
+            monkeypatch.setattr(UserMapper, 'find', mock_user_not_found)
+            assert(views.validate_make_new_reservation_room_user_exists(roomId, userId).status_code is views.STATUS_CODE['NOT_FOUND'])
 
