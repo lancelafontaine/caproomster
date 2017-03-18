@@ -13,7 +13,7 @@ class Reservation:
     def __str__(self):
         return "Reservation Info" +\
         "Holder: " + str(self.user.getName()) +\
-        self.time +\
+        str(self.time) +\
         "Description: " + str(self.description) +\
         "RID: " + str(self.reservationId)
 
