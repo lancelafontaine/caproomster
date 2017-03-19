@@ -3,6 +3,7 @@ from app.core.registry import Registry
 from app.core.reservationbook import ReservationBook
 from app.core.room import Room
 from app.core.timeslot import Timeslot
+from app.core.user import User
 from app.mapper import ReservationMapper
 from app.mapper import TimeslotMapper
 from app.mapper import UserMapper
@@ -38,13 +39,13 @@ def test_reservation_repeat():
     date = '2016-04-20'
     user_id = 1
     processed_description = ""
-    user = UserMapper.find(user_id)
+    user = User(user_id, "", "")
     room = Room(room_id, False)
-    timeSlot = Timeslot(start_time, end_time, date, block, user.getId())
+    time_slot = Timeslot(start_time, end_time, date, block, user_id)
     repeat_amount = 2
 
     # Execute
-    ReservationMapper.makeNewReservation(room, user, timeSlot, processed_description, repeat_amount)
+    ReservationMapper.makeNewReservation(room, user, time_slot, processed_description, repeat_amount)
 
     # Verify
     assert len(ReservationMapper.find_time_slot_ids(user_id)) == repeat_amount + 1
