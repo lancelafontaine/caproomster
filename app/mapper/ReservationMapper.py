@@ -20,7 +20,7 @@ def makeNewReservation(room,user,timeslot,description,repeat_amount):
     if repeat_amount > max_repetition:
         repeat_amount = max_repetition
 
-    if repeat_amount <= max_repetition :
+    if repeat_amount <= max_repetition:
 
         # filter date values
         date_split_list = timeslot.getDate().split('-')
