@@ -2,8 +2,11 @@ from reservation import Reservation
 from waiting import Waiting
 from collections import deque
 from datetime import datetime
+from datetime import timedelta
 from app.mapper import ReservationMapper
 from app.mapper import WaitingMapper
+from app.mapper import TimeslotMapper
+
 # ReservationBook object
 class ReservationBook:
 
@@ -14,6 +17,7 @@ class ReservationBook:
 
     # Method to make a reservation
     def makeReservation(self, room, holder, time, description):
+
         # Check if room is available at specifie time
         if (self.available(room, time) == True):
             r = Reservation(room,holder,time,description)
@@ -219,3 +223,31 @@ class ReservationBook:
 
     def setWaitingList(self, waitingList):
         self.waitingList = waitingList
+
+    def find_total_reserved_time_for_user_for_a_given_week(self, user_id, date):
+        diff_between_monday_and_sunday = 6
+        total_time = 0
+        # filter date values
+        date_split_list = date.split('-')
+        year = int(date_split_list[0])
+        month = int(date_split_list[1])
+        day = int(date_split_list[2])
+
+        # Create datetime object
+        reservation_date = datetime(year, month, day)
+
+        # find start of the week
+        monday_date = reservation_date - timedelta(days=reservation_date.weekday())
+
+        sunday_date = monday_date + timedelta(days=diff_between_monday_and_sunday)
+
+        user_timeslot_list = TimeslotMapper.find_all_timeslots_for_user(user_id)
+        for timeslot in user_timeslot_list:
+
+            reservation_date = datetime(timeslot[3].year, timeslot[3].month, timeslot[3].day)
+
+            # check if reservation_date lies between monday and sunday.
+            if monday_date < reservation_date < sunday_date:
+                total_time += timeslot[4]
+
+        return total_time
