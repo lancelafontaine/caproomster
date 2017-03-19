@@ -13,9 +13,14 @@ from app.core.reservation import Reservation
 
 
 def makeNewReservation(room,user,timeslot,description,repeat_amount):
-    max_repetition = 3
+    max_repetition = 2
     days_in_a_week = 7
-    if repeat_amount < max_repetition :
+
+    # safe guard if repeat amount is greater than max repetition
+    if repeat_amount > max_repetition:
+        repeat_amount = max_repetition
+
+    if repeat_amount <= max_repetition :
 
         # filter date values
         date_split_list = timeslot.getDate().split('-')
@@ -45,8 +50,6 @@ def makeNewReservation(room,user,timeslot,description,repeat_amount):
             reservation_date += timedelta(days=days_in_a_week)
 
             save(reservation)
-    else:
-        print("Invalid repeat amount")
     return reservation
 
 def find(reservationId):

@@ -30,7 +30,7 @@ def findId(userId):
     result = TimeslotTDG.findUser(userId)
     return result[-1][0]
 
-def find_all_timeslot_for_user(user_id):
+def find_all_timeslots_for_user(user_id):
     result = TimeslotTDG.findUser(user_id)
     return result
 
