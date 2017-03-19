@@ -2,9 +2,10 @@ import TimeslotIdMap
 import UnitOfWork
 
 from app.TDG import TimeslotTDG
-
 from app.core.timeslot import Timeslot
 
+from datetime import datetime
+from datetime import timedelta
 
 def makeNew(st, et, date,block, userId):
     timeslot = Timeslot(st, et, date,block, userId)
@@ -29,12 +30,9 @@ def findId(userId):
     result = TimeslotTDG.findUser(userId)
     return result[-1][0]
 
-def findTotalReservedTimeForUser(userID):
-    userTimeSlotList = TimeslotTDG.findUser(userID)
-    totalTime = 0
-    for timeSlot in userTimeSlotList:
-        totalTime += timeSlot[4] + 1
-    return totalTime
+def find_all_timeslot_for_user(user_id):
+    result = TimeslotTDG.findUser(user_id)
+    return result
 
 
 def set(timeslotId):
@@ -66,3 +64,6 @@ def save(timeslot):
 def erase(timeslot):
     timeslotId = timeslot.getId()
     TimeslotTDG.delete(timeslotId)
+
+
+

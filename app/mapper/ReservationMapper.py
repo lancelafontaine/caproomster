@@ -85,6 +85,14 @@ def findAll():
 def findByDate(date):
     return ReservationTDG.findByDate(date)
 
+def find_time_slot_ids(userId):
+    timeslot_ids = []
+    reservation_list = ReservationTDG.findByUserId(userId)
+    for reservation in reservation_list:
+        timeslot_ids.append(reservation[4])
+    return timeslot_ids
+
+
 def findByUser(userId):
     userReservation = []
     result = ReservationTDG.findByUserId(userId)
