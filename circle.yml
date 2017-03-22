@@ -1,7 +1,6 @@
 dependencies:
   override:
     - npm config set registry http://registry.npmjs.org/
-    - cd client && npm install
     - pip2 install -r requirements.txt
 
 test:

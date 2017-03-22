@@ -52,9 +52,6 @@ def findAll():
                 ReservationIdMap.addTo(reservation)
     return allReservations
 
-def findByDate(date):
-    return ReservationTDG.findByDate(date)
-
 def findByUser(userId):
     userReservation = []
     result = ReservationTDG.findByUserId(userId)

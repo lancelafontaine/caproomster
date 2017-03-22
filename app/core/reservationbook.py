@@ -219,3 +219,4 @@ class ReservationBook:
 
     def setWaitingList(self, waitingList):
         self.waitingList = waitingList
+
