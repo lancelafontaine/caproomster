@@ -17,7 +17,7 @@ STATUS_CODE = {
     'NOT_FOUND': 404,
     'UNPROCESSABLE': 422
 }
-RAND_UPPER = 99
+RAND_UPPER = 999999
 
 ##############
 # DECORATORS #
