@@ -180,7 +180,10 @@ def test_valid_validate_new_reservation(monkeypatch):
             }
             def mock_user_find(_):
                 return User(1, 'mr', 'pickles')
+            def mock_room_find(_):
+                return Room(1, False)
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
+            monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
             assert(views.validate_new_reservation(data).status_code is views.STATUS_CODE['OK'])
 
 def test_valid_validate_make_new_reservation_payload_format():
@@ -301,7 +304,10 @@ def test_valid_make_new_reservation_room_user_exists(monkeypatch):
             userId = "5"
             def mock_user_find(_):
                 return User(5, 'glorious', 'carpet')
+            def mock_room_find(_):
+                return Room(1, False)
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
+            monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
             assert(views.validate_make_new_reservation_room_user_exists(roomId, userId) is None)
 
 def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch):
@@ -311,7 +317,10 @@ def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch)
             userId = "5"
             def mock_user_not_found(_):
                 return
+            def mock_room_find(_):
+                return Room(1, False)
             monkeypatch.setattr(UserMapper, 'find', mock_user_not_found)
+            monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
             assert(views.validate_make_new_reservation_room_user_exists(roomId, userId).status_code is views.STATUS_CODE['NOT_FOUND'])
 
 def test_invalid_make_new_reservation_room_user_exists_room_missing(monkeypatch):
@@ -319,9 +328,12 @@ def test_invalid_make_new_reservation_room_user_exists_room_missing(monkeypatch)
         with app.test_request_context():
             roomId = "1"
             userId = "5"
+            def mock_user_find(_):
+                return User(5, 'kwazy', 'kupkakes')
             def mock_room_not_found(_):
                 return
             monkeypatch.setattr(RoomMapper, 'find', mock_room_not_found)
+            monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             assert(views.validate_make_new_reservation_room_user_exists(roomId, userId).status_code is views.STATUS_CODE['NOT_FOUND'])
 
 
