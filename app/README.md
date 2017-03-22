@@ -110,7 +110,25 @@ Creates a new reservation for a specific timeslot, user an room.
 
 #### Expected Request Payload
 
+```json
+{
+  "roomId":"1",
+  "userId": "1",
+  "startTime": "14",
+  "endTime": "15",
+  "date": "2020-03-19",
+  "description": "cool meeting"
+}
+```
+
 #### Success Response
+
+```json
+{
+  "makeNewReservation": "successfully created the reservation",
+  "reservationId": 221513
+}
+```
 
 
 
