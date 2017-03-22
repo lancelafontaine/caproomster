@@ -4,7 +4,12 @@ from flask import request, jsonify
 from app.mapper import ReservationMapper
 from app.mapper import RoomMapper
 from app.mapper import UserMapper
+from app.mapper import TimeslotMapper
+from app.core.timeslot import Timeslot
 from datetime import datetime
+from random import randint
+from collections import namedtuple
+import calendar
 
 STATUS_CODE = {
     'OK': 200,
@@ -12,6 +17,7 @@ STATUS_CODE = {
     'NOT_FOUND': 404,
     'UNPROCESSABLE': 422
 }
+RAND_UPPER = 99
 
 ##############
 # DECORATORS #
@@ -142,7 +148,8 @@ def validate_new_reservation(data):
     if response:
         return response
 
-    dateList = str(data['date']).split('-')
+    date = str(data['date'])
+    dateList = date.split('-')
     response = validate_make_new_reservation_date(dateList)
     if response:
         return response
@@ -154,8 +161,25 @@ def validate_new_reservation(data):
     if response:
         return response
 
-    # TO DO: Actually save a reservation and return a useful confirmation message
-    return jsonify({'temp':'temp'})
+    reservation = ReservationMapper.findAll()
+    response = validate_make_new_reservation_timeslots(reservation, dateList, startTime, endTime)
+    if response:
+        return response
+
+    # no use for `block` parameter, for now, just passing empty string
+    time = TimeslotMapper.makeNew(startTime, endTime, date, '', userId)
+    TimeslotMapper.done()
+    room = RoomMapper.find(roomId)
+    user = UserMapper.find(userId)
+    description = str(data['description'])
+    reservation = ReservationMapper.makeNewReservation(room, user, time, description, randint(0,RAND_UPPER))
+    ReservationMapper.done()
+
+    response_data = {
+        'makeNewReservation': 'successfully created the reservation',
+        'reservationId': reservation.getId()
+    }
+    return jsonify(response_data)
 
 def validate_make_new_reservation_payload_format(data):
     if 'roomId' not in data or \
@@ -176,8 +200,8 @@ def validate_make_new_reservation_payload_format(data):
         return response
 
 def validate_make_new_reservation_times(startTime, endTime):
-    if startTime < 0 or startTime > 23 or endTime < 0 or endTime > 23:
-        response = jsonify({'makeNewReservation error': '`startTime` and `endTime` must be integers between 0 and 23.'})
+    if startTime < 0 or startTime > 23 or endTime < 0 or endTime > 23 or  startTime == endTime:
+        response = jsonify({'makeNewReservation error': '`startTime` and `endTime` must be different integers between 0 and 23.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
@@ -210,10 +234,40 @@ def validate_make_new_reservation_date(dateList):
         return date_error()
 
 def validate_make_new_reservation_room_user_exists(roomId, userId):
-    # TO DO: Still need to validate for RoomMapper, but it's throwing scary errors now. To be investigated and fixed first.
-    if not UserMapper.find(userId):
+    if not UserMapper.find(userId) or not RoomMapper.find(roomId):
         response = jsonify({'makeNewReservation error': 'Either the room or user does not exist.'})
         response.status_code = STATUS_CODE['NOT_FOUND']
         return response
+
+def validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime):
+    # TO DO: check that the user's hours of reservation per week does not exceed 3
+    def time_overlap_error():
+        response = jsonify({'makeNewReservation error': 'This reservation\'s timeslot conflict with an existing reservation\'s timeslot. Calls the addToWaitingList endpoint with this data.'})
+        response.status_code = STATUS_CODE['UNPROCESSABLE']
+        return response
+
+    def to_timestamp(date_list, time):
+        return calendar.timegm(datetime(int(date_list[0]), int(date_list[1]), int(date_list[2]), int(time)).timetuple())
+
+    new_timestamp_start = to_timestamp(dateList, startTime)
+    new_timestamp_end = to_timestamp(dateList, endTime)
+
+    for reservation in reservations:
+        timeslot = reservation.getTimeslot()
+        timeslot_date_list= timeslot.getDate().isoformat().split('-')
+
+        existing_timestamp_start = to_timestamp(timeslot_date_list, timeslot.getStartTime())
+        existing_timestamp_end = to_timestamp(timeslot_date_list, timeslot.getEndTime())
+
+        if (new_timestamp_start < existing_timestamp_end) and \
+           (new_timestamp_end > existing_timestamp_start):
+            return time_overlap_error()
+
+
+
+
+
+
+
 
 

@@ -175,7 +175,7 @@ def test_valid_validate_new_reservation(monkeypatch):
               'userId': '1',
               'startTime': '14',
               'endTime': '15',
-              'date': '2017-03-19',
+              'date': '3000-03-19',
               'description': 'cool meeting'
             }
             def mock_user_find(_):
@@ -191,7 +191,7 @@ def test_valid_validate_make_new_reservation_payload_format():
               'userId': '1',
               'startTime': '14',
               'endTime': '15',
-              'date': '2017-03-19',
+              'date': '3000-03-19',
               'description': 'cool meeting'
             }
             assert(views.validate_make_new_reservation_payload_format(data) is None)
@@ -204,7 +204,7 @@ def test_invalid_validate_make_new_reservation_payload_format_missing_key():
               'userId': '1',
               'startTime': '14',
               'endTime': '15',
-              'date': '2017-03-19'
+              'date': '3000-03-19'
             }
             assert(views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
@@ -216,7 +216,7 @@ def test_invalid_validate_make_new_reservation_payload_format_not_digits():
               'userId': '1',
               'startTime': 'not a digit',
               'endTime': '15',
-              'date': '2017-03-19',
+              'date': '3000-03-19',
               'description': 'cool meeting'
             }
             assert(views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
@@ -313,4 +313,15 @@ def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch)
                 return
             monkeypatch.setattr(UserMapper, 'find', mock_user_not_found)
             assert(views.validate_make_new_reservation_room_user_exists(roomId, userId).status_code is views.STATUS_CODE['NOT_FOUND'])
+
+def test_invalid_make_new_reservation_room_user_exists_room_missing(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            roomId = "1"
+            userId = "5"
+            def mock_room_not_found(_):
+                return
+            monkeypatch.setattr(RoomMapper, 'find', mock_room_not_found)
+            assert(views.validate_make_new_reservation_room_user_exists(roomId, userId).status_code is views.STATUS_CODE['NOT_FOUND'])
+
 
