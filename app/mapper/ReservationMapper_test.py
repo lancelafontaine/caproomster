@@ -1,5 +1,5 @@
 from app.mapper import ReservationMapper
-from app.mapper import ReservationIdMap
+from app.mapper import IdMap
 from app.core.reservation import Reservation
 from app.core.user import User
 from app.core.timeslot import Timeslot
@@ -8,14 +8,16 @@ from app.TDG import ReservationTDG
 
 
 def teardown_module(module):
-    ReservationIdMap.clear()
+    IdMap.clear(Reservation)
 
 
 def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
     # Mock
     def no_find(_):
         return
-    monkeypatch.setattr(ReservationIdMap, 'find', no_find)
+    def no_find2(_, __):
+        return
+    monkeypatch.setattr(IdMap, 'find', no_find2)
     monkeypatch.setattr(ReservationTDG, 'find', no_find)
 
     # Execute
@@ -30,13 +32,13 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     expected = Reservation(Room(1,'a'), User(1, 'name', 'password'), Timeslot(1,2, 'date','block', 1), 'description', 1)
 
     # Mock
-    def no_find(_):
+    def no_find(_, __):
         return
 
     def yes_find(_):
         return [[expected.getId(), expected.getRoom().getId(), expected.getDescription(), expected.getUser().getId(), expected.getTimeslot().getId()]]
 
-    monkeypatch.setattr(ReservationIdMap, 'find', no_find)
+    monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(ReservationTDG, 'find', yes_find)
 
     # Execute
@@ -54,13 +56,13 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     expected = Reservation('room', User(1, 'name', 'password'), 'time', 'description', 1)
 
     # Mock
-    def id_find(_):
+    def id_find(_, __):
         return expected
 
     def no_find(_):
         return
 
-    monkeypatch.setattr(ReservationIdMap, 'find', id_find)
+    monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(ReservationTDG, 'find', no_find)
 
     # Execute
@@ -79,13 +81,13 @@ def test_find_found_in_id_map_found_in_DB(monkeypatch):
     expected = Reservation('room1', User(1, 'name2', 'password3'), 'time1', 'description2', 2)
 
     # Mock
-    def id_find(_):
+    def id_find(_, __):
         return expected
 
     def tdg_find(_):
         return [[unexpected.getId(), unexpected.getRoom()]]
 
-    monkeypatch.setattr(ReservationIdMap, 'find', id_find)
+    monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(ReservationTDG, 'find', tdg_find)
 
     # Execute

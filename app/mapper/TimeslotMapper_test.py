@@ -1,18 +1,20 @@
 from app.mapper import TimeslotMapper
-from app.mapper import TimeslotIdMap
+from app.mapper import IdMap
 from app.core.timeslot import Timeslot
 from app.TDG import TimeslotTDG
 
 
 def teardown_module(module):
-    TimeslotIdMap.clear()
+    IdMap.clear(Timeslot)
 
 
 def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
     # Mock
     def no_find(_):
         return
-    monkeypatch.setattr(TimeslotIdMap, 'find', no_find)
+    def no_find2(_, __):
+        return
+    monkeypatch.setattr(IdMap, 'find', no_find2)
     monkeypatch.setattr(TimeslotTDG, 'find', no_find)
 
     # Execute
@@ -27,13 +29,13 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     expected = Timeslot(1, 5, 'date', 'block', 'id')
 
     # Mock
-    def no_find(_):
+    def no_find(_, __):
         return
 
     def yes_find(_):
         return [[expected.getId(), expected.getStartTime(), expected.getEndTime(), expected.getDate(), expected.getBlock(), expected.getId()]]
 
-    monkeypatch.setattr(TimeslotIdMap, 'find', no_find)
+    monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(TimeslotTDG, 'find', yes_find)
 
     # Execute
@@ -52,13 +54,13 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     expected = Timeslot(1, 5, 'date', 'block', 'id')
 
     # Mock
-    def id_find(_):
+    def id_find(_, __):
         return expected
 
     def no_find(_):
         return
 
-    monkeypatch.setattr(TimeslotIdMap, 'find', id_find)
+    monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(TimeslotTDG, 'find', no_find)
 
     # Execute
@@ -78,13 +80,13 @@ def test_find_found_in_id_map_found_in_DB(monkeypatch):
     expected = Timeslot(1, 5, 'date', 'block', 'id')
 
     # Mock
-    def id_find(_):
+    def id_find(_, __):
         return expected
 
     def tdg_find(_):
         return [[unexpected.getId(), unexpected.getStartTime(), unexpected.getEndTime(), unexpected.getDate(), unexpected.getBlock(), unexpected.getId()]]
 
-    monkeypatch.setattr(TimeslotIdMap, 'find', id_find)
+    monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(TimeslotTDG, 'find', tdg_find)
 
     # Execute

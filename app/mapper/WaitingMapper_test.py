@@ -2,7 +2,7 @@ from app.mapper import WaitingMapper
 from app.mapper import TimeslotMapper
 from app.mapper import UserMapper
 from app.mapper import RoomMapper
-from app.mapper import WaitingIdMap
+from app.mapper import IdMap
 from app.core.waiting import Waiting
 from app.core.room import Room
 from app.core.user import User
@@ -11,14 +11,16 @@ from app.TDG import WaitingTDG
 
 
 def teardown_module(module):
-    WaitingIdMap.clear()
+    IdMap.clear(Waiting)
 
 
 def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
     # Mock
     def no_find(_):
         return
-    monkeypatch.setattr(WaitingIdMap, 'find', no_find)
+    def no_find2(_, __):
+        return
+    monkeypatch.setattr(IdMap, 'find', no_find2)
     monkeypatch.setattr(WaitingTDG, 'find', no_find)
 
     # Execute
@@ -36,7 +38,7 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     expected = Waiting(expected_room, expected_user, expected_timeslot, 'joe', 234)
 
     # Mock
-    def no_find(_):
+    def no_find(_, __):
         return
 
     def yes_find(_):
@@ -49,7 +51,7 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     def user_find(_):
         return expected_user
 
-    monkeypatch.setattr(WaitingIdMap, 'find', no_find)
+    monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(WaitingTDG, 'find', yes_find)
     monkeypatch.setattr(TimeslotMapper, 'find', timeslot_find)
     monkeypatch.setattr(RoomMapper, 'find', room_find)
@@ -71,13 +73,13 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     expected = Waiting(110, 32, 55, 'joel', 3384)
 
     # Mock
-    def id_find(_):
+    def id_find(_, __):
         return expected
 
     def no_find(_):
         return
 
-    monkeypatch.setattr(WaitingIdMap, 'find', id_find)
+    monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(WaitingTDG, 'find', no_find)
 
     # Execute
@@ -97,13 +99,13 @@ def test_find_found_in_id_map_found_in_DB(monkeypatch):
     expected = Waiting(110, 32, 55, 'joel', 3384)
 
     # Mock
-    def id_find(_):
+    def id_find(_, __):
         return expected
 
     def tdg_find(_):
         return [[unexpected.getId(), unexpected.getRoom(), unexpected.getUser(), unexpected.getDescription(), unexpected.getTimeslot()]]
 
-    monkeypatch.setattr(WaitingIdMap, 'find', id_find)
+    monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(WaitingTDG, 'find', tdg_find)
 
     # Execute
