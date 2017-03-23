@@ -25,8 +25,7 @@
             component: 'headerComponent'
           },
           'main': {
-            templateUrl: 'home/home.template.html',
-            controller: 'HomeController'
+            component: 'homeComponent'
           }
         }
       });

@@ -49,6 +49,7 @@
 
   gulp.task('html', function() {
     return gulp.src(['application/**/*.html'])
+    .pipe(rename({dirname: ''}))
     .pipe(gulp.dest('dist/'));
   });
 

@@ -13,7 +13,8 @@
     'mwl.calendar',
     'caproomster.api',
     'caproomster.login',
-    'caproomster.header'
+    'caproomster.header',
+    'caproomster.home'
   ]);
 
 })(angular);

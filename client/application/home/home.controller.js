@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('caproomster').controller('HomeController', HomeController);
+  angular.module('caproomster').controller('caproomster.home.HomeController', HomeController);
 
   HomeController.$inject = ['$scope', 'moment', 'calendarConfig'];
 

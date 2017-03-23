@@ -5,7 +5,7 @@
   angular.module('caproomster.login').component('loginComponent', {
     controller: 'caproomster.login.LoginController',
     controllerAs: 'vm',
-    templateUrl: 'login/login.template.html'
+    templateUrl: 'login.template.html'
   });
 
 })(angular);
