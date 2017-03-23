@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('caproomster.api').service('caproomster.restApi.ApiService', ApiService);
+  angular.module('caproomster.api').service('caproomster.api.ApiService', ApiService);
 
   ApiService.$inject = ['caproomster.api.ApiFactory'];
 
@@ -10,6 +10,7 @@
 
     var svc = this;
     svc.account = account;
+    svc.booking = booking;
 
     function account(action, payload) {
       if (action === 'login') {

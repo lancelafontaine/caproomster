@@ -1,19 +1,19 @@
-<div class="container-fluid home-page">
+<div class="container-fluid home-page" ng-if="vm.authenticated">
     <!-- Main view -->
     <div class="row home-page-upper">
         <!-- Toggle Room Select Menu -->
         <div class="room-list">
-            <a ng-click="toggleMenu()">
+            <a ng-click="vm.toggleMenu()">
               {{ toggleText }}
               <i class="fa fa-arrow-down" aria-hidden="true"></i>
             </a>
             <!-- TODO: populate rooms with ng-repeat -->
-            <div class="room-list-number" ng-if="isToggled">
-                <button type="button" class="btn" ng-click="changeRoom('H921')" ng-class="{'selected-room': roomNumber == 'H921'}">H921</button>
-                <button type="button" class="btn" ng-click="changeRoom('H922')" ng-class="{'selected-room': roomNumber == 'H922'}">H922</button>
-                <button type="button" class="btn" ng-click="changeRoom('H923')" ng-class="{'selected-room': roomNumber == 'H923'}">H923</button>
-                <button type="button" class="btn" ng-click="changeRoom('H924')" ng-class="{'selected-room': roomNumber == 'H924'}">H924</button>
-                <button type="button" class="btn" ng-click="changeRoom('H925')" ng-class="{'selected-room': roomNumber == 'H925'}">H925</button>
+            <div class="room-list-number" ng-if="vm.isToggled">
+                <button type="button" class="btn" ng-click="vm.changeRoom('H921')" ng-class="{'selected-room': roomNumber == 'H921'}">H921</button>
+                <button type="button" class="btn" ng-click="vm.changeRoom('H922')" ng-class="{'selected-room': roomNumber == 'H922'}">H922</button>
+                <button type="button" class="btn" ng-click="vm.changeRoom('H923')" ng-class="{'selected-room': roomNumber == 'H923'}">H923</button>
+                <button type="button" class="btn" ng-click="vm.changeRoom('H924')" ng-class="{'selected-room': roomNumber == 'H924'}">H924</button>
+                <button type="button" class="btn" ng-click="vm.changeRoom('H925')" ng-class="{'selected-room': roomNumber == 'H925'}">H925</button>
             </div>
         </div>
         <!-- End Toggle Room Select Menu -->
@@ -27,7 +27,7 @@
                 mwl-date-modifier
                 date="viewDate"
                 decrement="calendarView"
-                ng-click="cellIsOpen = false">
+                ng-click="vm.cellIsOpen = false">
                 Previous
               </button>
               <button
@@ -35,7 +35,7 @@
                 mwl-date-modifier
                 date="viewDate"
                 set-to-today
-                ng-click="cellIsOpen = false">
+                ng-click="vm.cellIsOpen = false">
                 Today
               </button>
               <button
@@ -43,7 +43,7 @@
                 mwl-date-modifier
                 date="viewDate"
                 increment="calendarView"
-                ng-click="cellIsOpen = false">
+                ng-click="vm.cellIsOpen = false">
                 Next
               </button>
             </div>
@@ -52,8 +52,8 @@
           <!-- View Select Button Group 2-->
           <div class="col-md-2 calendar-buttons">
             <div class="btn-group">
-              <label class="btn btn-primary" ng-model="calendarView" uib-btn-radio="'week'" ng-click="cellIsOpen = false">Week</label>
-              <label class="btn btn-primary" ng-model="calendarView" uib-btn-radio="'day'" ng-click="cellIsOpen = false">Day</label>
+              <label class="btn btn-primary" ng-model="vm.calendarView" uib-btn-radio="'week'" ng-click="vm.cellIsOpen = false">Week</label>
+              <label class="btn btn-primary" ng-model="vm.calendarView" uib-btn-radio="'day'" ng-click="vm.cellIsOpen = false">Day</label>
             </div>
           </div>
           <!-- End View Select Button Group 2-->
@@ -98,7 +98,7 @@
         <!-- End User Reservation -->
         <!-- Room Specification Display -->
         <div class="col-md-4 console">
-            <h2>{{ roomNumber }} - {{ calendarTitle }}</h2>
+            <h2>{{ vm.roomNumber }} - {{ vm.calendarTitle }}</h2>
             <!-- TODO: Populate room equipment list -->
             <!-- TODO: Get time slot number -->
             <p>Available Time Slot: 5</p>

@@ -10,7 +10,6 @@
   var rename = require('gulp-rename');
   var uglify = require('gulp-uglify');
   var mainBowerFiles = require('main-bower-files');
-  var karma = require('karma').server;
   var del = require('del');
   var filter = require('gulp-filter');
   var connect = require('gulp-connect');
@@ -135,7 +134,7 @@
       '.temp/js/app.js'
     ])
     .pipe(concat('application.js'))
-    .pipe(uglify().on('error', gutil.log))
+    //.pipe(uglify().on('error', gutil.log))
     .pipe(rename({
       extname: '.min.js'
     }))
