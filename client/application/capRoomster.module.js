@@ -10,7 +10,9 @@
     'ngSanitize',
     'ngStorage',
     'ngAnimate',
-    'mwl.calendar'
+    'mwl.calendar',
+    'caproomster.api',
+    'caproomster.login'
   ]);
 
 })(angular);

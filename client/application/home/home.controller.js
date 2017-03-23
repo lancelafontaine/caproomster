@@ -24,7 +24,7 @@
     function init() {
       $scope.calendarView = 'week';
       $scope.viewDate = new Date();
-      $scope.toggleText = "Show Room List";
+      $scope.toggleText = 'Show Room List';
       $scope.roomNumber = 'H921';
       $scope.cellIsOpen = true;
       $scope.events = [];
@@ -36,10 +36,10 @@
     function toggleMenu() {
       if (!$scope.isToggled) {
         $scope.isToggled = true;
-        $scope.toggleText = "Hide Room List";
+        $scope.toggleText = 'Hide Room List';
       } else {
         $scope.isToggled = false;
-        $scope.toggleText = "Show Room List";
+        $scope.toggleText = 'Show Room List';
       }
     }
 
@@ -118,7 +118,7 @@
         draggable: true,
         resizable: true
       });
-    };
+    }
 
     function timespanClicked(date, cell) {
       if ($scope.calendarView === 'month') {
@@ -136,27 +136,27 @@
           $scope.viewDate = date;
         }
       }
-    };
+    }
 
     function eventClicked() {
       //TODO
       console.log('Clicked');
-    };
+    }
 
     function eventEdited() {
       //TODO
       console.log('Edited');
-    };
+    }
 
     function eventDeleted() {
       //TODO
       console.log('Deleted');
-    };
+    }
 
     function eventTimesChanged() {
       //TODO
       console.log('Dropped or resized');
-    };
+    }
 
   }
 

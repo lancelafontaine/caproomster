@@ -2,6 +2,6 @@
 
   'use strict';
 
-  angular.module('caproomster.api', []);
+  angular.module('caproomster.login', []);
 
 })(angular);

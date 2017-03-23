@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('caproomster').controller('LoginController', LoginController);
+  angular.module('caproomster.login').controller('caproomster.login.LoginController', LoginController);
 
   LoginController.$inject = ['$scope', '$state'];
 

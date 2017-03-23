@@ -3,7 +3,7 @@
   'use strict';
 
   angular.module('caproomster').config([
-		
+
     '$stateProvider',
     '$urlRouterProvider',
 
@@ -13,8 +13,7 @@
         url: '/',
         views: {
           'header': {
-            templateUrl: 'login/login.template.html',
-            controller: 'LoginController'
+            component: 'loginComponent'
           }
         }
       });
@@ -31,7 +30,7 @@
           }
         }
       });
-			
+
       $urlRouterProvider.otherwise('/');
 
     }
