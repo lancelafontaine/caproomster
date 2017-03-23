@@ -22,7 +22,7 @@
         url: '/home',
         views: {
           'header': {
-            templateUrl: 'header/header.template.html'
+            component: 'headerComponent'
           },
           'main': {
             templateUrl: 'home/home.template.html',

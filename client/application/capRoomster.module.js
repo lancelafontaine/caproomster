@@ -12,7 +12,8 @@
     'ngAnimate',
     'mwl.calendar',
     'caproomster.api',
-    'caproomster.login'
+    'caproomster.login',
+    'caproomster.header'
   ]);
 
 })(angular);
