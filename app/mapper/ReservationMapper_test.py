@@ -1,5 +1,6 @@
 from app.mapper import ReservationMapper
 from app.mapper import TimeslotMapper
+from app.mapper import RoomMapper
 from app.mapper import IdMap
 from app.core.reservation import Reservation
 from app.core.user import User
@@ -32,7 +33,8 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
 def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
     expected_timeslot = Timeslot(1, 2, 'date', 'block', 1)
-    expected = Reservation(Room(1, 'a'), User(
+    expected_room = Room(1, 'a')
+    expected = Reservation(expected_room, User(
         1, 'name', 'password'), expected_timeslot, 'description', 1)
 
     # Mock
@@ -40,22 +42,26 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
         return
 
     def yes_find(_):
-        return [[expected.getId(), expected.getRoom().getId(), expected.getDescription(), expected.getUser().getId(), expected_timeslot.getId()]]
+        return [[expected.getId(), expected_room.getId(), expected.getDescription(), expected.getUser().getId(), expected_timeslot.getId()]]
 
     def timeslot_find(_):
         return expected_timeslot
 
+    def room_find(_):
+        return expected_room
+
     monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(ReservationTDG, 'find', yes_find)
     monkeypatch.setattr(TimeslotMapper, 'find', timeslot_find)
+    monkeypatch.setattr(RoomMapper, 'find', room_find)
 
     # Execute
     val = ReservationMapper.find(1)
 
     # Verify
-    assert(val.getRoom().getId() is expected.getRoom().getId())
+    assert(val.getRoom().getId() is expected_room.getId())
     assert(val.getDescription() is expected.getDescription())
-    assert(val.getTimeslot().getId() is expected.getTimeslot().getId())
+    assert(val.getTimeslot().getId() is expected_timeslot.getId())
     assert(val.getId() is expected.getId())
 
 
