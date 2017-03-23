@@ -40,7 +40,6 @@
       'js',
       'html',
       'static',
-      'test',
       callback
     );
   });
@@ -141,16 +140,6 @@
       extname: '.min.js'
     }))
     .pipe(gulp.dest('dist/js/'));
-  });
-
-  /** Unit test tasks **/
-
-  gulp.task('test', function(done) {
-    karma.start({
-      configFile: __dirname + '/test/test.conf.js',singleRun: true
-    }, function() {
-      done();
-    });
   });
 
   /** Clean tasks **/

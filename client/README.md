@@ -1,4 +1,4 @@
-# capRoomster 
+# capRoomster
 
 ## File Structure
 
@@ -47,7 +47,6 @@
 - `npm run pack` to package the application into `dist` folder
 - `npm run clean` to delete build folders
 - `npm run start` to run the application on a web browser, on localhost:8080
-- `npm run test` to run unit tests
 - `npm run check` to check syntax and format error
 - `npm run check:fix` to automatically fix syntax error
 

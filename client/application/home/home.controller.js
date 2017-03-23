@@ -4,9 +4,9 @@
 
   angular.module('caproomster').controller('caproomster.home.HomeController', HomeController);
 
-  HomeController.$inject = ['$scope', 'moment', 'calendarConfig'];
+  HomeController.$inject = ['$scope', 'moment', 'calendarConfig', 'caproomster.api.ApiService'];
 
-  function HomeController($scope, moment, calendarConfig) {
+  function HomeController($scope, moment, calendarConfig, ApiService) {
 
     // Init controller and variables
     init();
@@ -28,7 +28,17 @@
       $scope.roomNumber = 'H921';
       $scope.cellIsOpen = true;
       $scope.events = [];
-      fetchEvents();
+      checkLogin();
+    }
+
+    // Check login
+
+    function checkLogin() {
+      ApiService.account('checkLogin').then(function() {
+        fetchEvents();
+      }, function() {
+        $state.go('login');
+      });
     }
 
     // Toggle Menu

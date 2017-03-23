@@ -4,9 +4,9 @@
 
   angular.module('caproomster.login').controller('caproomster.login.LoginController', LoginController);
 
-  LoginController.$inject = ['$scope', '$state'];
+  LoginController.$inject = ['$scope', '$state', 'caproomster.api.ApiService'];
 
-  function LoginController($scope, $state) {
+  function LoginController($scope, $state, ApiService) {
 
     init();
     $scope.login = login;
@@ -31,10 +31,16 @@
         $scope.loginError = true;
       }
       else {
-        console.log('here');
-        $scope.loginError = true;
-        // do something here
-        //$state.go('home');
+        var payload = {
+          userId: $scope.userInfo.username,
+          password: $scope.userInfo.password
+        };
+        ApiService.account('login', payload).then(function() {
+          $state.go('home');
+        }, function(res) {
+          $scope.loginError = true;
+          console.log(res);
+        });
       }
     }
 

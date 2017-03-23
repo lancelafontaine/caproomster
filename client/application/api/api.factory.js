@@ -11,33 +11,60 @@
     var baseUrl = AppConstant.server_base_url;
 
     return {
-      a: a,
-      b: b
+      login: login,
+      logout: logout,
+      getRoomList: getRoomList,
+      reserveSlot: reserveSlot
     };
 
-        // Register
+    /* login factory */
 
-        // Update
-
-    function a() {
-      var url = '/a';
+    function login() {
+      var url = '/login';
       return $resource(baseUrl + url, {}, {
-        post: {
+        login: {
           method: 'POST',
+          withCredentials: true
+        },
+        check: {
+          method: 'GET',
           withCredentials: true
         }
       });
     }
 
-        // get user skill profile
+    /* logout factory */
 
-    function b() {
-      var url = '/b';
-      return $resource(baseUrl + url, {
-        email: '@email'
-      }, {
+    function logout() {
+      var url = '/logout';
+      return $resource(baseUrl + url, {}, {
+        logout: {
+          method: 'GET',
+          withCredentials: true
+        }
+      });
+    }
+
+    /* getRoom factory */
+
+    function getRoomList() {
+      var url = '/rooms/all';
+      return $resource(baseUrl + url, {}, {
         get: {
-          method: 'GET'
+          method: 'GET',
+          withCredentials: true
+        }
+      });
+    }
+
+    /* creaeReservation factory */
+
+    function reserveSlot() {
+      var url = '/reservations/create';
+      return $resource(baseUrl + url, {}, {
+        reserve: {
+          method: 'POST',
+          withCredentials: true
         }
       });
     }
