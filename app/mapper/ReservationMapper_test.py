@@ -1,4 +1,5 @@
 from app.mapper import ReservationMapper
+from app.mapper import TimeslotMapper
 from app.mapper import IdMap
 from app.core.reservation import Reservation
 from app.core.user import User
@@ -15,6 +16,7 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
     # Mock
     def no_find(_):
         return
+
     def no_find2(_, __):
         return
     monkeypatch.setattr(IdMap, 'find', no_find2)
@@ -29,17 +31,23 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    expected = Reservation(Room(1,'a'), User(1, 'name', 'password'), Timeslot(1,2, 'date','block', 1), 'description', 1)
+    expected_timeslot = Timeslot(1, 2, 'date', 'block', 1)
+    expected = Reservation(Room(1, 'a'), User(
+        1, 'name', 'password'), expected_timeslot, 'description', 1)
 
     # Mock
     def no_find(_, __):
         return
 
     def yes_find(_):
-        return [[expected.getId(), expected.getRoom().getId(), expected.getDescription(), expected.getUser().getId(), expected.getTimeslot().getId()]]
+        return [[expected.getId(), expected.getRoom().getId(), expected.getDescription(), expected.getUser().getId(), expected_timeslot.getId()]]
+
+    def timeslot_find(_):
+        return expected_timeslot
 
     monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(ReservationTDG, 'find', yes_find)
+    monkeypatch.setattr(TimeslotMapper, 'find', timeslot_find)
 
     # Execute
     val = ReservationMapper.find(1)
@@ -53,7 +61,8 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
 
 def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     # Test Data
-    expected = Reservation('room', User(1, 'name', 'password'), 'time', 'description', 1)
+    expected = Reservation('room', User(
+        1, 'name', 'password'), 'time', 'description', 1)
 
     # Mock
     def id_find(_, __):
@@ -77,8 +86,10 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    unexpected = Reservation('room', User(1, 'name', 'password'), 'time', 'description', 1)
-    expected = Reservation('room1', User(1, 'name2', 'password3'), 'time1', 'description2', 2)
+    unexpected = Reservation('room', User(
+        1, 'name', 'password'), 'time', 'description', 1)
+    expected = Reservation('room1', User(
+        1, 'name2', 'password3'), 'time1', 'description2', 2)
 
     # Mock
     def id_find(_, __):
