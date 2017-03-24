@@ -79,6 +79,37 @@ def make_new_reservation():
         data = request.get_json()
         return validate_new_reservation(data)
 
+@app.route('/reservations/user/<userId>', methods=['GET'])
+@nocache
+@require_login
+def get_reservations_by_user(userId):
+    if request.method == 'GET':
+        reservations = ReservationMapper.findByUser(int(userId))
+        reservations_data = []
+        for reservation in reservations:
+            reservation_data = {}
+            reservation_data['room'] = {}
+            reservation_data['room']['roomId'] = reservation.getRoom().getId()
+            reservation_data['user'] = {}
+            reservation_data['user']['username'] = reservation.getUser().getName()
+            reservation_data['user']['userId'] = reservation.getUser().getId()
+            reservation_data['timeslot'] = {}
+            reservation_data['timeslot']['startTime'] = reservation.getTimeslot().getStartTime()
+            reservation_data['timeslot']['endTime'] = reservation.getTimeslot().getEndTime()
+            reservation_data['timeslot']['date'] = reservation.getTimeslot().getDate()
+            reservation_data['timeslot']['timeId'] = reservation.getTimeslot().getId()
+            reservation_data['description'] = reservation.getDescription()
+
+            reservation_data['reservationId'] = reservation.getId()
+            reservations_data += [reservation_data]
+
+        data = {
+            'userId': userId,
+            'reservations': reservations_data
+        }
+        return jsonify(data)
+
+
 
 ####################
 # HELPER FUNCTIONS #
@@ -172,7 +203,7 @@ def validate_new_reservation(data):
     room = RoomMapper.find(roomId)
     user = UserMapper.find(userId)
     description = str(data['description'])
-    reservation = ReservationMapper.makeNew(room, user, time, description, randint(0,RAND_UPPER))
+    reservation = ReservationMapper.makeNewReservation(room, user, time, description, randint(0,RAND_UPPER))
     ReservationMapper.done()
 
     response_data = {
