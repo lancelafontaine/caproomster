@@ -25,7 +25,7 @@ class ReservationBook:
             ReservationMapper.done()
             self.reservationList.append(r)
 
-    def makeNewReservation(self, room, user, timeslot, description, repeat_amount):
+    def makeRepeatedReservation(self, room, user, timeslot, description, repeat_amount):
         max_repetition = 2
         days_in_a_week = 7
 
