@@ -1,5 +1,4 @@
 import UnitOfWork
-import WaitingIdMap
 import RoomMapper
 import UserMapper
 import TimeslotMapper
@@ -10,25 +9,20 @@ from app.core.waiting import Waiting
 
 def makeNew(room, description, reservee, timeslot):
     waiting = Waiting(room, reservee, timeslot, description,0)
-    WaitingIdMap.add(waiting)
     UnitOfWork.registerNew(waiting)
     return waiting
 
 
 def find(waitingId):
-    waiting = WaitingIdMap.get(waitingId)
-    if waiting == None:
-        result = WaitingTDG.find(waitingId)
-        if result == None:
-            return
-        else:
-            room = RoomMapper.find(result[0][1])
-            reservee = UserMapper.find(result[0][2])
-            timeslot = TimeslotMapper.find(result[0][4])
-            waiting = Waiting(room, result[0][3], reservee, timeslot)
-            WaitingIdMap.add(waiting)
-
-    return waiting
+    result = []
+    result = WaitingTDG.find(waitingId)
+    if not result:
+        return
+    else:
+        room = RoomMapper.find(result[0][1])
+        reservee = UserMapper.find(result[0][2])
+        timeslot = TimeslotMapper.find(result[0][4])
+        return Waiting(room, reservee, timeslot, result[0][3], result[0][0])
 
 def findRoomOnDate(roomId,date):
     waitingList = WaitingTDG.findByRoom(roomId,date)
@@ -36,22 +30,17 @@ def findRoomOnDate(roomId,date):
 
 
 def findAll():
-    return WaitingTDG.findAll()
-
     result = WaitingTDG.findAll()
     waitings = []
-    if result == None:
+    if not result:
         return
     else:
-        for index, r in enumerate(result):
-            waitings = WaitingIdMap.find(r[0])
-            if waiting == None:
-                room = RoomMapper.find(r[1])
-                reservee = UserMapper.find(r[2])
-                timeslot = TimeslotMapper.find(r[4])
-                waiting = Waiting(room, r[3], reservee, timeslot)
-                WaitingIdMap.add(waiting)
-                waitings.append(waiting)
+        for _, r in enumerate(result):
+            room = RoomMapper.find(r[1])
+            reservee = UserMapper.find(r[2])
+            timeslot = TimeslotMapper.find(r[4])
+            waiting = Waiting(room, reservee, timeslot, r[3], r[0])
+            waitings.append(waiting)
     return waitings
 
 
@@ -63,12 +52,8 @@ def done():
     UnitOfWork.commit()
 
 # remove waiting instance from unit of work
-def delete(waiting):
-    waitingId = waiting.getId()
-    waiting = WaitingIdMap.find(waitingId)
-    if waiting is not None:
-        WaitingIdMap.delete(waiting)
-    UnitOfWork.registerDeleted(waiting)
+def delete(waitingId):
+    UnitOfWork.registerDeleted(Waiting(None,None,None,None,waitingId))
 
 
 def save(waiting):
@@ -81,7 +66,7 @@ def save(waiting):
 
 def update(waiting):
     WaitingTDG.update(waiting)
+
 # remove waiting instance from database
-def erase(waiting):
-    waitingId = waiting.getId()
+def erase(waitingId):
     WaitingTDG.delete(waitingId)

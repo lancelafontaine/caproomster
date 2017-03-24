@@ -74,3 +74,4 @@ class Registry:
 
     def setReservationBook(self, reservationBook):
         self.reservationBook = reservationBook
+

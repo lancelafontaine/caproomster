@@ -2,22 +2,23 @@
 
   'use strict';
 
-  angular.module('caproomster').controller('LoginController', LoginController);
+  angular.module('caproomster.login').controller('caproomster.login.LoginController', LoginController);
 
-  LoginController.$inject = ['$scope', '$state'];
+  LoginController.$inject = ['$state', 'caproomster.api.ApiService'];
 
-  function LoginController($scope, $state) {
+  function LoginController($state, ApiService) {
 
-    init();
-    $scope.login = login;
+    var vm = this;
+    vm.$onInit = init;
 
     function init() {
+      vm.login = login;
       loadVideo();
-      $scope.userInfo = {};
+      vm.userInfo = {};
     }
 
     function loadVideo() {
-      $scope.videos = [{
+      vm.videos = [{
         videoId: 'JDl0AhqHF_s',
         start: 3,
         end: 30,
@@ -26,15 +27,21 @@
     }
 
     function login() {
-      $scope.loginError = false;
-      if (!$scope.userInfo.username || !$scope.userInfo.password) {
-        $scope.loginError = true;
+      vm.loginError = false;
+      if (!vm.userInfo.username || !vm.userInfo.password) {
+        vm.loginError = true;
       }
       else {
-        console.log('here');
-        $scope.loginError = true;
-        // do something here
-        //$state.go('home');
+        var payload = {
+          userId: vm.userInfo.username,
+          password: vm.userInfo.password
+        };
+        ApiService.account('login', payload).then(function() {
+          $state.go('home');
+        }, function(res) {
+          vm.loginError = true;
+          console.log(res);
+        });
       }
     }
 

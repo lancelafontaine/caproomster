@@ -21,3 +21,4 @@ def test_invalid_registry_init():
 
     with pytest.raises(AttributeError) as e:
         registry.fakeAttributeDoesntExist
+

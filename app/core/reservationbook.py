@@ -7,11 +7,11 @@ from app.mapper import ReservationMapper
 from app.mapper import WaitingMapper
 from app.mapper import TimeslotMapper
 
+
 # ReservationBook object
 class ReservationBook:
-
     # Constructor
-    def __init__(self,reservationlist,waitinglist):
+    def __init__(self, reservationlist, waitinglist):
         self.reservationList = reservationlist
         self.waitingList = waitinglist
 
@@ -20,7 +20,7 @@ class ReservationBook:
 
         # Check if room is available at specifie time
         if (self.available(room, time) == True):
-            r = Reservation(room,holder,time,description)
+            r = Reservation(room, holder, time, description)
             ReservationMapper.registerNew(r)
             ReservationMapper.done()
             self.reservationList.append(r)
@@ -60,21 +60,21 @@ class ReservationBook:
 
     # Method to add to the waiting list
     def addToWaitingList(self, room, holder, time, description):
-        w = Waiting(room,holder,time,description,self.genWid())
+        w = Waiting(room, holder, time, description, self.genWid())
         WaitingMapper.registerNew(w)
         self.waitingList.append(w)
 
     # Method to modify reservation
-    def modifyReservation(self,reservationId, time):
+    def modifyReservation(self, reservationId, time):
         r = self.getReservationById(reservationId)
-        if self.available(r.getRoom(), r.getTimeslot(),reservationId) == True:
+        if self.available(r.getRoom(), r.getTimeslot(), reservationId) == True:
             r.setTimeslot(time)
 
     # Method to cancel reservation
-    def cancel(self,reservationId):
+    def cancel(self, reservationId):
         r = self.getReservationById(reservationId)
         print(self.reservationList)
-        #self.reservationList.remove(r)
+        # self.reservationList.remove(r)
         ReservationMapper.delete(reservationId)
 
     # Method to update the waiting list
@@ -82,10 +82,10 @@ class ReservationBook:
         # Get a queue of all reservations in specify room
         wList = self.getListByRoom(roomId)
         for index in range(len(wList)):
-            w = wList.popleft() #Dequeue
-            if self.available(w.getRoom(),w.getTimeslot()) == True:
+            w = wList.popleft()  # Dequeue
+            if self.available(w.getRoom(), w.getTimeslot()) == True:
                 if self.isRestricted(w.getUser(), w.getTimeslot()) == False:
-                    r = Reservation(w.getRoom(), w.getUser(), w.getTimeslot(), w.getDescription(),self.genRid())
+                    r = Reservation(w.getRoom(), w.getUser(), w.getTimeslot(), w.getDescription(), self.genRid())
                     self.reservationList.append(r)
                     self.waitingList.remove(w)
                     break
@@ -99,13 +99,13 @@ class ReservationBook:
         return self.getReservationList()
 
     # Method that return a reservation based on Id
-    def getReservationById(self,reservationId):
+    def getReservationById(self, reservationId):
         for index in range(len(self.reservationList)):
             if self.reservationList[index].getId() == reservationId:
                 return self.reservationList[index]
 
     # Method to get a queue of Waiting
-    def getListByRoom(self,roomId):
+    def getListByRoom(self, roomId):
         wList = deque([])
         for index in range(len(self.waitingList)):
             if self.waitingList[index].getRoom().getId() == roomId:
@@ -113,7 +113,7 @@ class ReservationBook:
         return wList
 
     # Method to check if the timeslot is available, also overloaded for modifyReservation case
-    def available(self,room, time, rid = None):
+    def available(self, room, time, rid=None):
         isAvailable = True
         if rid == None:
             for index in range(len(self.reservationList)):
@@ -152,11 +152,11 @@ class ReservationBook:
         return isAvailable
 
     # Method to view MY reservations
-    def viewMyReservation(self,user):
+    def viewMyReservation(self, user):
         myReservationList = []
         for index in range(len(self.reservationList)):
             r = self.reservationList[index]
-            if(r.getUser() == user):
+            if (r.getUser() == user):
                 myReservationList.append(r)
         return myReservationList
 
@@ -206,7 +206,7 @@ class ReservationBook:
         return tid
 
     # Method for restriction
-    def isRestricted(self,user,time):
+    def isRestricted(self, user, time):
         restrictions = False
         nbMyReservationInWeek = 0
         # Get user reservations
@@ -234,9 +234,9 @@ class ReservationBook:
                 nbMyReservationInWeek = nbMyReservationInWeek + 1
             # Check if user is attempting to make another reservation on same day
             if r.getTimeslot().getDate() == time.getDate():
-                 restrictions = True
-                 print("Request Failed: Only one reservation per day.")
-                 break
+                restrictions = True
+                print("Request Failed: Only one reservation per day.")
+                break
         # Check if user is at max reservation
         if nbMyReservationInWeek >= 3:
             restrictions = True
@@ -257,7 +257,8 @@ class ReservationBook:
     def setWaitingList(self, waitingList):
         self.waitingList = waitingList
 
-    def find_total_reserved_time_for_user_for_a_given_week(self, user_id, date):
+    @staticmethod
+    def find_total_reserved_time_for_user_for_a_given_week(user_id, date):
         diff_between_monday_and_sunday = 6
         total_time = 0
         # filter date values
