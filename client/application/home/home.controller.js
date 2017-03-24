@@ -87,6 +87,9 @@
           console.log('Deleted');
         }
       }];
+      ApiService.booking('getAllReservation').then(function(res){
+        console.log(res);
+      });
       // mock data
       vm.events = [
         {
