@@ -87,24 +87,23 @@ def get_reservations_by_user(userId):
         reservations = ReservationMapper.findByUser(int(userId))
         reservations_data = []
         for reservation in reservations:
-            reservation_data = {}
-            reservation_data['room'] = {}
-            reservation_data['room']['roomId'] = reservation.getRoom().getId()
-            reservation_data['user'] = {}
-            reservation_data['user']['username'] = reservation.getUser().getName()
-            reservation_data['user']['userId'] = reservation.getUser().getId()
-            reservation_data['timeslot'] = {}
-            reservation_data['timeslot']['startTime'] = reservation.getTimeslot().getStartTime()
-            reservation_data['timeslot']['endTime'] = reservation.getTimeslot().getEndTime()
-            reservation_data['timeslot']['date'] = reservation.getTimeslot().getDate()
-            reservation_data['timeslot']['timeId'] = reservation.getTimeslot().getId()
-            reservation_data['description'] = reservation.getDescription()
-
-            reservation_data['reservationId'] = reservation.getId()
-            reservations_data += [reservation_data]
-
+            reservations_data += [parse_reservation_object(reservation)]
         data = {
             'userId': userId,
+            'reservations': reservations_data
+        }
+        return jsonify(data)
+
+@app.route('/reservations/all', methods=['GET'])
+@nocache
+@require_login
+def get_all_reservations():
+    if request.method == 'GET':
+        reservations = ReservationMapper.findAll()
+        reservations_data = []
+        for reservation in reservations:
+            reservations_data += [parse_reservation_object(reservation)]
+        data = {
             'reservations': reservations_data
         }
         return jsonify(data)
@@ -293,6 +292,22 @@ def validate_make_new_reservation_timeslots(reservations, dateList, startTime, e
         if (new_timestamp_start < existing_timestamp_end) and \
            (new_timestamp_end > existing_timestamp_start):
             return time_overlap_error()
+
+def parse_reservation_object(reservation):
+    reservation_data = {}
+    reservation_data['room'] = {}
+    reservation_data['room']['roomId'] = reservation.getRoom().getId()
+    reservation_data['user'] = {}
+    reservation_data['user']['username'] = reservation.getUser().getName()
+    reservation_data['user']['userId'] = reservation.getUser().getId()
+    reservation_data['timeslot'] = {}
+    reservation_data['timeslot']['startTime'] = reservation.getTimeslot().getStartTime()
+    reservation_data['timeslot']['endTime'] = reservation.getTimeslot().getEndTime()
+    reservation_data['timeslot']['date'] = reservation.getTimeslot().getDate()
+    reservation_data['timeslot']['timeId'] = reservation.getTimeslot().getId()
+    reservation_data['description'] = reservation.getDescription()
+    reservation_data['reservationId'] = reservation.getId()
+    return reservation_data
 
 
 
