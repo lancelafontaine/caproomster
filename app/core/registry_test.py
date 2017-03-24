@@ -13,8 +13,10 @@ def test_valid_registry_init():
 
     registry = Registry(reservationBook)
 
-    assert(type(registry.reservationBook.reservationList) is list)
-    assert(type(registry.reservationBook.waitingList) is list)
+    assert(type(registry.reservationBook.reservationList) is deque)
+    assert(type(registry.reservationBook.waitingListRegular) is deque)
+    assert(type(registry.reservationBook.waitingListCapstone) is deque)
+
 
 def test_invalid_registry_init():
     reservationList = deque()
