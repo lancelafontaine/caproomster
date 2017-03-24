@@ -3,18 +3,17 @@
     <div class="row home-page-upper">
         <!-- Toggle Room Select Menu -->
         <div class="room-list">
-            <a ng-click="vm.toggleMenu()">
-              {{ toggleText }}
+            <p ng-click="vm.toggleMenu()">
+              {{ vm.toggleText }}
               <i class="fa fa-arrow-down" aria-hidden="true"></i>
-            </a>
-            <!-- TODO: populate rooms with ng-repeat -->
+            </p>
             <div class="room-list-number" ng-if="vm.isToggled">
                 <button
                 type="button"
                 class="btn"
                 ng-repeat="room in vm.roomList"
-                ng-click="vm.changeRoom(room)"
-                ng-class="{'selected-room': roomNumber == room}">
+                ng-click="vm.changeRoom(room); vm.toggleMenu()"
+                ng-class="{'selected-room': vm.roomNumber == room}">
                   Room {{ room }}
                 </button>
             </div>
