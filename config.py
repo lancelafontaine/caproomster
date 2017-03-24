@@ -2,7 +2,6 @@ import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # connect to dataase
-os.environ['POSTGRES_PASSWORD'] = 'PASSWORD';
 sqlPass = os.environ['POSTGRES_PASSWORD']
 SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:' + \
     sqlPass + '@localhost/development'
