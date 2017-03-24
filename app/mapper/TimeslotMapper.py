@@ -25,8 +25,7 @@ def findId(userId):
 
 
 def find_all_timeslots_for_user(user_id):
-    result = TimeslotTDG.findUser(user_id)
-    return result
+    return TimeslotTDG.findUser(user_id)
 
 
 def set(timeslotId):
