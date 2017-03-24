@@ -1,6 +1,7 @@
-import pytest
 from app.core.registry import Registry
 from app.core.reservationbook import ReservationBook
+import pytest
+
 
 def test_valid_registry_init():
     reservationList = []
