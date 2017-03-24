@@ -15,8 +15,6 @@ newList = []
 changedList = []
 deletedList = []
 
-def __int__(self):
-	pass
 
 def registerNew(object):
     newList.append(object)

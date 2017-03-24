@@ -7,18 +7,17 @@ from app.mapper import WaitingMapper
 from app.mapper import UnitOfWork
 
 # ReservationBook object
-class ReservationBook:
-	# Default Constructor
+class ReservationBook(object):
 	def __init__(self):
 		self.reservationList = deque()
-		self.waitingList = deque()
-		self.capstoneList = deque()
+		self.waitingListRegular = deque()
+		self.waitingListCapstone = deque()
 
 	# Constructor
-	def __init__(self, reservationlist, waitinglist, capstoneList):
+	def __init__(self, reservationlist, waitinglist, capstoneList=False):
 		self.reservationList = reservationlist
-		self.waitingList = waitinglist
-		self.capstoneList = capstoneList
+		self.waitingListRegular = waitinglist
+		self.waitingListCapstone = capstoneList
 
 	# Method to make a reservation
 	def makeReservation(self, room, holder, time, description):
@@ -32,12 +31,16 @@ class ReservationBook:
 	# Method to add to the waiting list
 	def addToWaitingList(self, room, holder, time, description):
 		w = Waiting(room, holder, time, description, self.genWid())
+		print(w)
+		import pdb
+		pdb.set_trace()
+
 		if w.getUser().isCapstone():
-			self.capstoneList.append(w)
+			self.waitingListCapstone.append(w)
 		else:
-			self.waitingList.append(w)
+			self.waitingListRegular.append(w)
 		UnitOfWork.registerNew(w)
-		WaitingMapper.done()
+		#WaitingMapper.done()
 
 	# Method to modify reservation
 	def modifyReservation(self, reservationId, time):
@@ -60,7 +63,7 @@ class ReservationBook:
 				if not self.isRestricted(w.getUser(), w.getTimeslot()):
 					r = Reservation(w.getRoom(), w.getUser(), w.getTimeslot(), w.getDescription(), self.genRid())
 					self.reservationList.append(r)
-					self.waitingList.remove(w)
+					self.waitingListRegular.remove(w)
 					break
 
 	# Method to view all reservations
@@ -82,12 +85,12 @@ class ReservationBook:
 		wList = deque()
 
 		#First get all capstone students
-		for w in self.capstoneList:
+		for w in self.waitingListCapstone:
 			if w.getRoom().getId() == roomId:
 				wList.append(w)
 
 		#Then add the regular students at end
-		for w in self.waitingList:
+		for w in self.waitingListRegular:
 			if w.getRoom().getId() == roomId:
 				wList.append(w)
 
@@ -128,7 +131,7 @@ class ReservationBook:
 	# Print method for current number of reservations and waitings in the system
 	def printNb(self):
 		print("Nb of Reservations: " + str(len(self.reservationList)))
-		print("Nb of Waiting: " + str(len(self.waitingList)))
+		print("Nb of Waiting: " + str(len(self.waitingListRegular)))
 
 	# Method to generate reservationId
 	def genRid(self):
@@ -144,9 +147,9 @@ class ReservationBook:
 
 	# Method to generate waitingId
 	def genWid(self):
-		if not self.waitingList:
+		if not self.waitingListRegular and not len(self.waitingListRegular)==0:
 			largeList = []
-			for w in self.waitingList:
+			for w in self.waitingListRegular:
 				largeList.append(w.getId())
 			return max(largeList) + 1
 		else:
@@ -155,7 +158,7 @@ class ReservationBook:
 	# Method to generate timeslotId
 	def genTid(self):
 		timeslotList = []
-		for w in self.waitingList:
+		for w in self.waitingListRegular:
 			timeslotList.append(w.getTimeslot())
 		for r in self.reservationList:
 			timeslotList.append(r.getTimeslot())
@@ -212,7 +215,7 @@ class ReservationBook:
 		self.reservationList = reservationList
 
 	def getWaitingList(self):
-		return self.waitingList
+		return self.waitingListRegular
 
 	def setWaitingList(self, waitingList):
-		self.waitingList = waitingList
+		self.waitingListRegular = waitingList

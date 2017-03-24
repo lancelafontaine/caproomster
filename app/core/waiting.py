@@ -9,12 +9,11 @@ class Waiting:
         self.waitingId = waitingId
 
     # Print method for debugging
-    def _print(self):
-        print("Waiting Info")
-        print("Holder: " + str(self.user.getName()))
-        self.time._print()
-        print("Description: " + str(self.description))
-        print("WID: " + str(self.waitingId))
+    def __str__(self):
+        return "Waiting Info: \n Holder: " +\
+               str(self.user.getName())+str(self.time)+"Description: " +\
+               str(self.description)+"WID: " + str(self.waitingId)
+
     # Accessors and Mutators
     def getId(self):
         return self.waitingId

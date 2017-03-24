@@ -11,12 +11,11 @@ class Timeslot:
 
     # Print method for debugging
     def _print(self):
-        print("Timeslot Info")
-        print("StartTime: " + str(self.startTime))
-        print("EndTime: " + str(self.endTime))
-        print("Date: " + str(self.date))
-        print("Duration: " + str(self.block))
-        print("TID: " + str(self.timeId))
+        return "Timeslot Info\nStartTime: " +\
+               str(self.startTime) +"\nEndTime: " +\
+               str(self.endTime)+"\nDate: " +\
+               str(self.date)+"\nDuration: " +\
+               str(self.block)+"TID: " + str(self.timeId)
 
     # Accessors and Mutators
     def getStartTime(self):
