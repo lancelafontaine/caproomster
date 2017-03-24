@@ -1,9 +1,6 @@
 import UnitOfWork
 import ReservationIdMap
 
-from datetime import datetime
-from datetime import timedelta
-
 from app.TDG import ReservationTDG
 from app.mapper import TimeslotMapper
 from app.mapper import RoomMapper
@@ -12,44 +9,10 @@ from app.core.reservation import Reservation
 
 
 
-def makeNewReservation(room,user,timeslot,description,repeat_amount):
-    max_repetition = 2
-    days_in_a_week = 7
-
-    # safe guard if repeat amount is greater than max repetition
-    if repeat_amount > max_repetition:
-        repeat_amount = max_repetition
-
-    if repeat_amount <= max_repetition:
-
-        # filter date values
-        date_split_list = timeslot.getDate().split('-')
-        year = int(date_split_list[0])
-        month = int(date_split_list[1])
-        day = int(date_split_list[2])
-
-        # Create datetime object
-        reservation_date = datetime(year,month,day)
-
-        # repeatAmount + 1 : because at least 1 reservation should be made
-        for i in range(repeat_amount + 1):
-
-            # create and register a timeslot object
-            timeslot.setDate(reservation_date.strftime('%Y-%m-%d'))
-            timeslot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), timeslot.getDate(), timeslot.getBlock(), user.getId())
-            TimeslotMapper.save(timeslot)
-            timeslot_id = TimeslotMapper.findId(user.getId())
-            timeslot.setId(timeslot_id)
-
-            # create and register a reservation object
-            reservation = Reservation(room, user,timeslot,description,timeslot_id)
-            ReservationIdMap.addTo(reservation)
-            UnitOfWork.registerNew(reservation)
-
-            # add a week to the current reservation date
-            reservation_date += timedelta(days=days_in_a_week)
-
-            save(reservation)
+def makeNewReservation(room,holder,time,description,reservationId):
+    reservation = Reservation(room, holder,time,description,reservationId)
+    ReservationIdMap.addTo(reservation)
+    UnitOfWork.registerNew(reservation)
     return reservation
 
 def find(reservationId):
