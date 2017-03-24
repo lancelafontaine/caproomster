@@ -27,7 +27,7 @@ def test_reservation_repeat(monkeypatch):
     repeat_amount = 2
 
     # Expected result
-    expected_amount_of_reservation = repeat_amount + 1 # + 1 because 0 repeat_amount will still make 1 reservation
+    expected_amount_of_reservation = repeat_amount + 1  # + 1 because 0 repeat_amount will still make 1 reservation
 
     # Mock
     def TimeslotMapper_makeNew(a, b, c, d, e):
