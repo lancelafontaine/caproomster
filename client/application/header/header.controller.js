@@ -8,7 +8,11 @@
   function HeaderController($state, ApiService) {
 
     var vm = this;
-    vm.logout = logout;
+    vm.$onInit = init;
+
+    function init() {
+      vm.logout = logout;
+    }
 
     function logout() {
       ApiService.account('logout').then(function() {

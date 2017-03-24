@@ -20,7 +20,7 @@
         return ApiFactory.login().check({}).$promise;
       }
       if (action === 'logout') {
-        return ApiFactory.logout().check({}).$promise;
+        return ApiFactory.logout().logout({}).$promise;
       }
       return undefined;
     }

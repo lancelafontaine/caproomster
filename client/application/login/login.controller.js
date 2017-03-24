@@ -9,10 +9,10 @@
   function LoginController($state, ApiService) {
 
     var vm = this;
-    vm.login = login;
-    init();
+    vm.$onInit = init;
 
     function init() {
+      vm.login = login;
       loadVideo();
       vm.userInfo = {};
     }

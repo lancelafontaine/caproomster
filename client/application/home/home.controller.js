@@ -9,25 +9,24 @@
   function HomeController($state, moment, calendarConfig, ApiService) {
 
     var vm = this;
-
-    // Init controller and variables
-    init();
-    vm.toggleMenu = toggleMenu;
-    vm.changeRoom = changeRoom;
-    vm.addEvent = addEvent;
-    vm.eventClicked = eventClicked;
-    vm.eventEdited = eventEdited;
-    vm.eventDeleted = eventDeleted;
-    vm.eventTimesChanged = eventTimesChanged;
-    vm.timespanClicked = timespanClicked;
+    vm.$onInit = init;
 
     // Init function
 
     function init() {
+      vm.toggleMenu = toggleMenu;
+      vm.changeRoom = changeRoom;
+      vm.addEvent = addEvent;
+      vm.eventClicked = eventClicked;
+      vm.eventEdited = eventEdited;
+      vm.eventDeleted = eventDeleted;
+      vm.eventTimesChanged = eventTimesChanged;
+      vm.timespanClicked = timespanClicked;
       vm.calendarView = 'week';
       vm.viewDate = new Date();
       vm.toggleText = 'Show Room List';
-      vm.roomNumber = 'H921';
+      vm.roomList = [];
+      vm.roomNumber = '';
       vm.cellIsOpen = true;
       vm.events = [];
       checkLogin();
@@ -49,7 +48,8 @@
 
     function fetchRoomList() {
       ApiService.booking('getRoomList').then(function(res) {
-        // missing info on doc
+        vm.roomList = res.rooms;
+        vm.roomNumber = vm.roomList[0];
       });
     }
 
