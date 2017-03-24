@@ -32,16 +32,13 @@ class ReservationBook(object):
 	# Method to add to the waiting list
 	def addToWaitingList(self, room, holder, time, description):
 		w = Waiting(room, holder, time, description, self.genWid())
-		#		import pdb
-		#		pdb.set_trace()
-
 		if w.getUser().isCapstone():
 			self.waitingListCapstone.append(w)
 		else:
 			self.waitingListRegular.append(w)
 		print(w)
 		UnitOfWork.registerNew(w)
-		# WaitingMapper.done()
+		WaitingMapper.done()
 
 	# Method to modify reservation
 	def modifyReservation(self, reservationId, time):
@@ -64,7 +61,10 @@ class ReservationBook(object):
 				if not self.isRestricted(w.getUser(), w.getTimeslot()):
 					r = Reservation(w.getRoom(), w.getUser(), w.getTimeslot(), w.getDescription(), self.genRid())
 					self.reservationList.append(r)
-					self.waitingListRegular.remove(w)
+					if w.getUser().isCapstone():
+						self.waitingListCapstone.remove(w)
+					else:
+						self.waitingListRegular.remove(w)
 					break
 
 	# Method to view all reservations
@@ -87,12 +87,12 @@ class ReservationBook(object):
 
 		# First get all capstone students
 		for w in self.waitingListCapstone:
-			if w.getRoom().getId() == roomId:
+			if w.getRoom() == roomId:
 				wList.append(w)
 
 		# Then add the regular students at end
 		for w in self.waitingListRegular:
-			if w.getRoom().getId() == roomId:
+			if w.getRoom() == roomId:
 				wList.append(w)
 
 		return wList
@@ -103,7 +103,7 @@ class ReservationBook(object):
 		for r in self.reservationList:
 			if r.getId() == rid:
 				continue
-			if r.getRoom().getId() == room.getId():
+			if r.getRoom() == room:
 				t = r.getTimeslot()
 				# Check if same date
 				if t.getDate() == time.getDate():
@@ -136,24 +136,24 @@ class ReservationBook(object):
 
 	# Method to generate reservationId
 	def genRid(self):
-		if not self.reservationList:
+		if len(self.reservationList) !=0:
 			largeList = []
 			# Find the largest ID
 			for r in self.reservationList:
 				largeList.append(r.getId())
 			return max(largeList) + 1
 		else:
-			return 0
+			return 1
 
 	# Method to generate waitingId
 	def genWid(self):
-		if not self.waitingListRegular and not len(self.waitingListRegular) == 0:
+		if len(self.waitingListRegular) != 0:
 			largeList = []
 			for w in self.waitingListRegular:
 				largeList.append(w.getId())
 			return max(largeList) + 1
 		else:
-			return 0
+			return 1
 
 	# Method to generate timeslotId
 	def genTid(self):
@@ -163,13 +163,13 @@ class ReservationBook(object):
 		for r in self.reservationList:
 			timeslotList.append(r.getTimeslot())
 
-		if not timeslotList:
+		if len(timeslotList) != 0 :
 			largeList = []
 			for t in timeslotList:
 				largeList.append(t.getId())
 			return max(largeList) + 1
 		else:
-			return 0
+			return 1
 
 	# Method for restriction
 	def isRestricted(self, user, time):
@@ -214,8 +214,14 @@ class ReservationBook(object):
 	def setReservationList(self, reservationList):
 		self.reservationList = reservationList
 
-	def getWaitingList(self):
+	def getRegularWaitingList(self):
 		return self.waitingListRegular
 
-	def setWaitingList(self, waitingList):
+	def setRegularWaitingList(self, waitingList):
 		self.waitingListRegular = waitingList
+
+	def getCapstoneWaitingList(self):
+		return self.waitingListCapstone
+
+	def setCapstoneWaitingList(self, waitingList):
+		self.waitingListCapstone = waitingList
