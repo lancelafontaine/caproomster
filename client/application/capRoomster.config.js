@@ -3,7 +3,7 @@
   'use strict';
 
   angular.module('caproomster').config([
-		
+
     '$stateProvider',
     '$urlRouterProvider',
 
@@ -13,8 +13,7 @@
         url: '/',
         views: {
           'header': {
-            templateUrl: 'login/login.template.html',
-            controller: 'LoginController'
+            component: 'loginComponent'
           }
         }
       });
@@ -23,15 +22,14 @@
         url: '/home',
         views: {
           'header': {
-            templateUrl: 'header/header.template.html'
+            component: 'headerComponent'
           },
           'main': {
-            templateUrl: 'home/home.template.html',
-            controller: 'HomeController'
+            component: 'homeComponent'
           }
         }
       });
-			
+
       $urlRouterProvider.otherwise('/');
 
     }

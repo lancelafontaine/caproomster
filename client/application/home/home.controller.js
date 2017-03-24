@@ -2,51 +2,73 @@
 
   'use strict';
 
-  angular.module('caproomster').controller('HomeController', HomeController);
+  angular.module('caproomster').controller('caproomster.home.HomeController', HomeController);
 
-  HomeController.$inject = ['$scope', 'moment', 'calendarConfig'];
+  HomeController.$inject = ['$state', 'moment', 'calendarConfig', 'caproomster.api.ApiService'];
 
-  function HomeController($scope, moment, calendarConfig) {
+  function HomeController($state, moment, calendarConfig, ApiService) {
 
-    // Init controller and variables
-    init();
-    $scope.toggleMenu = toggleMenu;
-    $scope.changeRoom = changeRoom;
-    $scope.addEvent = addEvent;
-    $scope.eventClicked = eventClicked;
-    $scope.eventEdited = eventEdited;
-    $scope.eventDeleted = eventDeleted;
-    $scope.eventTimesChanged = eventTimesChanged;
-    $scope.timespanClicked = timespanClicked;
+    var vm = this;
+    vm.$onInit = init;
 
     // Init function
 
     function init() {
-      $scope.calendarView = 'week';
-      $scope.viewDate = new Date();
-      $scope.toggleText = "Show Room List";
-      $scope.roomNumber = 'H921';
-      $scope.cellIsOpen = true;
-      $scope.events = [];
-      fetchEvents();
+      vm.toggleMenu = toggleMenu;
+      vm.changeRoom = changeRoom;
+      vm.addEvent = addEvent;
+      vm.eventClicked = eventClicked;
+      vm.eventEdited = eventEdited;
+      vm.eventDeleted = eventDeleted;
+      vm.eventTimesChanged = eventTimesChanged;
+      vm.timespanClicked = timespanClicked;
+      vm.calendarView = 'week';
+      vm.viewDate = new Date();
+      vm.toggleText = 'Show Room List';
+      vm.roomList = [];
+      vm.roomNumber = '';
+      vm.cellIsOpen = true;
+      vm.events = [];
+      checkLogin();
+    }
+
+    // Check login
+
+    function checkLogin() {
+      ApiService.account('checkLogin').then(function() {
+        vm.authenticated = true;
+        fetchEvents();
+        fetchRoomList();
+      }, function() {
+        $state.go('login');
+      });
+    }
+
+    // Fetch room list
+
+    function fetchRoomList() {
+      ApiService.booking('getRoomList').then(function(res) {
+        vm.roomList = res.rooms;
+        vm.roomNumber = vm.roomList[0];
+      });
     }
 
     // Toggle Menu
 
     function toggleMenu() {
-      if (!$scope.isToggled) {
-        $scope.isToggled = true;
-        $scope.toggleText = "Hide Room List";
+      if (!vm.isToggled) {
+        vm.isToggled = true;
+        vm.toggleText = 'Hide Room List';
       } else {
-        $scope.isToggled = false;
-        $scope.toggleText = "Show Room List";
+        vm.isToggled = false;
+        vm.toggleText = 'Show Room List';
       }
     }
 
     // Change room number and fetch room data
 
     function changeRoom(room) {
-      $scope.roomNumber = room;
+      vm.roomNumber = room;
       // TODO: change view, get data etc.
     }
 
@@ -66,7 +88,7 @@
         }
       }];
       // mock data
-      $scope.events = [
+      vm.events = [
         {
           title: 'Bruce - Reservation',
           color: calendarConfig.colorTypes.info,
@@ -110,7 +132,7 @@
 
     function addEvent() {
       // TODO: mocking for now
-      $scope.events.push({
+      vm.events.push({
         title: 'New event',
         startsAt: moment().startOf('day').toDate(),
         endsAt: moment().endOf('day').toDate(),
@@ -118,45 +140,45 @@
         draggable: true,
         resizable: true
       });
-    };
+    }
 
     function timespanClicked(date, cell) {
-      if ($scope.calendarView === 'month') {
-        if (($scope.cellIsOpen && moment(date).startOf('day').isSame(moment($scope.viewDate).startOf('day'))) || cell.events.length === 0 || !cell.inMonth) {
-          $scope.cellIsOpen = false;
+      if (vm.calendarView === 'month') {
+        if ((vm.cellIsOpen && moment(date).startOf('day').isSame(moment(vm.viewDate).startOf('day'))) || cell.events.length === 0 || !cell.inMonth) {
+          vm.cellIsOpen = false;
         } else {
-          $scope.cellIsOpen = true;
-          $scope.viewDate = date;
+          vm.cellIsOpen = true;
+          vm.viewDate = date;
         }
-      } else if ($scope.calendarView === 'year') {
-        if (($scope.cellIsOpen && moment(date).startOf('month').isSame(moment($scope.viewDate).startOf('month'))) || cell.events.length === 0) {
-          $scope.cellIsOpen = false;
+      } else if (vm.calendarView === 'year') {
+        if ((vm.cellIsOpen && moment(date).startOf('month').isSame(moment(vm.viewDate).startOf('month'))) || cell.events.length === 0) {
+          vm.cellIsOpen = false;
         } else {
-          $scope.cellIsOpen = true;
-          $scope.viewDate = date;
+          vm.cellIsOpen = true;
+          vm.viewDate = date;
         }
       }
-    };
+    }
 
     function eventClicked() {
       //TODO
       console.log('Clicked');
-    };
+    }
 
     function eventEdited() {
       //TODO
       console.log('Edited');
-    };
+    }
 
     function eventDeleted() {
       //TODO
       console.log('Deleted');
-    };
+    }
 
     function eventTimesChanged() {
       //TODO
       console.log('Dropped or resized');
-    };
+    }
 
   }
 
