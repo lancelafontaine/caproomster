@@ -8,20 +8,27 @@ from collections import deque
 
 """Tests whether a capstone student really has priority over a regular student in the waitlist"""
 
+
 def test_addToWaitingList(monkeypatch):
-	#mock
+	# Initialization
+	reservationBook = ReservationBook([], [],[])
+
+	# mock
 	def mockUOW_registernew(_):
+
 		pass
 
 	def mockWaitingMapperDone():
 		pass
 
-	monkeypatch.setattr(UnitOfWork,'registerNew',mockUOW_registernew("dummy arg"))
-	monkeypatch.setattr(WaitingMapper,'done',mockWaitingMapperDone())
+	monkeypatch.setattr(UnitOfWork, 'registerNew', mockUOW_registernew)
+	monkeypatch.setattr(WaitingMapper, 'done', mockWaitingMapperDone)
 
-	#execute
-	ReservationBook.addToWaitingList(ReservationBook(deque(),deque(),deque()),2,User(3,'usrname','pass',True),Timeslot(11,13,'2017-03-25',2,4567),'desc')
 
-	#verify
-	assert len(ReservationBook.capstoneList) == 0
+	# execute
+	reservationBook.addToWaitingList(2, User(3, 'usrname', 'pass', True),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc')
+
+	# verify
+	assert len(reservationBook.waitingListCapstone) == 1
 	print("hello")

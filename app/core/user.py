@@ -5,7 +5,7 @@ class User:
     def __init__(self):
         pass
 
-    def __init__(self, userId, name, password, capstone):
+    def __init__(self, userId, name, password, capstone=False):
         self.name = name
         self.password = password
         self.userId = userId

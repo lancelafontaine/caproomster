@@ -1,4 +1,3 @@
-
 import UserMapper
 import RoomMapper
 import ReservationMapper
@@ -17,54 +16,55 @@ deletedList = []
 
 
 def registerNew(object):
-    newList.append(object)
+	newList.append(object)
+
 
 def registerDirty(object):
-    changedList.append(object)
+	changedList.append(object)
+
 
 def registerDeleted(object):
-    deletedList.append(object)
-
+	deletedList.append(object)
 
 
 def commit():
-    print('cmmitting')
-    for index, object in enumerate(newList):
-        if isinstance(object, User):
-            UserMapper.save(object)
-        if isinstance(object, Room):
-            RoomMapper.save(object)
-        if isinstance(object, Reservation):
-            ReservationMapper.save(object)
-        if isinstance(object, Waiting):
-            WaitingMapper.save(object)
-        if isinstance(object, Timeslot):
-            TimeslotMapper.save(object)
+	print('cmmitting')
+	for index, object in enumerate(newList):
+		if isinstance(object, User):
+			UserMapper.save(object)
+		if isinstance(object, Room):
+			RoomMapper.save(object)
+		if isinstance(object, Reservation):
+			ReservationMapper.save(object)
+		if isinstance(object, Waiting):
+			WaitingMapper.save(object)
+		if isinstance(object, Timeslot):
+			TimeslotMapper.save(object)
 
-    for index, object in enumerate(changedList):
-        if isinstance(object, User):
-            UserMapper.update(object)
-        if isinstance(object, Room):
-            RoomMapper.update(object)
-        if isinstance(object, Reservation):
-            ReservationMapper.update(object)
-        if isinstance(object, Waiting):
-            WaitingMapper.update(object)
-        if isinstance(object, Timeslot):
-            TimeslotMapper.update(object)
+	for index, object in enumerate(changedList):
+		if isinstance(object, User):
+			UserMapper.update(object)
+		if isinstance(object, Room):
+			RoomMapper.update(object)
+		if isinstance(object, Reservation):
+			ReservationMapper.update(object)
+		if isinstance(object, Waiting):
+			WaitingMapper.update(object)
+		if isinstance(object, Timeslot):
+			TimeslotMapper.update(object)
 
-    for index, object in enumerate(deletedList):
-        if isinstance(object, User):
-            UserMapper.erase(object)
-        if isinstance(object, Room):
-            RoomMapper.erase(object)
-        if isinstance(object, Reservation):
-            ReservationMapper.erase(object.getId())
-        if isinstance(object, Waiting):
-            WaitingMapper.erase(object)
-        if isinstance(object, Timeslot):
-            TimeslotMapper.erase(object.getId())
+	for index, object in enumerate(deletedList):
+		if isinstance(object, User):
+			UserMapper.erase(object)
+		if isinstance(object, Room):
+			RoomMapper.erase(object)
+		if isinstance(object, Reservation):
+			ReservationMapper.erase(object.getId())
+		if isinstance(object, Waiting):
+			WaitingMapper.erase(object)
+		if isinstance(object, Timeslot):
+			TimeslotMapper.erase(object.getId())
 
-    del newList[:]
-    del changedList[:]
-    del deletedList[:]
+	del newList[:]
+	del changedList[:]
+	del deletedList[:]

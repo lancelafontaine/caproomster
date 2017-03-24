@@ -6,6 +6,7 @@ from app.mapper import ReservationMapper
 from app.mapper import WaitingMapper
 from app.mapper import UnitOfWork
 
+
 # ReservationBook object
 class ReservationBook(object):
 	def __init__(self):
@@ -14,7 +15,7 @@ class ReservationBook(object):
 		self.waitingListCapstone = deque()
 
 	# Constructor
-	def __init__(self, reservationlist, waitinglist, capstoneList=False):
+	def __init__(self, reservationlist, waitinglist, capstoneList):
 		self.reservationList = reservationlist
 		self.waitingListRegular = waitinglist
 		self.waitingListCapstone = capstoneList
@@ -31,16 +32,16 @@ class ReservationBook(object):
 	# Method to add to the waiting list
 	def addToWaitingList(self, room, holder, time, description):
 		w = Waiting(room, holder, time, description, self.genWid())
-		print(w)
-		import pdb
-		pdb.set_trace()
+		#		import pdb
+		#		pdb.set_trace()
 
 		if w.getUser().isCapstone():
 			self.waitingListCapstone.append(w)
 		else:
 			self.waitingListRegular.append(w)
+		print(w)
 		UnitOfWork.registerNew(w)
-		#WaitingMapper.done()
+		# WaitingMapper.done()
 
 	# Method to modify reservation
 	def modifyReservation(self, reservationId, time):
@@ -84,12 +85,12 @@ class ReservationBook(object):
 	def getListByRoom(self, roomId):
 		wList = deque()
 
-		#First get all capstone students
+		# First get all capstone students
 		for w in self.waitingListCapstone:
 			if w.getRoom().getId() == roomId:
 				wList.append(w)
 
-		#Then add the regular students at end
+		# Then add the regular students at end
 		for w in self.waitingListRegular:
 			if w.getRoom().getId() == roomId:
 				wList.append(w)
@@ -144,10 +145,9 @@ class ReservationBook(object):
 		else:
 			return 0
 
-
 	# Method to generate waitingId
 	def genWid(self):
-		if not self.waitingListRegular and not len(self.waitingListRegular)==0:
+		if not self.waitingListRegular and not len(self.waitingListRegular) == 0:
 			largeList = []
 			for w in self.waitingListRegular:
 				largeList.append(w.getId())
