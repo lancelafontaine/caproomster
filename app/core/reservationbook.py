@@ -53,7 +53,7 @@ class ReservationBook:
             timeslot.setId(timeslot_id)
 
             # create and register a reservation object
-            reservation = ReservationMapper.makeNewReservation(room, user, timeslot, description, timeslot_id)
+            reservation = ReservationMapper.makeNew(room, user, timeslot, description, timeslot_id)
             self.reservationList.append(reservation)
             # add a week to the current reservation date
             reservation_date += timedelta(days=days_in_a_week)
