@@ -69,16 +69,19 @@ def test_find_total_reserved_time_for_user_for_a_given_week(monkeypatch):
     def get_Timeslots(_):
         timeslot_list = [[0 for x in range(columns)] for y in range(rows)]
         date1 = datetime(2017, 3, 23)
+
         timeslot_list[0][0] = (9)           #start time
         timeslot_list[0][1] = (11)          #end time
         timeslot_list[0][2] = (0)           #id
         timeslot_list[0][3] = (date1)       #date
         timeslot_list[0][4] = (2)           #block
+
         timeslot_list[1][0] = (9)
         timeslot_list[1][1] = (10)
         timeslot_list[1][2] = (0)
         timeslot_list[1][3] = (date1)
         timeslot_list[1][4] = (1)
+
         timeslot_list[2][0] = (9)
         timeslot_list[2][1] = (15)
         timeslot_list[2][2] = (0)
