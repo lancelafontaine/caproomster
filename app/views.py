@@ -202,7 +202,7 @@ def validate_new_reservation(data):
     room = RoomMapper.find(roomId)
     user = UserMapper.find(userId)
     description = str(data['description'])
-    reservation = ReservationMapper.makeNewReservation(room, user, time, description, randint(0,RAND_UPPER))
+    reservation = ReservationMapper.makeNew(room, user, time, description, randint(0,RAND_UPPER))
     ReservationMapper.done()
 
     response_data = {
