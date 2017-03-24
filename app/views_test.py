@@ -1,8 +1,11 @@
 from app import views, app
 from app.core.user import User
 from app.core.room import Room
+from app.core.reservation import Reservation
+from app.core.timeslot import Timeslot
 from app.mapper import UserMapper
 from app.mapper import RoomMapper
+from app.mapper import ReservationMapper
 from flask import request, jsonify
 import json
 
@@ -182,8 +185,18 @@ def test_valid_validate_new_reservation(monkeypatch):
                 return User(1, 'mr', 'pickles')
             def mock_room_find(_):
                 return Room(1, False)
+            def mock_reservation_done():
+                return
+            def mock_reservation_add(*args):
+                time = Timeslot(1,2,'2020-01-01', '', 1)
+                room = Room(1, False)
+                user = User(1, 'mr', 'pickles')
+                return Reservation(room, user, time, 'description', 1)
+
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
+            monkeypatch.setattr(ReservationMapper, 'done', mock_reservation_done)
+            monkeypatch.setattr(ReservationMapper, 'makeNew', mock_reservation_add)
             assert(views.validate_new_reservation(data).status_code is views.STATUS_CODE['OK'])
 
 def test_valid_validate_make_new_reservation_payload_format():
