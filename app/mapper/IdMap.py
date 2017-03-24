@@ -25,4 +25,5 @@ def find(object_class, objectId):
 
 # Clear the ID Map
 def clear(object_class):
-    del objectMap[object_class]
+    if object_class in objectMap:
+        del objectMap[object_class]
