@@ -192,11 +192,14 @@ def test_valid_validate_new_reservation(monkeypatch):
                 room = Room(1, False)
                 user = User(1, 'mr', 'pickles')
                 return Reservation(room, user, time, 'description', 1)
+            def mock_reservation_find_all(*args):
+                return []
 
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
             monkeypatch.setattr(ReservationMapper, 'done', mock_reservation_done)
             monkeypatch.setattr(ReservationMapper, 'makeNew', mock_reservation_add)
+            monkeypatch.setattr(ReservationMapper, 'findAll', mock_reservation_find_all)
             assert(views.validate_new_reservation(data).status_code is views.STATUS_CODE['OK'])
 
 def test_valid_validate_make_new_reservation_payload_format():
