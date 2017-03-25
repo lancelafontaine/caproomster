@@ -26,7 +26,7 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    expected = User(10, 'joe', 'shmoe', False)
+    expected = User(10, 'joe', 'shmoe')
 
     # Mock
     def no_find(_, __):
@@ -49,7 +49,7 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
 
 def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     # Test Data
-    expected = User(110, 'joel', 'shmoel', False)
+    expected = User(110, 'joel', 'shmoel', True)
 
     # Mock
     def id_find(_,__):
