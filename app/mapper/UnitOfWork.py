@@ -59,11 +59,11 @@ def commit():
 		if isinstance(object, Room):
 			RoomMapper.erase(object)
 		if isinstance(object, Reservation):
-			ReservationMapper.erase(object.getId())
+			ReservationMapper.erase(object)
 		if isinstance(object, Waiting):
 			WaitingMapper.erase(object)
 		if isinstance(object, Timeslot):
-			TimeslotMapper.erase(object.getId())
+			TimeslotMapper.erase(object)
 
 	del newList[:]
 	del changedList[:]

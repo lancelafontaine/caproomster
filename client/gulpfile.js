@@ -10,7 +10,6 @@
   var rename = require('gulp-rename');
   var uglify = require('gulp-uglify');
   var mainBowerFiles = require('main-bower-files');
-  var karma = require('karma').server;
   var del = require('del');
   var filter = require('gulp-filter');
   var connect = require('gulp-connect');
@@ -40,7 +39,6 @@
       'js',
       'html',
       'static',
-      'test',
       callback
     );
   });
@@ -49,6 +47,7 @@
 
   gulp.task('html', function() {
     return gulp.src(['application/**/*.html'])
+    .pipe(rename({dirname: ''}))
     .pipe(gulp.dest('dist/'));
   });
 
@@ -135,21 +134,11 @@
       '.temp/js/app.js'
     ])
     .pipe(concat('application.js'))
-    .pipe(uglify().on('error', gutil.log))
+    //.pipe(uglify().on('error', gutil.log))
     .pipe(rename({
       extname: '.min.js'
     }))
     .pipe(gulp.dest('dist/js/'));
-  });
-
-  /** Unit test tasks **/
-
-  gulp.task('test', function(done) {
-    karma.start({
-      configFile: __dirname + '/test/test.conf.js',singleRun: true
-    }, function() {
-      done();
-    });
   });
 
   /** Clean tasks **/

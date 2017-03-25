@@ -1,18 +1,20 @@
 from app.mapper import UserMapper
-from app.mapper import UserIdMap
+from app.mapper import IdMap
 from app.core.user import User
 from app.TDG import UserTDG
 
 
 def teardown_module(module):
-    UserIdMap.clear()
+    IdMap.clear(User)
 
 
 def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
     # Mock
     def no_find(_):
         return
-    monkeypatch.setattr(UserIdMap, 'find', no_find)
+    def no_find2(_, __):
+        return
+    monkeypatch.setattr(IdMap, 'find', no_find2)
     monkeypatch.setattr(UserTDG, 'find', no_find)
 
     # Execute
@@ -27,13 +29,13 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     expected = User(10, 'joe', 'shmoe', False)
 
     # Mock
-    def no_find(_):
+    def no_find(_, __):
         return
 
     def yes_find(_):
         return [[expected.getId(), expected.getName(), expected.getPassword(), expected.isCapstone()]]
 
-    monkeypatch.setattr(UserIdMap, 'find', no_find)
+    monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(UserTDG, 'find', yes_find)
 
     # Execute
@@ -50,13 +52,13 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     expected = User(110, 'joel', 'shmoel', False)
 
     # Mock
-    def id_find(_):
+    def id_find(_,__):
         return expected
 
     def no_find(_):
         return
 
-    monkeypatch.setattr(UserIdMap, 'find', id_find)
+    monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(UserTDG, 'find', no_find)
 
     # Execute
@@ -75,13 +77,13 @@ def test_find_found_in_id_map_found_in_DB(monkeypatch):
     expected = User(110, 'joel', 'shmoel',False)
 
     # Mock
-    def id_find(_):
+    def id_find(_,__):
         return expected
 
     def tdg_find(_):
         return [[unexpected.getId(), unexpected.getName(), unexpected.getPassword()]]
 
-    monkeypatch.setattr(UserIdMap, 'find', id_find)
+    monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(UserTDG, 'find', tdg_find)
 
     # Execute

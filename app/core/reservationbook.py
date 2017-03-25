@@ -2,8 +2,10 @@ from reservation import Reservation
 from waiting import Waiting
 from collections import deque
 from datetime import datetime
+from datetime import timedelta
 from app.mapper import ReservationMapper
 from app.mapper import WaitingMapper
+from app.mapper import TimeslotMapper
 from app.mapper import UnitOfWork
 
 
@@ -136,7 +138,7 @@ class ReservationBook(object):
 
 	# Method to generate reservationId
 	def genRid(self):
-		if len(self.reservationList) !=0:
+		if len(self.reservationList) != 0:
 			largeList = []
 			# Find the largest ID
 			for r in self.reservationList:
@@ -163,7 +165,7 @@ class ReservationBook(object):
 		for r in self.reservationList:
 			timeslotList.append(r.getTimeslot())
 
-		if len(timeslotList) != 0 :
+		if len(timeslotList) != 0:
 			largeList = []
 			for t in timeslotList:
 				largeList.append(t.getId())
@@ -225,3 +227,65 @@ class ReservationBook(object):
 
 	def setCapstoneWaitingList(self, waitingList):
 		self.waitingListCapstone = waitingList
+
+	def makeRepeatedReservation(self, room, user, timeslot, description, repeat_amount):
+		max_repetition = 2
+		days_in_a_week = 7
+
+		# safe guard if repeat amount is greater than max repetition
+		if repeat_amount > max_repetition:
+			repeat_amount = max_repetition
+
+		# filter date values
+		date_split_list = timeslot.getDate().split('-')
+		year = int(date_split_list[0])
+		month = int(date_split_list[1])
+		day = int(date_split_list[2])
+
+		# Create datetime object
+		reservation_date = datetime(year, month, day)
+
+		# repeatAmount + 1 : because at least 1 reservation should be made
+		for i in range(repeat_amount + 1):
+			# create and register a timeslot object
+			timeslot.setDate(reservation_date.strftime('%Y-%m-%d'))
+			timeslot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), timeslot.getDate(),
+			                                  timeslot.getBlock(), user.getId())
+			TimeslotMapper.save(timeslot)
+			timeslot_id = TimeslotMapper.findId(user.getId())
+			timeslot.setId(timeslot_id)
+
+			# create and register a reservation object
+			reservation = ReservationMapper.makeNew(room, user, timeslot, description, timeslot_id)
+			self.reservationList.append(reservation)
+			# add a week to the current reservation date
+			reservation_date += timedelta(days=days_in_a_week)
+
+	@staticmethod
+	def find_total_reserved_time_for_user_for_a_given_week(user_id, date):
+		diff_between_monday_and_sunday = 6
+		total_time = 0
+		# filter date values
+		date_split_list = date.split('-')
+		year = int(date_split_list[0])
+		month = int(date_split_list[1])
+		day = int(date_split_list[2])
+
+		# Create datetime object
+		reservation_date = datetime(year, month, day)
+
+		# find start of the week
+		monday_date = reservation_date - timedelta(days=reservation_date.weekday())
+
+		sunday_date = monday_date + timedelta(days=diff_between_monday_and_sunday)
+
+		user_timeslot_list = TimeslotMapper.find_all_timeslots_for_user(user_id)
+		for timeslot in user_timeslot_list:
+
+			reservation_date = datetime(timeslot[3].year, timeslot[3].month, timeslot[3].day)
+
+			# check if reservation_date lies between monday and sunday.
+			if monday_date < reservation_date < sunday_date:
+				total_time += timeslot[4]
+
+		return total_time
