@@ -38,7 +38,6 @@ class ReservationBook(object):
 			self.waitingListCapstone.append(w)
 		else:
 			self.waitingListRegular.append(w)
-		print(w)
 		UnitOfWork.registerNew(w)
 		WaitingMapper.done()
 
