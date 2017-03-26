@@ -10,11 +10,9 @@ class Waiting:
 
     # Print method for debugging
     def __str__(self):
-        return "Waiting Info" +\
-        "Holder: " + str(self.user.getName()) +\
-        str(self.time) +\
-        "Description: " + str(self.description) +\
-        "WID: " + str(self.waitingId)
+        return "Waiting Info: \n Holder: " +\
+               str(self.user.getName())+str(self.time)+"Description: " +\
+               str(self.description)+"WID: " + str(self.waitingId)
 
     # Accessors and Mutators
     def getId(self):

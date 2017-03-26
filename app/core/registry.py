@@ -54,7 +54,7 @@ class Registry:
 
     # Method to view MY reservations only
     def viewMyReservation(self, user):
-        return self.reservationBook.viewMyReservation(user)
+        return self.reservationBook.viewMyReservations(user)
 
     # Print method for debugging
     def printNb(self):
@@ -74,4 +74,3 @@ class Registry:
 
     def setReservationBook(self, reservationBook):
         self.reservationBook = reservationBook
-
