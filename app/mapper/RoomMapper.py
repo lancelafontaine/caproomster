@@ -39,10 +39,6 @@ def findAll():
                 rooms.append(room)
     return rooms
 
-def setRoom(roomId):
-    room = find(roomId)
-    update(room.getId())
-
 def delete(roomId):
     room = RoomIdMap.find(roomId)
     if room is not None:
