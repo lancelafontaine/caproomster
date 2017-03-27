@@ -39,10 +39,9 @@ def findAll():
                 rooms.append(room)
     return rooms
 
-def setRoom(roomId, lock):
+def setRoom(roomId):
     room = find(roomId)
-    room.setLock(lock)
-    update(room.getId(),room.getLock())
+    update(room.getId())
 
 def delete(roomId):
     room = RoomIdMap.find(roomId)
@@ -57,8 +56,8 @@ def save(room):
     RoomTDG.insert(room.getLock())
 
 #updates room Object
-def update(room,availability):
-    RoomTDG.update(room, availability)
+def update(room):
+    RoomTDG.update(room)
 #deletes room object
 def erase(room):
     RoomTDG.delete(room.getId())

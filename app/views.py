@@ -323,7 +323,7 @@ def addNewReservation(month,day):
 								print(timeslots[3])
 								return render_template(redirectTo, allowed = "You can only have a reservation that totals to 2 hours per day")
 						room = Room(roomId[0], False)
-						if registry.initiateAction(room.getId()):
+						if registry.initiateAction():
 							# Instantiate parameters
 							timeSlot = TimeslotMapper.makeNew(startTime, endTime, date, block, user.getId())
 							TimeslotMapper.save(timeSlot)
@@ -333,11 +333,11 @@ def addNewReservation(month,day):
 							reservation = ReservationMapper.makeNewReservation(room, user, timeSlot,
 																			   processed_description, timeslotId)
 							ReservationMapper.save(reservation)
-							registry.endAction(room.getId())
+							registry.endAction()
 							return redirect(url_for('dashboard', user=session['user']))
 					else:
 						room = Room(roomId[0],False)
-						if registry.initiateAction(room.getId()):
+						if registry.initiateAction():
 							#Instantiate parameters
 							timeSlot = TimeslotMapper.makeNew(startTime,endTime,date,block, user.getId())
 							TimeslotMapper.save(timeSlot)

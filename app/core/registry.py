@@ -8,22 +8,12 @@ class Registry:
         self.reservationBook = reservationBook
 
     # Method to initiate an action
-    def initiateAction(self,roomId):
-        room = RoomMapper.find(roomId)
-
-        if room.getLock() == False:
-            RoomMapper.setRoom(roomId,True)
+    def initiateAction(self):
             return True
-        else:
-            print("Room Occupied")
-            return False
 
     # Method to end an action
-    def endAction(self,roomId):
-        room = RoomMapper.find(roomId)
-        if room.getLock() == True:
-            print("Room was set False")
-            RoomMapper.update(roomId, False)
+    def endAction(self):
+       return True
 
 
     # Method to make a reservation
