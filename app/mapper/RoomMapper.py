@@ -1,5 +1,4 @@
 import UnitOfWork
-import RoomIdMap
 
 from app.TDG import RoomTDG
 
@@ -8,52 +7,48 @@ from app.core.room import Room
 
 def makeNew(roomId, lock):
     room = Room(roomId, lock)
-    RoomIdMap.addTo(room)
-    UnitOfWork.registerNewRoom(room)
+    UnitOfWork.registerNew(room)
     return room
 
 def find(roomId):
-    room = RoomIdMap.find(roomId)
     result = []
-    if room == None:
-        result = RoomTDG.find(roomId)
-        if result == None:
-            return
-        else:
-            room = Room(result[0][0], result[0][1])
-            RoomIdMap.addTo(room)
-    return room
+    result = RoomTDG.find(roomId)
+    if not result:
+        return
+    else:
+        return Room(result[0][0], result[0][1])
 
 #returns array of all rooms
 def findAll():
     result = RoomTDG.findAll()
     rooms = []
-    if result == None:
+    if not result:
         return
     else:
         for index, r in enumerate(result):
-            room = RoomIdMap.find(r[0])
-            if room == None:
-                room = Room(r[0], r[1])
-                RoomIdMap.addTo(room)
-                rooms.append(room)
+            room = Room(r[0], r[1])
+            rooms.append(room)
     return rooms
 
 def delete(roomId):
-    room = RoomIdMap.find(roomId)
-    if room is not None:
-        RoomIdMap.removeFrom(room)
-    UnitOfWork.registerDeleted(room)
+    UnitOfWork.registerDeleted(Room(roomId,None))
 #save all work
 def done():
     UnitOfWork.commit()
+
 #adds room object
 def save(room):
     RoomTDG.insert(room.getLock())
 
 #updates room Object
+<<<<<<< HEAD
 def update(room):
     RoomTDG.update(room)
+=======
+def update(room,availability):
+    RoomTDG.update(room, availability)
+
+>>>>>>> master
 #deletes room object
-def erase(room):
-    RoomTDG.delete(room.getId())
+def erase(roomId):
+    RoomTDG.delete(roomId)

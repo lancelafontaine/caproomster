@@ -8,19 +8,18 @@ def __init__():
     pass
 
 
-def makeNew(userId, name, password):
-    user = User(userId, name, password)
+def makeNew(userId, name, password, capstone):
+    user = User(userId, name, password, capstone)
     UnitOfWork.registerNew(user)
     return user
 
 
 def find(userId):
-    result = []
     result = UserTDG.find(userId)
     if not result:
         return
     else:
-        return User(result[0][0], result[0][1], result[0][2])
+        return User(result[0][0], result[0][1], result[0][2], result[0][3])
 
 
 def setUser(userId):
@@ -30,7 +29,7 @@ def setUser(userId):
 
 
 def delete(userId):
-    UnitOfWork.registerDeleted( User(userId,None,None) )
+    UnitOfWork.registerDeleted( User(userId,None,None,None) )
 
 
 def done():
@@ -40,7 +39,8 @@ def done():
 def save(user):
     UserTDG.insert(
         user.getName(),
-        user.getPassword()
+        user.getPassword(),
+        user.isCapstone()
     )
 
 
@@ -48,7 +48,8 @@ def update(user):
     UserTDG.update(
         user.getId(),
         user.getName(),
-        user.getPassword()
+        user.getPassword(),
+        user.isCapstone()
     )
 
 
