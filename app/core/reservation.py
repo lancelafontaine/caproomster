@@ -10,12 +10,12 @@ class Reservation:
         self.reservationId = reservationId
 
     # Print method for debugging
-    def _print(self):
-        print("Reservation Info")
-        print("Holder: " + str(self.user.getName()))
-        self.time._print()
-        print("Description: " + str(self.description))
-        print("RID: " + str(self.reservationId))
+    def __str__(self):
+        return "Reservation Info" +\
+        "Holder: " + str(self.user.getName()) +\
+        self.time +\
+        "Description: " + str(self.description) +\
+        "RID: " + str(self.reservationId)
 
     # Accessors and Mutators
     def getId(self):

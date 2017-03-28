@@ -11,21 +11,21 @@ def find(id):
     else:
         return []
 
-def insert(name, pw):
+def insert(name, pw, capstone):
     conn = connect_db()
     if conn:
 	cur = conn.cursor()
-	cur.execute("""INSERT INTO userTable(password, name) VALUES
-  		(%s, %s);""", (pw, name))
+	cur.execute("""INSERT INTO userTable(password, name, capstone) VALUES
+  		(%s, %s);""", (pw, name, capstone))
 	conn.commit()
 	conn.close()
 
-def update(id, name, password):
+def update(id, name, password, capstone):
     conn = connect_db()
     if conn:
 	cur = conn.cursor()
 	cur.execute("""UPDATE userTable SET name = %s,
-  		password = %s WHERE userId = %s;""", (name, password, id))
+  		password = %s WHERE userId = %s;""", (name, password, id, capstone))
 	conn.commit()
 	conn.close()
 

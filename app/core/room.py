@@ -1,4 +1,3 @@
-
 # Room Object
 class Room:
 
@@ -8,8 +7,8 @@ class Room:
         self.lock = lock
 
     # Print method for debugging
-    def printLock(self):
-        print("Room " + str(self.roomId) + " is lock? " + str(self.lock))
+    def __str__(self):
+        return "Room " + str(self.roomId) + " is lock? " + str(self.lock)
 
     # Accessors and Mutators
     def getLock(self):
