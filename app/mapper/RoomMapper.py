@@ -41,14 +41,14 @@ def save(room):
     RoomTDG.insert(room.getLock())
 
 #updates room Object
-<<<<<<< HEAD
+
 def update(room):
     RoomTDG.update(room)
-=======
+
 def update(room,availability):
     RoomTDG.update(room, availability)
 
->>>>>>> master
+
 #deletes room object
 def erase(roomId):
     RoomTDG.delete(roomId)

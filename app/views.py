@@ -96,7 +96,7 @@ def get_reservations_by_user(userId):
 
 @app.route('/reservations/all', methods=['GET'])
 @nocache
-<<<<<<< HEAD
+
 def addNewReservation(month,day):
 
 	if month == 'september':
@@ -216,7 +216,7 @@ def addNewReservation(month,day):
 
 # annee mois jour
 # fetch dans le timeslottable de ses meme temps
-=======
+
 @require_login
 def get_all_reservations():
     if request.method == 'GET':
@@ -438,4 +438,4 @@ def parse_reservation_object(reservation):
 
 
 
->>>>>>> master
+
