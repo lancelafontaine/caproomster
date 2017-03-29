@@ -112,12 +112,14 @@ Creates a new reservation for a specific timeslot, user an room.
 
 ```json
 {
-  "roomId":"1",
-  "userId": "1",
-  "startTime": "14",
-  "endTime": "15",
-  "date": "2020-03-19",
-  "description": "cool meeting"
+  	"roomId":"1",
+  	"userId": "1",
+	"timeslot":  {
+		"startTime": "16",
+		"endTime": "17",
+		"date": "2020-03-19"
+	},
+  	"description": "cool meeting"
 }
 ```
 
@@ -130,10 +132,103 @@ Creates a new reservation for a specific timeslot, user an room.
 }
 ```
 
+## Resource - `reservations/user/:userId`
 
+### `GET`
 
+Gets all the reservations of a specific user
 
+#### Success Response
 
+```json
+{
+	"reservations": [
+		{
+			"description": "cool meeting",
+			"reservationId": 1,
+			"room": {
+				"roomId": 1
+			},
+			"timeslot": {
+				"date": "Thu, 19 Mar 2020 00:00:00 GMT",
+				"endTime": 15,
+				"startTime": 14,
+				"timeId": 1
+			},
+			"user": {
+				"userId": 1,
+				"username": "John"
+			}
+		}
+	],
+	"userId": "1"
+}
+```
+
+## Resource - `reservation/room/:roomId`
+
+### `GET`
+
+Gets all the reservations within a particular room.
+
+#### Success Response
+
+```json
+{
+	"reservations": [
+		{
+			"description": "cool meeting",
+			"reservationId": 1,
+			"room": {
+				"roomId": 1
+			},
+			"timeslot": {
+				"date": "Thu, 19 Mar 2020 00:00:00 GMT",
+				"endTime": 15,
+				"startTime": 14,
+				"timeId": 1
+			},
+			"user": {
+				"userId": 1,
+				"username": "John"
+			}
+		}
+	],
+	"roomId": "1"
+}
+```
+
+## Resource - `reservations/all`
+
+### `GET`
+
+Gets all the reservations in the system
+
+#### Success Response
+
+```json
+{
+	"reservations": [
+		{
+			"description": "cool meeting",
+			"reservationId": 1,
+			"room": {
+				"roomId": 1
+			},
+			"timeslot": {
+				"date": "Thu, 19 Mar 2020 00:00:00 GMT",
+				"endTime": 15,
+				"startTime": 14,
+				"timeId": 1
+			},
+			"user": {
+				"userId": 1,
+				"username": "John"
+			}
+		}
+	]
+}
+```
 
 
 

@@ -48,3 +48,19 @@ class Reservation:
     def setDescription(self, description):
         self.description = description
 
+    def to_dict(self):
+        reservation_data = {}
+        reservation_data['room'] = {}
+        reservation_data['room']['roomId'] = self.getRoom().getId()
+        reservation_data['user'] = {}
+        reservation_data['user']['username'] = self.getUser().getName()
+        reservation_data['user']['userId'] = self.getUser().getId()
+        reservation_data['timeslot'] = {}
+        reservation_data['timeslot']['startTime'] = self.getTimeslot().getStartTime()
+        reservation_data['timeslot']['endTime'] = self.getTimeslot().getEndTime()
+        reservation_data['timeslot']['date'] = self.getTimeslot().getDate()
+        reservation_data['timeslot']['timeId'] = self.getTimeslot().getId()
+        reservation_data['description'] = self.getDescription()
+        reservation_data['reservationId'] = self.getId()
+        return reservation_data
+

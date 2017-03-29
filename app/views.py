@@ -79,6 +79,21 @@ def make_new_reservation():
         data = request.get_json()
         return validate_new_reservation(data)
 
+@app.route('/reservations/room/<roomId>', methods=['GET'])
+@nocache
+@require_login
+def get_reservations_by_room(roomId):
+    if request.method == 'GET':
+        reservations = ReservationMapper.findByRoom(roomId)
+        reservations_data = []
+        for reservation in reservations:
+            reservations_data += [reservation.to_dict()]
+        data = {
+            'roomId': roomId,
+            'reservations': reservations_data
+        }
+        return jsonify(data)
+
 @app.route('/reservations/user/<userId>', methods=['GET'])
 @nocache
 @require_login
@@ -87,7 +102,7 @@ def get_reservations_by_user(userId):
         reservations = ReservationMapper.findByUser(int(userId))
         reservations_data = []
         for reservation in reservations:
-            reservations_data += [parse_reservation_object(reservation)]
+            reservations_data += [reservation.to_dict()]
         data = {
             'userId': userId,
             'reservations': reservations_data
@@ -99,10 +114,10 @@ def get_reservations_by_user(userId):
 @require_login
 def get_all_reservations():
     if request.method == 'GET':
-        reservations = ReservationMapper.findAll()
+        reservations = ReservationMapper.findByRoom()
         reservations_data = []
         for reservation in reservations:
-            reservations_data += [parse_reservation_object(reservation)]
+            reservations_data += [reservation.to_dict()]
         data = {
             'reservations': reservations_data
         }
@@ -172,13 +187,13 @@ def validate_new_reservation(data):
     if response:
         return response
 
-    startTime = int(data['startTime'])
-    endTime = int(data['endTime'])
+    startTime = int(data['timeslot']['startTime'])
+    endTime = int(data['timeslot']['endTime'])
     response = validate_make_new_reservation_times(startTime, endTime)
     if response:
         return response
 
-    date = str(data['date'])
+    date = str(data['timeslot']['date'])
     dateList = date.split('-')
     response = validate_make_new_reservation_date(dateList)
     if response:
@@ -214,16 +229,21 @@ def validate_new_reservation(data):
 def validate_make_new_reservation_payload_format(data):
     if 'roomId' not in data or \
        'userId' not in data or \
-       'startTime' not in data or \
-       'endTime' not in data or \
-       'date' not in data or \
+       'timeslot' not in data or \
        'description' not in data:
-        response = jsonify({'makeNewReservation error': '`roomId`, `userId`, `startTime`, `endTime`, `date` and `description` fields are required.'})
+        response = jsonify({'makeNewReservation error': '`roomId`, `userId`, `timeslot`, and `description` fields are required.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
-    if not str(data['startTime']).isdigit() or \
-       not str(data['endTime']).isdigit() or \
+    if 'startTime' not in data['timeslot'] or \
+       'endTime' not in data['timeslot'] or \
+       'date' not in data['timeslot']:
+        response = jsonify({'makeNewReservation error': '`startTime`, `endTime`, `date` fields are required in `timeslot`.'})
+        response.status_code = STATUS_CODE['UNPROCESSABLE']
+        return response
+
+    if not str(data['timeslot']['startTime']).isdigit() or \
+       not str(data['timeslot']['endTime']).isdigit() or \
        not str(data['userId']).isdigit():
         response = jsonify({'makeNewReservation error': '`userId`, `startTime` and `endTime` must be integers.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
@@ -293,28 +313,4 @@ def validate_make_new_reservation_timeslots(reservations, dateList, startTime, e
             if (new_timestamp_start < existing_timestamp_end) and \
                (new_timestamp_end > existing_timestamp_start):
                 return time_overlap_error()
-
-def parse_reservation_object(reservation):
-    reservation_data = {}
-    reservation_data['room'] = {}
-    reservation_data['room']['roomId'] = reservation.getRoom().getId()
-    reservation_data['user'] = {}
-    reservation_data['user']['username'] = reservation.getUser().getName()
-    reservation_data['user']['userId'] = reservation.getUser().getId()
-    reservation_data['timeslot'] = {}
-    reservation_data['timeslot']['startTime'] = reservation.getTimeslot().getStartTime()
-    reservation_data['timeslot']['endTime'] = reservation.getTimeslot().getEndTime()
-    reservation_data['timeslot']['date'] = reservation.getTimeslot().getDate()
-    reservation_data['timeslot']['timeId'] = reservation.getTimeslot().getId()
-    reservation_data['description'] = reservation.getDescription()
-    reservation_data['reservationId'] = reservation.getId()
-    return reservation_data
-
-
-
-
-
-
-
-
 
