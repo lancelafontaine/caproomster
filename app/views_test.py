@@ -6,6 +6,7 @@ from app.core.timeslot import Timeslot
 from app.mapper import UserMapper
 from app.mapper import RoomMapper
 from app.mapper import ReservationMapper
+from app.mapper import TimeslotMapper
 from flask import request, jsonify
 import json
 
@@ -174,12 +175,14 @@ def test_valid_validate_new_reservation(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             data = {
-              'roomId': '1',
-              'userId': '1',
-              'startTime': '14',
-              'endTime': '15',
-              'date': '3000-03-19',
-              'description': 'cool meeting'
+                'roomId': '1',
+                'userId': '1',
+                'timeslot': {
+                    'startTime': '14',
+                    'endTime': '15',
+                    'date': '3000-03-19'
+                },
+                'description': 'cool meeting'
             }
             def mock_user_find(_):
                 return User(1, 'mr', 'pickles')
@@ -206,12 +209,14 @@ def test_valid_validate_make_new_reservation_payload_format():
     with app.app_context():
         with app.test_request_context():
             data = {
-              'roomId': '1',
-              'userId': '1',
-              'startTime': '14',
-              'endTime': '15',
-              'date': '3000-03-19',
-              'description': 'cool meeting'
+                'roomId': '1',
+                'userId': '1',
+                'timeslot': {
+                    'startTime': '14',
+                    'endTime': '15',
+                    'date': '3000-03-19'
+                },
+                'description': 'cool meeting'
             }
             assert(views.validate_make_new_reservation_payload_format(data) is None)
 
@@ -219,11 +224,27 @@ def test_invalid_validate_make_new_reservation_payload_format_missing_key():
     with app.app_context():
         with app.test_request_context():
             data = {
-              'roomId': '1',
-              'userId': '1',
-              'startTime': '14',
-              'endTime': '15',
-              'date': '3000-03-19'
+                'roomId': '1',
+                'userId': '1',
+                'timeslot': {
+                    'startTime': '14',
+                    'endTime': '15',
+                    'date': '3000-03-19'
+                }
+            }
+            assert(views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_validate_make_new_reservation_payload_format_missing_timeslot_key():
+    with app.app_context():
+        with app.test_request_context():
+            data = {
+                'roomId': '1',
+                'userId': '1',
+                'timeslot': {
+                    'startTime': '14',
+                    'endTime': '15'
+                },
+                'description': 'best workout'
             }
             assert(views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
@@ -231,12 +252,14 @@ def test_invalid_validate_make_new_reservation_payload_format_not_digits():
     with app.app_context():
         with app.test_request_context():
             data = {
-              'roomId': '1',
-              'userId': '1',
-              'startTime': 'not a digit',
-              'endTime': '15',
-              'date': '3000-03-19',
-              'description': 'cool meeting'
+            'roomId': '1',
+            'userId': '1',
+            'timeslot': {
+                'startTime': 'not a digit',
+                'endTime': '15',
+                'date': '3000-03-19'
+            },
+            'description': 'cool meeting'
             }
             assert(views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
@@ -276,48 +299,48 @@ def test_invalid_validate_make_new_reservation_times_more_than_3_hours_long():
 def test_valid_validate_make_new_reservation_date():
     with app.app_context():
         with app.test_request_context():
-            dateList = ["2040", "04", "04"]
+            dateList = ['2040', '04', '04']
             assert(views.validate_make_new_reservation_date(dateList) is None)
-            dateList = ["2040", "4", "4"]
+            dateList = ['2040', '4', '4']
             assert(views.validate_make_new_reservation_date(dateList) is None)
 
 def test_invalid_validate_make_new_reservation_date_more_than_3_elems():
     with app.app_context():
         with app.test_request_context():
-            dateList = ["2040", "04", "04", "04"]
+            dateList = ['2040', '04', '04', '04']
             assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
-            dateList = ["2040", "04"]
+            dateList = ['2040', '04']
             assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
 def test_invalid_validate_make_new_reservation_date_elem_is_not_digit():
     with app.app_context():
         with app.test_request_context():
-            dateList = ["2040", "04", "not a digit"]
+            dateList = ['2040', '04', 'not a digit']
             assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
-            dateList = ["2040", "not a digit", "04"]
+            dateList = ['2040', 'not a digit', '04']
             assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
-            dateList = ["not a digit", "04", "04"]
+            dateList = ['not a digit', '04', '04']
             assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
 def test_invalid_validate_make_new_reservation_date_impossible_date():
     with app.app_context():
         with app.test_request_context():
-            dateList = ["2040", "04", "90"]
+            dateList = ['2040', '04', '90']
             assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
-            dateList = ["2040", "49", "04"]
+            dateList = ['2040', '49', '04']
             assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
 def test_invalid_validate_make_new_reservation_date_before_current_date():
     with app.app_context():
         with app.test_request_context():
-            dateList = ["1999", "04", "04"]
+            dateList = ['1999', '04', '04']
             assert(views.validate_make_new_reservation_date(dateList).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
 def test_valid_make_new_reservation_room_user_exists(monkeypatch):
     with app.app_context():
         with app.test_request_context():
-            roomId = "1"
-            userId = "5"
+            roomId = '1'
+            userId = '5'
             def mock_user_find(_):
                 return User(5, 'glorious', 'carpet')
             def mock_room_find(_):
@@ -329,8 +352,8 @@ def test_valid_make_new_reservation_room_user_exists(monkeypatch):
 def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch):
     with app.app_context():
         with app.test_request_context():
-            roomId = "1"
-            userId = "5"
+            roomId = '1'
+            userId = '5'
             def mock_user_not_found(_):
                 return
             def mock_room_find(_):
@@ -342,8 +365,8 @@ def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch)
 def test_invalid_make_new_reservation_room_user_exists_room_missing(monkeypatch):
     with app.app_context():
         with app.test_request_context():
-            roomId = "1"
-            userId = "5"
+            roomId = '1'
+            userId = '5'
             def mock_user_find(_):
                 return User(5, 'kwazy', 'kupkakes')
             def mock_room_not_found(_):
@@ -351,5 +374,278 @@ def test_invalid_make_new_reservation_room_user_exists_room_missing(monkeypatch)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_not_found)
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             assert(views.validate_make_new_reservation_room_user_exists(roomId, userId).status_code is views.STATUS_CODE['NOT_FOUND'])
+
+def test_valid_make_new_reservation_timeslots_without_reservations():
+    with app.app_context():
+        with app.test_request_context():
+            reservations = []
+            dateList = ['2040', '04', '04']
+            startTime = 5
+            endTime = 7
+
+            result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
+            assert(result == None)
+
+def test_valid_make_new_reservation_timeslots_with_reservations():
+    with app.app_context():
+        with app.test_request_context():
+            reservations = []
+            time = Timeslot(1,2,'2020-01-01', '', 1)
+            room = Room(1, False)
+            user = User(1, 'mr', 'pickles')
+            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservations.append(reservation1)
+
+            dateList = ['2040', '04', '04']
+            startTime = 5
+            endTime = 7
+
+            result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
+            assert(result == None)
+
+def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
+    with app.app_context():
+        with app.test_request_context():
+            reservations = []
+            time = Timeslot(5,8,'2020-01-01', '', 1)
+            room = Room(1, False)
+            user = User(1, 'mr', 'pickles')
+            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservations.append(reservation1)
+
+            dateList = ['2020', '01', '01']
+            startTime = 3
+            endTime = 5
+
+            result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
+            assert(result == None)
+
+def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
+    with app.app_context():
+        with app.test_request_context():
+            reservations = []
+            time = Timeslot(5,8,'2020-01-01', '', 1)
+            room = Room(1, False)
+            user = User(1, 'mr', 'pickles')
+            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservations.append(reservation1)
+
+            dateList = ['2020', '01', '01']
+            startTime = 8
+            endTime = 10
+
+            result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
+            assert(result == None)
+
+
+
+def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
+    with app.app_context():
+        with app.test_request_context():
+            reservations = []
+            time = Timeslot(5,7,'2020-01-01', '', 1)
+            room = Room(1, False)
+            user = User(1, 'mr', 'pickles')
+            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservations.append(reservation1)
+
+            dateList = ['2020', '01', '01']
+            startTime = 5
+            endTime = 7
+
+            result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
+            assert(result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
+    with app.app_context():
+        with app.test_request_context():
+            reservations = []
+            time = Timeslot(5,8,'2020-01-01', '', 1)
+            room = Room(1, False)
+            user = User(1, 'mr', 'pickles')
+            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservations.append(reservation1)
+
+            dateList = ['2020', '01', '01']
+            startTime = 6
+            endTime = 7
+
+            result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
+            assert(result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
+    with app.app_context():
+        with app.test_request_context():
+            reservations = []
+            time = Timeslot(5,8,'2020-01-01', '', 1)
+            room = Room(1, False)
+            user = User(1, 'mr', 'pickles')
+            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservations.append(reservation1)
+
+            dateList = ['2020', '01', '01']
+            startTime = 4
+            endTime = 7
+
+            result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
+            assert(result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
+    with app.app_context():
+        with app.test_request_context():
+            reservations = []
+            time = Timeslot(5,8,'2020-01-01', '', 1)
+            room = Room(1, False)
+            user = User(1, 'mr', 'pickles')
+            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservations.append(reservation1)
+
+            dateList = ['2020', '01', '01']
+            startTime = 6
+            endTime = 9
+
+            result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
+            assert(result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_get_all_rooms_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def rooms_found():
+                return [Room(1, False), Room(2, False), Room(3, False)]
+            monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
+
+            views.session.clear()
+            response = views.get_all_rooms()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+def test_valid_get_all_rooms_with_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def rooms_found():
+                return [Room(1, False), Room(2, False), Room(3, False)]
+            monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'userId': 1})
+            response = views.get_all_rooms()
+            assert(response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert(isinstance(response_data, dict))
+            assert('rooms' in response_data)
+            assert(isinstance(response_data['rooms'], list))
+
+
+def test_invalid_make_new_reservation_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def empty_return():
+                return
+            def room_find(_):
+                return Room(1, False)
+            def user_find(_):
+                return User(1, 'buddy', 'boy')
+            def reservation_create(*args, **kwargs):
+                room = Room(1, False)
+                user = User(1, 'buddy', 'boy')
+                time = Timeslot(1,2,'2020-01-01', '', 1)
+                return Reservation(room, user, time, 'description', 1)
+            def timeslot_create(_):
+                return Timeslot(1,2,'2020-01-01', '', 1)
+
+            monkeypatch.setattr(TimeslotMapper, 'makeNew', empty_return)
+            monkeypatch.setattr(ReservationMapper, 'makeNew', reservation_create)
+            monkeypatch.setattr(TimeslotMapper, 'done', empty_return)
+            monkeypatch.setattr(RoomMapper, 'find', room_find)
+            monkeypatch.setattr(UserMapper, 'find', user_find)
+
+            views.session.clear()
+            response = views.make_new_reservation()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+
+def test_invalid_get_reservations_by_room_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            views.session.clear()
+            response = views.get_reservations_by_room()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+def test_valid_get_reservations_by_room_with_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def find_by_room(*args, **kwargs):
+                room = Room(1, False)
+                user = User(1, 'buddy', 'boy')
+                time = Timeslot(1,2,'2020-01-01', '', 1)
+                return [Reservation(room, user, time, 'description', 1)]
+            monkeypatch.setattr(ReservationMapper, 'findByRoom', find_by_room)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'userId': 1})
+            response = views.get_reservations_by_room("1")
+            assert(response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert(isinstance(response_data, dict))
+            assert('reservations' in response_data)
+            assert('roomId' in response_data)
+            assert(isinstance(response_data['reservations'], list))
+
+
+
+def test_invalid_get_reservations_by_user_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            views.session.clear()
+            response = views.get_reservations_by_user()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+def test_valid_get_reservations_by_user_with_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def find_by_user(*args, **kwargs):
+                room = Room(1, False)
+                user = User(1, 'buddy', 'boy')
+                time = Timeslot(1,2,'2020-01-01', '', 1)
+                return [Reservation(room, user, time, 'description', 1)]
+            monkeypatch.setattr(ReservationMapper, 'findByUser', find_by_user)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'userId': 1})
+            response = views.get_reservations_by_user("1")
+            assert(response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert(isinstance(response_data, dict))
+            assert('reservations' in response_data)
+            assert('userId' in response_data)
+            assert(isinstance(response_data['reservations'], list))
+
+
+def test_invalid_get_reservations_by_room_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            views.session.clear()
+            response = views.get_reservations_by_room()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+def test_valid_get_reservations_by_with_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def find_by_room(*args, **kwargs):
+                room = Room(1, False)
+                user = User(1, 'buddy', 'boy')
+                time = Timeslot(1,2,'2020-01-01', '', 1)
+                return [Reservation(room, user, time, 'description', 1)]
+            monkeypatch.setattr(ReservationMapper, 'findByRoom', find_by_room)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'userId': 1})
+            response = views.get_reservations_by_room("1")
+            assert(response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert(isinstance(response_data, dict))
+            assert('reservations' in response_data)
+            assert('roomId' in response_data)
+            assert(isinstance(response_data['reservations'], list))
+
 
 

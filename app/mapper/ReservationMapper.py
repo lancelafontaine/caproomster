@@ -12,7 +12,6 @@ def makeNew(room, holder, time, description, reservationId):
     UnitOfWork.registerNew(reservation)
     return reservation
 
-
 def find(reservationId):
     result = []
     result = ReservationTDG.find(reservationId)
@@ -56,6 +55,12 @@ def findByUser(userId):
         userReservation.append(find(userR[0]))
     return userReservation
 
+def findByRoom(roomId):
+    roomReservations = []
+    result = ReservationTDG.findByRoom(roomId)
+    for index, roomR in enumerate(result):
+        roomReservations.append(find(roomR[0]))
+    return roomReservations
 
 def setReservation(reservationId):
     reservation = find(reservationId)

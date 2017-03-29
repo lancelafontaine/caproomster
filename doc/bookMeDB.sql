@@ -95,12 +95,12 @@ CREATE TABLE IF NOT EXISTS reservationTable (
 -- ///////////// INSERT STATMENTS //////////////////////
 
 INSERT INTO userTable(password, name, capstone) VALUES
-	('pass','John',FALSE),
-	('pass','Emily',FALSE),
-	('pass','Rudy',FALSE),
-	('pass','Jackie',FALSE),
-    ('pass','Mary',TRUE),
-    ('pass','Hans',TRUE);
+        ('pass','John',FALSE),
+        ('pass','Emily',FALSE),
+        ('pass','Rudy',FALSE),
+        ('pass','Jackie',FALSE),
+        ('pass','Mary',TRUE),
+        ('pass','Hans',TRUE);
 
 
 INSERT INTO roomTable(roomId) VALUES
