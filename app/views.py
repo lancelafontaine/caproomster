@@ -282,16 +282,17 @@ def validate_make_new_reservation_timeslots(reservations, dateList, startTime, e
     new_timestamp_start = to_timestamp(dateList, startTime)
     new_timestamp_end = to_timestamp(dateList, endTime)
 
-    for reservation in reservations:
-        timeslot = reservation.getTimeslot()
-        timeslot_date_list= timeslot.getDate().isoformat().split('-')
+    if reservations:
+        for reservation in reservations:
+            timeslot = reservation.getTimeslot()
+            timeslot_date_list= timeslot.getDate().isoformat().split('-')
 
-        existing_timestamp_start = to_timestamp(timeslot_date_list, timeslot.getStartTime())
-        existing_timestamp_end = to_timestamp(timeslot_date_list, timeslot.getEndTime())
+            existing_timestamp_start = to_timestamp(timeslot_date_list, timeslot.getStartTime())
+            existing_timestamp_end = to_timestamp(timeslot_date_list, timeslot.getEndTime())
 
-        if (new_timestamp_start < existing_timestamp_end) and \
-           (new_timestamp_end > existing_timestamp_start):
-            return time_overlap_error()
+            if (new_timestamp_start < existing_timestamp_end) and \
+               (new_timestamp_end > existing_timestamp_start):
+                return time_overlap_error()
 
 def parse_reservation_object(reservation):
     reservation_data = {}
