@@ -19,18 +19,6 @@ STATUS_CODE = {
 }
 RAND_UPPER = 999999
 
-##############
-# DECORATORS #
-##############
-
-def require_login(func):
-    def wrapper(*args, **kwargs):
-        if not is_logged_in_bool():
-            return unauthorized()
-        return func(*args, **kwargs)
-    wrapper.func_name = func.func_name
-    return wrapper
-
 ##########
 # ROUTES #
 ##########
@@ -114,7 +102,7 @@ def get_reservations_by_user(userId):
 @require_login
 def get_all_reservations():
     if request.method == 'GET':
-        reservations = ReservationMapper.findByRoom()
+        reservations = ReservationMapper.findAll()
         reservations_data = []
         for reservation in reservations:
             reservations_data += [reservation.to_dict()]
