@@ -293,7 +293,7 @@ def validate_make_new_reservation_timeslots(reservations, dateList, startTime, e
     if reservations:
         for reservation in reservations:
             timeslot = reservation.getTimeslot()
-            timeslot_date_list= timeslot.getDate().isoformat().split('-')
+            timeslot_date_list= timeslot.getDate().split('-')
 
             existing_timestamp_start = to_timestamp(timeslot_date_list, timeslot.getStartTime())
             existing_timestamp_end = to_timestamp(timeslot_date_list, timeslot.getEndTime())
