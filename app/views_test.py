@@ -6,6 +6,7 @@ from app.core.timeslot import Timeslot
 from app.mapper import UserMapper
 from app.mapper import RoomMapper
 from app.mapper import ReservationMapper
+from app.mapper import TimeslotMapper
 from flask import request, jsonify
 import json
 
@@ -505,5 +506,146 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
             assert(result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+
+def test_invalid_get_all_rooms_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def rooms_found():
+                return [Room(1, False), Room(2, False), Room(3, False)]
+            monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
+
+            views.session.clear()
+            response = views.get_all_rooms()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+def test_valid_get_all_rooms_with_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def rooms_found():
+                return [Room(1, False), Room(2, False), Room(3, False)]
+            monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'userId': 1})
+            response = views.get_all_rooms()
+            assert(response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert(isinstance(response_data, dict))
+            assert('rooms' in response_data)
+            assert(isinstance(response_data['rooms'], list))
+
+
+def test_invalid_make_new_reservation_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def empty_return():
+                return
+            def room_find(_):
+                return Room(1, False)
+            def user_find(_):
+                return User(1, 'buddy', 'boy')
+            def reservation_create(*args, **kwargs):
+                room = Room(1, False)
+                user = User(1, 'buddy', 'boy')
+                time = Timeslot(1,2,'2020-01-01', '', 1)
+                return Reservation(room, user, time, 'description', 1)
+            def timeslot_create(_):
+                return Timeslot(1,2,'2020-01-01', '', 1)
+
+            monkeypatch.setattr(TimeslotMapper, 'makeNew', empty_return)
+            monkeypatch.setattr(ReservationMapper, 'makeNew', reservation_create)
+            monkeypatch.setattr(TimeslotMapper, 'done', empty_return)
+            monkeypatch.setattr(RoomMapper, 'find', room_find)
+            monkeypatch.setattr(UserMapper, 'find', user_find)
+
+            views.session.clear()
+            response = views.make_new_reservation()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+
+def test_invalid_get_reservations_by_room_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            views.session.clear()
+            response = views.get_reservations_by_room()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+def test_valid_get_reservations_by_room_with_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def find_by_room(*args, **kwargs):
+                room = Room(1, False)
+                user = User(1, 'buddy', 'boy')
+                time = Timeslot(1,2,'2020-01-01', '', 1)
+                return [Reservation(room, user, time, 'description', 1)]
+            monkeypatch.setattr(ReservationMapper, 'findByRoom', find_by_room)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'userId': 1})
+            response = views.get_reservations_by_room("1")
+            assert(response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert(isinstance(response_data, dict))
+            assert('reservations' in response_data)
+            assert('roomId' in response_data)
+            assert(isinstance(response_data['reservations'], list))
+
+
+
+def test_invalid_get_reservations_by_user_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            views.session.clear()
+            response = views.get_reservations_by_user()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+def test_valid_get_reservations_by_user_with_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def find_by_user(*args, **kwargs):
+                room = Room(1, False)
+                user = User(1, 'buddy', 'boy')
+                time = Timeslot(1,2,'2020-01-01', '', 1)
+                return [Reservation(room, user, time, 'description', 1)]
+            monkeypatch.setattr(ReservationMapper, 'findByUser', find_by_user)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'userId': 1})
+            response = views.get_reservations_by_user("1")
+            assert(response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert(isinstance(response_data, dict))
+            assert('reservations' in response_data)
+            assert('userId' in response_data)
+            assert(isinstance(response_data['reservations'], list))
+
+
+def test_invalid_get_reservations_by_room_without_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            views.session.clear()
+            response = views.get_reservations_by_room()
+            assert(response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+def test_valid_get_reservations_by_with_login(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def find_by_room(*args, **kwargs):
+                room = Room(1, False)
+                user = User(1, 'buddy', 'boy')
+                time = Timeslot(1,2,'2020-01-01', '', 1)
+                return [Reservation(room, user, time, 'description', 1)]
+            monkeypatch.setattr(ReservationMapper, 'findByRoom', find_by_room)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'userId': 1})
+            response = views.get_reservations_by_room("1")
+            assert(response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert(isinstance(response_data, dict))
+            assert('reservations' in response_data)
+            assert('roomId' in response_data)
+            assert(isinstance(response_data['reservations'], list))
+
 
 
