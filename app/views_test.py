@@ -174,12 +174,14 @@ def test_valid_validate_new_reservation(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             data = {
-              'roomId': '1',
-              'userId': '1',
-              'startTime': '14',
-              'endTime': '15',
-              'date': '3000-03-19',
-              'description': 'cool meeting'
+                'roomId': '1',
+                'userId': '1',
+                'timeslot': {
+                    'startTime': '14',
+                    'endTime': '15',
+                    'date': '3000-03-19'
+                },
+                'description': 'cool meeting'
             }
             def mock_user_find(_):
                 return User(1, 'mr', 'pickles')
@@ -206,12 +208,14 @@ def test_valid_validate_make_new_reservation_payload_format():
     with app.app_context():
         with app.test_request_context():
             data = {
-              'roomId': '1',
-              'userId': '1',
-              'startTime': '14',
-              'endTime': '15',
-              'date': '3000-03-19',
-              'description': 'cool meeting'
+                'roomId': '1',
+                'userId': '1',
+                'timeslot': {
+                    'startTime': '14',
+                    'endTime': '15',
+                    'date': '3000-03-19'
+                },
+                'description': 'cool meeting'
             }
             assert(views.validate_make_new_reservation_payload_format(data) is None)
 
@@ -219,11 +223,13 @@ def test_invalid_validate_make_new_reservation_payload_format_missing_key():
     with app.app_context():
         with app.test_request_context():
             data = {
-              'roomId': '1',
-              'userId': '1',
-              'startTime': '14',
-              'endTime': '15',
-              'date': '3000-03-19'
+                'roomId': '1',
+                'userId': '1',
+                'timeslot': {
+                    'startTime': '14',
+                    'endTime': '15',
+                    'date': '3000-03-19'
+                }
             }
             assert(views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
@@ -231,12 +237,14 @@ def test_invalid_validate_make_new_reservation_payload_format_not_digits():
     with app.app_context():
         with app.test_request_context():
             data = {
-              'roomId': '1',
-              'userId': '1',
-              'startTime': 'not a digit',
-              'endTime': '15',
-              'date': '3000-03-19',
-              'description': 'cool meeting'
+            'roomId': '1',
+            'userId': '1',
+            'timeslot': {
+                'startTime': 'not a digit',
+                'endTime': '15',
+                'date': '3000-03-19'
+            },
+            'description': 'cool meeting'
             }
             assert(views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
