@@ -99,6 +99,127 @@ def get_reservations_by_user(userId):
 
 @app.route('/reservations/all', methods=['GET'])
 @nocache
+
+def addNewReservation(month,day):
+
+	if month == 'september':
+		m = '09'
+		redirectTo = "september.html"
+	if month == 'october':
+		m = '10'
+		redirectTo = "october.html"
+	if month == 'november':
+		m = '11'
+		redirectTo = "november.html"
+	if month == 'december':
+		m = '12'
+		redirectTo = "december.html"
+	if month == 'january':
+		m = '01'
+		redirectTo = "january.html"
+	if month == 'february':
+		m = '02'
+		redirectTo = "february.html"
+	if month == 'march':
+		m = '03'
+		redirectTo = "march.html"
+	if month == 'april':
+		m = '04'
+		redirectTo = "april.html"
+	if month == 'may':
+		m = '05'
+		redirectTo = "may.html"
+	if month == 'june':
+		m = '06'
+		redirectTo = "june.html"
+	if month == 'july':
+		m = '07'
+		redirectTo = "july.html"
+	if month == 'august':
+		m = '08'
+		redirectTo = "august.html"
+	if int(day) < 10:
+		date = '2016-' + m + '-0' + day
+	else:
+		date = '2016-' + m + '-' + day
+	rooms = checkAvailabilities.checkAvailabilities(date)
+	if request.method == 'POST':
+		if request.form.getlist('chosenTime'):
+			chosenTime = request.form.getlist('chosenTime')
+			endTime = int(chosenTime[-1])
+			startTime = int(chosenTime[0])
+			roomId = request.form.getlist('room')
+			block = endTime + 1 - startTime
+			if block < 3:
+				block = block + 1
+				description = request.form['description']
+				processed_description = description.upper()
+				user = UserMapper.find(session['userId'])
+				if checkAvailabilities.validateAvailability(roomId[0],date,startTime, endTime):
+					userTimeslots = TimeslotTDG.findUser(user.getId())
+					checkBlock = 0
+					print(userTimeslots)
+					if userTimeslots:
+						print("userTimeslots:")
+						for timeslots in userTimeslots:
+							checkBlock = checkBlock + timeslots[2] + 1 - timeslots[1]
+						for timeslots in userTimeslots:
+							print("checkBlock:")
+							print (checkBlock)
+							if str(timeslots[3]) == str(date) and checkBlock >1:
+								print(timeslots[3])
+								return render_template(redirectTo, allowed = "You can only have a reservation that totals to 2 hours per day")
+						room = Room(roomId[0], False)
+						if registry.initiateAction():
+							# Instantiate parameters
+							timeSlot = TimeslotMapper.makeNew(startTime, endTime, date, block, user.getId())
+							TimeslotMapper.save(timeSlot)
+							timeslotId = TimeslotMapper.findId(user.getId())
+							timeSlot.setId(timeslotId)
+							# Make Reservation
+							reservation = ReservationMapper.makeNewReservation(room, user, timeSlot,
+																			   processed_description, timeslotId)
+							ReservationMapper.save(reservation)
+							registry.endAction()
+							return redirect(url_for('dashboard', user=session['user']))
+					else:
+						room = Room(roomId[0],False)
+						if registry.initiateAction():
+							#Instantiate parameters
+							timeSlot = TimeslotMapper.makeNew(startTime,endTime,date,block, user.getId())
+							TimeslotMapper.save(timeSlot)
+							timeslotId = TimeslotMapper.findId(user.getId())
+							timeSlot.setId(timeslotId)
+							#Make Reservation
+							reservation = ReservationMapper.makeNewReservation(room, user, timeSlot, processed_description,timeslotId)
+							ReservationMapper.save(reservation)
+							registry.endAction(room.getId())
+							return redirect(url_for('dashboard', user=session['user']))
+				else:
+					userTimeslots = TimeslotTDG.findUser(user.getId())
+					if userTimeslots:
+						print("userTimeslots:")
+						for timeslots in userTimeslots:
+							if str(timeslots[3]) == str(date):
+								print(timeslots[3])
+								return render_template('month.html', allowed="You can only have 1 reservation per day")
+					else:
+						room = Room(roomId[0], False)
+						timeSlot = TimeslotMapper.makeNew(startTime, endTime, date, block, user.getId())
+						TimeslotMapper.save(timeSlot)
+						timeslotId = TimeslotMapper.findId(user.getId())
+						timeSlot.setId(timeslotId)
+						waiting = WaitingMapper.makeNew(room,description,user,timeSlot)
+						WaitingMapper.save(waiting)
+						return redirect(url_for('dashboard', user=session['user']))
+			else:
+				return render_template('add.html', allowed="You can only reserve the room for 2 consecutive hours.", rooms=rooms)
+	return render_template('add.html',rooms=rooms, allowed="")
+
+
+# annee mois jour
+# fetch dans le timeslottable de ses meme temps
+
 @require_login
 def get_all_reservations():
     if request.method == 'GET':
@@ -302,4 +423,5 @@ def validate_make_new_reservation_timeslots(reservations, dateList, startTime, e
             if (new_timestamp_start < existing_timestamp_end) and \
                (new_timestamp_end > existing_timestamp_start):
                 return time_overlap_error()
+
 

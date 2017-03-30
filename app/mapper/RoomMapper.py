@@ -30,11 +30,6 @@ def findAll():
             rooms.append(room)
     return rooms
 
-def setRoom(roomId, lock):
-    room = find(roomId)
-    room.setLock(lock)
-    update(room.getId(),room.getLock())
-
 def delete(roomId):
     UnitOfWork.registerDeleted(Room(roomId,None))
 #save all work
@@ -46,8 +41,13 @@ def save(room):
     RoomTDG.insert(room.getLock())
 
 #updates room Object
+
+def update(room):
+    RoomTDG.update(room)
+
 def update(room,availability):
     RoomTDG.update(room, availability)
+
 
 #deletes room object
 def erase(roomId):
