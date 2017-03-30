@@ -1,18 +1,13 @@
 import UnitOfWork
 
 from app.TDG import ReservationTDG
-
 from app.mapper import TimeslotMapper
 from app.mapper import RoomMapper
 from app.mapper import UserMapper
-
-from app.core.room import Room
-from app.core.user import User
-from app.core.timeslot import Timeslot
 from app.core.reservation import Reservation
 
 
-def makeNew(room,holder,time,description,reservationId):
+def makeNew(room, holder, time, description, reservationId):
     reservation = Reservation(room, holder, time, description, reservationId)
     UnitOfWork.registerNew(reservation)
     return reservation
@@ -23,11 +18,12 @@ def find(reservationId):
     if not result:
         return
     else:
-        #must make a reference to timeslottable and create a timeslot object
+        # must make a reference to timeslottable and create a timeslot object
         room = RoomMapper.find(result[0][1])
         holder = UserMapper.find(result[0][3])
         timeslot = TimeslotMapper.find(result[0][4])
-        return Reservation(room, holder,timeslot,result[0][2],timeslot.getId())
+        return Reservation(room, holder, timeslot, result[0][2], timeslot.getId())
+
 
 def findAll():
     result = ReservationTDG.findAll()
@@ -43,6 +39,15 @@ def findAll():
             allReservations.append(reservation)
         return allReservations
 
+
+def find_time_slot_ids(userId):
+    timeslot_ids = []
+    reservation_list = ReservationTDG.findByUserId(userId)
+    for reservation in reservation_list:
+        timeslot_ids.append(reservation[4])
+    return timeslot_ids
+
+
 def findByUser(userId):
     userReservation = []
     result = ReservationTDG.findByUserId(userId)
@@ -50,27 +55,38 @@ def findByUser(userId):
         userReservation.append(find(userR[0]))
     return userReservation
 
+def findByRoom(roomId):
+    roomReservations = []
+    result = ReservationTDG.findByRoom(roomId)
+    for index, roomR in enumerate(result):
+        roomReservations.append(find(roomR[0]))
+    return roomReservations
+
 def setReservation(reservationId):
     reservation = find(reservationId)
     reservation.setId(reservationId)
     UnitOfWork.registerDirty(reservationId)
 
+
 def delete(reservationId):
     UnitOfWork.registerDeleted(Reservation(None, None, None, reservationId))
 
-#save all work
+
+# save all work
 def done():
     UnitOfWork.commit()
+
 
 # Saves reservation
 def save(reservation):
     ReservationTDG.insert(reservation.getRoom().getId(),
-        reservation.getDescription(),
-        reservation.getUser().getId(),
-        reservation.getTimeslot().getId()
-    )
+                          reservation.getDescription(),
+                          reservation.getUser().getId(),
+                          reservation.getTimeslot().getId()
+                          )
 
-#updates room Object
+
+# updates room Object
 def update(reservation):
     ReservationTDG.update(
         reservation.getId(),
@@ -80,6 +96,7 @@ def update(reservation):
         reservation.getTimeslot().getId()
     )
 
-#deletes room object
+
+# deletes room object
 def erase(reservationid):
     ReservationTDG.delete(reservationid)

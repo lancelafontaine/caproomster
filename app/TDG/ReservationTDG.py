@@ -65,6 +65,17 @@ def findByUserId(userId):
     else:
         return []
 
+def findByRoom(roomId):
+    conn = connect_db()
+    if conn:
+        cur = conn.cursor()
+        cur.execute("""SELECT * FROM reservationTable WHERE room = %s;""", (roomId))
+        data = cur.fetchall()
+        conn.close()
+        return data
+    else:
+        return []
+
 def findAll():
     conn = connect_db()
     if conn:

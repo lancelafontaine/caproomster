@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS userTable (
 	userId SERIAL NOT NULL,
 	name VARCHAR(30)  NOT NULL DEFAULT ' ',
 	password VARCHAR(30) NOT NULL,
+  capstone BOOLEAN NOT NULL,
 	PRIMARY KEY (userId)
 );
 
@@ -93,11 +94,13 @@ CREATE TABLE IF NOT EXISTS reservationTable (
 
 -- ///////////// INSERT STATMENTS //////////////////////
 
-INSERT INTO userTable(password, name) VALUES
-	('pass','John'),
-	('pass','Emily'),
-	('pass','Rudy'),
-	('pass','Jackie');
+INSERT INTO userTable(password, name, capstone) VALUES
+        ('pass','John',FALSE),
+        ('pass','Emily',FALSE),
+        ('pass','Rudy',FALSE),
+        ('pass','Jackie',FALSE),
+        ('pass','Mary',TRUE),
+        ('pass','Hans',TRUE);
 
 
 INSERT INTO roomTable(roomId) VALUES
