@@ -30,6 +30,9 @@ class User:
     def setId(self, userId):
         self.userId = userId
 
+    def setCapstone(self, capstone=True):
+        self.capstone = capstone
+
     def isCapstone(self):
         return self.capstone
 
