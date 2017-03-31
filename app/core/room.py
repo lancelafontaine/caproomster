@@ -6,8 +6,6 @@ class Room:
         self.roomId = roomId
         self.lock = lock
 
-<<<<<<< HEAD
-=======
     # Print method for debugging
     def __str__(self):
         return "Room " + str(self.roomId) + " is lock? " + str(self.lock)
@@ -19,7 +17,6 @@ class Room:
     def setLock(self, bool):
         self.lock = bool
 
->>>>>>> master
     def getId(self):
         return self.roomId
 
