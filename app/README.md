@@ -26,9 +26,10 @@ Checks if the current user is logged in or not.
 **200 - OK**
 ```json
 {
-  "success": {
-    "userId": 1
-  }
+	"data": {
+		"username": "iscapstone"
+	},
+	"login success": "Successfully logged in"
 }
 ```
 
@@ -47,23 +48,20 @@ Login attempt. Returns a session token.
 #### Expected Request Payload
 ```json
 {
-  "userId":"1",
-  "password": "pass"
-}
-```
+	"username":"iscapstone",
+	"password":"soen344"
+}```
 
 #### Success Response
 
 **200 - OK**
 ```json
 {
-  "data": {
-    "userId": "1",
-    "username": "John"
-  },
-  "login success": "Successfully logged in"
-}
-```
+	"data": {
+		"username": "iscapstone"
+	},
+	"login success": "Successfully logged in"
+}```
 
 <hr/>
 
@@ -96,9 +94,14 @@ Retrieves all CAPSTONE rooms in the system.
 **200 - OK**
 ```json
 {
-  "logout success": "Successfully logged out."
-}
-```
+	"rooms": [
+		1,
+		2,
+		3,
+		4,
+		5
+	]
+}```
 
 <hr/>
 
@@ -112,16 +115,14 @@ Creates a new reservation for a specific timeslot, user an room.
 
 ```json
 {
-  	"roomId":"1",
-  	"userId": "1",
-	"timeslot":  {
-		"startTime": "16",
-		"endTime": "17",
-		"date": "2020-03-19"
-	},
-  	"description": "cool meeting"
-}
-```
+	"rooms": [
+		1,
+		2,
+		3,
+		4,
+		5
+	]
+}```
 
 #### Success Response
 

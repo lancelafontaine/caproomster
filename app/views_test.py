@@ -25,7 +25,7 @@ def test_invalid_login_no_pass():
     with app.app_context():
         with app.test_request_context():
             data = {
-                'userId': 1
+                'username': 'naan bread'
             }
             response = views.validate_login(data)
             assert (response.status_code == views.STATUS_CODE['UNPROCESSABLE'])
@@ -51,7 +51,7 @@ def test_invalid_login_nonexisting_user(monkeypatch):
             monkeypatch.setattr(UserMapper, 'find', user_not_found)
 
             data = {
-                'userId': 1,
+                'username': "iscapstone",
                 'password': 'test'
             }
             response = views.validate_login(data)
@@ -62,12 +62,12 @@ def test_invalid_login_wrong_pass(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def user_found(_):
-                return User(1, 'buddy', 'boy')
+                return User('very','secret')
 
             monkeypatch.setattr(UserMapper, 'find', user_found)
 
             data = {
-                'userId': 1,
+                'username': 'very',
                 'password': 'wrong password'
             }
             response = views.validate_login(data)
@@ -78,12 +78,12 @@ def test_valid_login(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def user_found(_):
-                return User(1, 'mechanical', 'keyboard')
+                return User('mechanical', 'keyboard')
 
             monkeypatch.setattr(UserMapper, 'find', user_found)
 
             data = {
-                'userId': 1,
+                'username': 'mechanical',
                 'password': 'keyboard'
             }
             response = views.validate_login(data)
@@ -102,7 +102,7 @@ def test_is_logged_in():
     with app.app_context():
         with app.test_request_context():
             views.session.clear()
-            views.session.update({'logged_in': True, 'userId': 1})
+            views.session.update({'logged_in': True, 'username': 'loggedIn!'})
             response = views.is_logged_in()
             assert (response.status_code == views.STATUS_CODE['OK'])
 
@@ -111,15 +111,15 @@ def test_logout():
     with app.app_context():
         with app.test_request_context():
             views.session.clear()
-            views.session.update({'logged_in': True, 'userId': 1})
+            views.session.update({'logged_in': True, 'username': 'potatoes'})
             assert ('logged_in' in views.session)
             assert (views.session['logged_in'] is True)
-            assert ('userId' in views.session)
-            assert (views.session['userId'] == 1)
+            assert ('username' in views.session)
+            assert (views.session['username'] == 'potatoes')
             response = views.logout()
             assert (response.status_code == views.STATUS_CODE['OK'])
             assert ('logged_in' not in views.session)
-            assert ('userId' not in views.session)
+            assert ('username' not in views.session)
 
 
 def test_invalid_get_all_rooms_no_login():
@@ -139,7 +139,7 @@ def test_valid_get_all_rooms_with_login(monkeypatch):
             monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
 
             views.session.clear()
-            views.session.update({'logged_in': True, 'userId': 1})
+            views.session.update({'logged_in': True, 'username': 'hamburger'})
             response = views.get_all_rooms()
             assert (response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())
@@ -152,7 +152,7 @@ def test_is_logged_in_bool_true():
     with app.app_context():
         with app.test_request_context():
             views.session.clear()
-            views.session.update({'logged_in': True, 'userId': 1})
+            views.session.update({'logged_in': True, 'username': 'hummus'})
             assert (views.is_logged_in_bool() is True)
 
 
@@ -196,7 +196,7 @@ def test_valid_validate_new_reservation(monkeypatch):
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'userId': '1',
+                'username': 'mr',
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
@@ -206,7 +206,7 @@ def test_valid_validate_new_reservation(monkeypatch):
             }
 
             def mock_user_find(_):
-                return User(1, 'mr', 'pickles')
+                return User('mr', 'pickles')
 
             def mock_room_find(_):
                 return Room(1, False)
@@ -215,9 +215,9 @@ def test_valid_validate_new_reservation(monkeypatch):
                 return
 
             def mock_reservation_add(*args):
-                time = Timeslot(1, 2, '2020-01-01', '', 1)
+                time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
                 room = Room(1, False)
-                user = User(1, 'mr', 'pickles')
+                user = User('mr', 'pickles')
                 return Reservation(room, user, time, 'description', 1)
 
             def mock_reservation_find_all(*args):
@@ -225,6 +225,7 @@ def test_valid_validate_new_reservation(monkeypatch):
 
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
+            monkeypatch.setattr(TimeslotMapper, 'done', mock_reservation_done)
             monkeypatch.setattr(ReservationMapper, 'done', mock_reservation_done)
             monkeypatch.setattr(ReservationMapper, 'makeNew', mock_reservation_add)
             monkeypatch.setattr(ReservationMapper, 'findAll', mock_reservation_find_all)
@@ -236,7 +237,7 @@ def test_valid_validate_make_new_reservation_payload_format():
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'userId': '1',
+                'username': 'macaroni',
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
@@ -252,7 +253,7 @@ def test_invalid_validate_make_new_reservation_payload_format_missing_key():
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'userId': '1',
+                'username': 'peanut butter',
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
@@ -266,7 +267,7 @@ def test_invalid_validate_make_new_reservation_payload_format_missing_timeslot_k
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'userId': '1',
+                'username': 'kiwi',
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15'
@@ -280,7 +281,7 @@ def test_invalid_validate_make_new_reservation_payload_format_not_digits():
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'userId': '1',
+                'username': 'asparagus',
                 'timeslot': {
                     'startTime': 'not a digit',
                     'endTime': '15',
@@ -369,24 +370,24 @@ def test_valid_make_new_reservation_room_user_exists(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             roomId = '1'
-            userId = '5'
+            username = 'brocolli'
 
             def mock_user_find(_):
-                return User(5, 'glorious', 'carpet')
+                return User('glorious', 'carpet')
 
             def mock_room_find(_):
                 return Room(1, False)
 
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
-            assert (views.validate_make_new_reservation_room_user_exists(roomId, userId) is None)
+            assert (views.validate_make_new_reservation_room_user_exists(roomId, username) is None)
 
 
 def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             roomId = '1'
-            userId = '5'
+            username = 'ketchup'
 
             def mock_user_not_found(_):
                 return
@@ -397,7 +398,7 @@ def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch)
             monkeypatch.setattr(UserMapper, 'find', mock_user_not_found)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
             assert (
-            views.validate_make_new_reservation_room_user_exists(roomId, userId).status_code is views.STATUS_CODE[
+            views.validate_make_new_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE[
                 'NOT_FOUND'])
 
 
@@ -405,17 +406,17 @@ def test_invalid_make_new_reservation_room_user_exists_room_missing(monkeypatch)
     with app.app_context():
         with app.test_request_context():
             roomId = '1'
-            userId = '5'
+            username = 'sandwich'
 
             def mock_user_find(_):
-                return User(5, 'kwazy', 'kupkakes')
+                return User('kwazy', 'kupkakes')
 
             def mock_room_not_found(_):
                 return
 
             monkeypatch.setattr(RoomMapper, 'find', mock_room_not_found)
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
-            assert (views.validate_make_new_reservation_room_user_exists(roomId, userId).status_code is views.STATUS_CODE['NOT_FOUND'])
+            assert (views.validate_make_new_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE['NOT_FOUND'])
 
 def test_valid_make_new_reservation_timeslots_without_reservations():
     with app.app_context():
@@ -433,9 +434,9 @@ def test_valid_make_new_reservation_timeslots_with_reservations():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(1, 2, '2020-01-01', '', 1)
+            time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
             room = Room(1, False)
-            user = User(1, 'mr', 'pickles')
+            user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
 
@@ -451,9 +452,9 @@ def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', '', 1)
+            time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
             room = Room(1, False)
-            user = User(1, 'mr', 'pickles')
+            user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
 
@@ -469,9 +470,9 @@ def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', '', 1)
+            time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
             room = Room(1, False)
-            user = User(1, 'mr', 'pickles')
+            user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
 
@@ -487,9 +488,9 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 7, '2020-01-01', '', 1)
+            time = Timeslot(5, 7, '2020-01-01', '', 1, 1)
             room = Room(1, False)
-            user = User(1, 'mr', 'pickles')
+            user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
 
@@ -505,9 +506,9 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', '', 1)
+            time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
             room = Room(1, False)
-            user = User(1, 'mr', 'pickles')
+            user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
 
@@ -523,9 +524,9 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', '', 1)
+            time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
             room = Room(1, False)
-            user = User(1, 'mr', 'pickles')
+            user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
 
@@ -541,9 +542,9 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', '', 1)
+            time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
             room = Room(1, False)
-            user = User(1, 'mr', 'pickles')
+            user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
 
@@ -577,7 +578,7 @@ def test_valid_get_all_rooms_with_login(monkeypatch):
             monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
 
             views.session.clear()
-            views.session.update({'logged_in': True, 'userId': 1})
+            views.session.update({'logged_in': True, 'username': 'banana'})
             response = views.get_all_rooms()
             assert (response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())
@@ -596,11 +597,11 @@ def test_invalid_make_new_reservation_without_login(monkeypatch):
                 return Room(1, False)
 
             def user_find(_):
-                return User(1, 'buddy', 'boy')
+                return User('buddy', 'boy')
 
             def reservation_create(*args, **kwargs):
                 room = Room(1, False)
-                user = User(1, 'buddy', 'boy')
+                user = User('buddy', 'boy')
                 time = Timeslot(1, 2, '2020-01-01', '', 1)
                 return Reservation(room, user, time, 'description', 1)
 
@@ -631,14 +632,14 @@ def test_valid_get_reservations_by_room_with_login(monkeypatch):
         with app.test_request_context():
             def find_by_room(*args, **kwargs):
                 room = Room(1, False)
-                user = User(1, 'buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', '', 1)
+                user = User('buddy', 'boy')
+                time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
                 return [Reservation(room, user, time, 'description', 1)]
 
             monkeypatch.setattr(ReservationMapper, 'findByRoom', find_by_room)
 
             views.session.clear()
-            views.session.update({'logged_in': True, 'userId': 1})
+            views.session.update({'logged_in': True, 'username': 'salt and pepper'})
             response = views.get_reservations_by_room("1")
             assert (response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())
@@ -661,20 +662,20 @@ def test_valid_get_reservations_by_user_with_login(monkeypatch):
         with app.test_request_context():
             def find_by_user(*args, **kwargs):
                 room = Room(1, False)
-                user = User(1, 'buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', '', 1)
+                user = User('buddy', 'boy')
+                time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
                 return [Reservation(room, user, time, 'description', 1)]
 
             monkeypatch.setattr(ReservationMapper, 'findByUser', find_by_user)
 
             views.session.clear()
-            views.session.update({'logged_in': True, 'userId': 1})
+            views.session.update({'logged_in': True, 'username': 'marmelade'})
             response = views.get_reservations_by_user("1")
             assert (response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())
             assert (isinstance(response_data, dict))
             assert ('reservations' in response_data)
-            assert ('userId' in response_data)
+            assert ('username' in response_data)
             assert (isinstance(response_data['reservations'], list))
 
 
@@ -691,14 +692,14 @@ def test_valid_get_reservations_by_with_login(monkeypatch):
         with app.test_request_context():
             def find_by_room(*args, **kwargs):
                 room = Room(1, False)
-                user = User(1, 'buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', '', 1)
+                user = User('buddy', 'boy')
+                time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
                 return [Reservation(room, user, time, 'description', 1)]
 
             monkeypatch.setattr(ReservationMapper, 'findByRoom', find_by_room)
 
             views.session.clear()
-            views.session.update({'logged_in': True, 'userId': 1})
+            views.session.update({'logged_in': True, 'username': 'tzatziki'})
             response = views.get_reservations_by_room("1")
             assert (response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())

@@ -32,10 +32,10 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    expected_timeslot = Timeslot(1, 2, 'date', 'block', 1)
+    expected_timeslot = Timeslot(1, 2, 'date', 'block', 1, 1)
     expected_room = Room(1, 'a')
     expected = Reservation(expected_room, User(
-        1, 'name', 'password'), expected_timeslot, 'description', 1)
+        'name', 'password'), expected_timeslot, 'description', 1)
 
     # Mock
     def no_find(_, __):
@@ -68,7 +68,7 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
 def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     # Test Data
     expected = Reservation('room', User(
-        1, 'name', 'password'), 'time', 'description', 1)
+        'name', 'password'), 'time', 'description', 1)
 
     # Mock
     def id_find(_, __):
@@ -93,9 +93,9 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
 def test_find_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
     unexpected = Reservation('room', User(
-        1, 'name', 'password'), 'time', 'description', 1)
+        'name', 'password'), 'time', 'description', 1)
     expected = Reservation('room1', User(
-        1, 'name2', 'password3'), 'time1', 'description2', 2)
+        'name2', 'password3'), 'time1', 'description2', 2)
 
     # Mock
     def id_find(_, __):
