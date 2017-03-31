@@ -23,6 +23,9 @@ class User:
     def setPassword(self, password):
         self.password = password
 
+    def setCapstone(self, capstone=True):
+        self.capstone = capstone
+
     def isCapstone(self):
         return self.capstone
 

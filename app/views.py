@@ -152,6 +152,7 @@ def validate_login(data):
         'login success': 'Successfully logged in',
         'data': {
             'username': str(user.getId())
+	          'capstone': str(user.isCapstone())
         }
     }
     return jsonify(success)
