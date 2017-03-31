@@ -29,47 +29,29 @@
       vm.roomNumber = '';
       vm.cellIsOpen = true;
       vm.events = [];
-      checkLogin();
+      refreshData();
     }
 
     // Check login
 
-    function checkLogin() {
+    function refreshData() {
       ApiService.account('checkLogin').then(function() {
         vm.authenticated = true;
-        fetchEvents();
-        fetchRoomList();
+        ApiService.booking('getRoomList').then(function(res) {
+          vm.roomList = res.rooms;
+          vm.roomNumber = vm.roomList[0];
+          fetchEvents();
+        });
       }, function() {
         $state.go('login');
       });
-    }
-
-    // Fetch room list
-
-    function fetchRoomList() {
-      ApiService.booking('getRoomList').then(function(res) {
-        vm.roomList = res.rooms;
-        vm.roomNumber = vm.roomList[0];
-      });
-    }
-
-    // Toggle Menu
-
-    function toggleMenu() {
-      if (!vm.isToggled) {
-        vm.isToggled = true;
-        vm.toggleText = 'Hide Room List';
-      } else {
-        vm.isToggled = false;
-        vm.toggleText = 'Show Room List';
-      }
     }
 
     // Change room number and fetch room data
 
     function changeRoom(room) {
       vm.roomNumber = room;
-      // TODO: change view, get data etc.
+      fetchEvents();
     }
 
     // Fetch reservations from backend
@@ -87,7 +69,9 @@
           console.log('Deleted');
         }
       }];
-      ApiService.booking('getAllReservation').then(function(res){
+      ApiService.booking('getAllReservation', {
+        roomId: vm.roomNumber
+      }).then(function(res){
         console.log(res);
       });
       // mock data
@@ -181,6 +165,18 @@
     function eventTimesChanged() {
       //TODO
       console.log('Dropped or resized');
+    }
+
+    // Toggle Menu
+
+    function toggleMenu() {
+      if (!vm.isToggled) {
+        vm.isToggled = true;
+        vm.toggleText = 'Hide Room List';
+      } else {
+        vm.isToggled = false;
+        vm.toggleText = 'Show Room List';
+      }
     }
 
   }

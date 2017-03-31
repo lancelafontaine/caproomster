@@ -73,8 +73,10 @@
     /* getAllReservation factory */
 
     function getAllReservation() {
-      var url = '/reservations/all';
-      return $resource(baseUrl + url, {}, {
+      var url = '/reservations/room/:roomId';
+      return $resource(baseUrl + url, {
+        roomId: '@roomId'
+      }, {
         get: {
           method: 'GET',
           withCredentials: true

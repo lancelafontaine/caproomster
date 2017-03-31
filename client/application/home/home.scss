@@ -12,9 +12,10 @@
         max-height: 80%;
         overflow: scroll;
         .room-list {
-            height: auto;
-            width: 14%;
-            background-color: rgba(255,248,220,0.5);
+            margin: auto;
+            height: 25px;
+            width: 103%;
+            background-color: rgba(0,0,0,0.5);
             z-index: 100;
             position: absolute;
             text-align: center;
@@ -23,26 +24,29 @@
                 font-weight: bold;
                 text-decoration: none;
                 cursor: pointer;
-                color: darkorange;
+                color: white;
+                margin: 0px;
             }
             button {
                 font-weight: bold;
                 color: black;
                 background-color: white;
                 border-color: black;
-                display: block;
-                margin: auto;
-                margin-top: 10px;
-                margin-bottom: 10px;
-                width: 65%;
+                display: inline-block;
+                margin: 10px;
+                width: 45%;
             }
             button:hover, .selected-room {
                 background-color: #1b1f23;
                 color: white;
                 border-color: white;
             }
+            .room-list-number {
+                background-color: rgba(0,0,0,0.5);
+            }
         }
         .calendar-view {
+            margin-top: 10px;
             .calendar-buttons {
                 text-align: center;
                 margin-top: 25px;
