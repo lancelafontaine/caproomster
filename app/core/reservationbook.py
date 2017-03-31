@@ -23,17 +23,17 @@ class ReservationBook(object):
 		self.waitingListCapstone = capstoneList
 
 	# Method to make a reservation
-	def makeReservation(self, room, holder, time, description):
+	def makeReservation(self, room, holder, timeslot, description, equipment):
 		# Check if room is available at specifie time
-		if (self.available(room, time) == True):
-			r = Reservation(room, holder, time, description)
+		if (self.available(room, timeslot, equipment) == True):
+			r = Reservation(room, holder, timeslot, description, equipment)
 			self.reservationList.append(r)
 			UnitOfWork.registerNew(r)
 			ReservationMapper.done()
 
 	# Method to add to the waiting list
-	def addToWaitingList(self, room, holder, time, description):
-		w = Waiting(room, holder, time, description, self.genWid())
+	def addToWaitingList(self, room, holder, timeslot, description):
+		w = Waiting(room, holder, timeslot, description, self.genWid())
 		if w.getUser().isCapstone():
 			self.waitingListCapstone.append(w)
 		else:
@@ -42,10 +42,10 @@ class ReservationBook(object):
 		WaitingMapper.done()
 
 	# Method to modify reservation
-	def modifyReservation(self, reservationId, time):
+	def modifyReservation(self, reservationId, timeslot):
 		r = self.getReservationById(reservationId)
 		if self.available(r.getRoom(), r.getTimeslot(), reservationId):
-			r.setTimeslot(time)
+			r.setTimeslot(timeslot)
 
 	# Method to cancel reservation
 	def cancel(self, reservationId):
@@ -99,7 +99,7 @@ class ReservationBook(object):
 		return wList
 
 	# Method to check if the timeslot is available, also overloaded for modifyReservation case
-	def available(self, room, time, rid=None):
+	def available(self, room, timeslot, equipment, rid=None):
 		isAvailable = True
 		for r in self.reservationList:
 			if r.getId() == rid:
@@ -107,15 +107,15 @@ class ReservationBook(object):
 			if r.getRoom() == room:
 				t = r.getTimeslot()
 				# Check if same date
-				if t.getDate() == time.getDate():
+				if t.getDate() == timeslot.getDate():
 					# Check if same start time
-					if t.getStartTime() == time.getStartTime():
+					if t.getStartTime() == timeslot.getStartTime():
 						isAvailable = False
 					# Check if same end time
-					if t.getEndTime() == time.getEndTime():
+					if t.getEndTime() == timeslot.getEndTime():
 						isAvailable = False
 					# Check if the time overlaps with each other
-					if t.getStartTime() < time.getStartTime() and time.getEndTime() < t.getEndTime():
+					if t.getStartTime() < timeslot.getStartTime() and timeslot.getEndTime() < t.getEndTime():
 						isAvailable = False
 
 		if isAvailable == False:
@@ -123,12 +123,12 @@ class ReservationBook(object):
 		return isAvailable
 
 	# Method to view MY reservations
-	def viewMyReservations(self, user):
-		myReservationList = []
+	def getUserReservations(self, user):
+		userReservations = []
 		for r in self.reservationList:
 			if (r.getUser() == user):
-				myReservationList.append(r)
-		return myReservationList
+				userReservations.append(r)
+		return userReservations
 
 	# Print method for current number of reservations and waitings in the system
 	def printNb(self):
@@ -185,7 +185,7 @@ class ReservationBook(object):
 		dt1 = datetime(year1, month1, day1)
 		wk1 = dt1.isocalendar()[1]
 
-		for r in self.viewMyReservations(user):
+		for r in self.getUserReservations(user):
 			# Get week nb
 			date2 = r.getTimeslot().getDate()
 			day2 = int(date2[8:10])

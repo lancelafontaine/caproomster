@@ -27,18 +27,18 @@ class Registry:
 
 
     # Method to make a reservation
-    def makeNewReservation(self,roomId,holder,time,description):
+    def makeNewReservation(self, roomId, user, timeslot, description, equipment):
         # Verifiy if there is any restrictions
-        if self.isRestricted(holder,time) == False:
-            self.reservationBook.makeReservation(RoomMapper.find(roomId),holder,time,description)
+        if self.isUserRestricted(user, timeslot) == False:
+            self.reservationBook.makeReservation(RoomMapper.find(roomId), user, timeslot, description, equipment)
 
     # Method to add to the waiting list
-    def addToWaitingList(self,roomId,holder,time,description):
-        self.reservationBook.addToWaitingList(RoomMapper.find(roomId),holder,time,description)
+    def addToWaitingList(self, roomId, user, timeslot, description):
+        self.reservationBook.addToWaitingList(RoomMapper.find(roomId), user, timeslot, description)
 
     # Method to modify a reservation
-    def modifyReservation(self,reservationId, time):
-        self.reservationBook.modifyReservation(reservationId, time)
+    def modifyReservation(self, reservationId, timeslot):
+        self.reservationBook.modifyReservation(reservationId, timeslot)
 
     # Method to cancel a reservation
     def cancelReservation(self,reservationId):
@@ -53,8 +53,8 @@ class Registry:
         self.reservationBook.updateWaiting(roomId)
 
     # Method to view MY reservations only
-    def viewMyReservation(self, user):
-        return self.reservationBook.viewMyReservations(user)
+    def viewUserReservations(self, user):
+        return self.reservationBook.getUserReservations(user)
 
     # Print method for debugging
     def printNb(self):
@@ -65,8 +65,8 @@ class Registry:
         return self.reservationBook.genTid()
 
     # Method for restriction
-    def isRestricted(self, user, time):
-        return self.reservationBook.isRestricted(user,time)
+    def isUserRestricted(self, user, time):
+        return self.reservationBook.isUserRestricted(user, time)
 
     # Accessors and Mutators
     def getReservationBook(self):

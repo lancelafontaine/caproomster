@@ -2,19 +2,21 @@
 class Reservation:
 
     # Constructor
-    def __init__(self, room,holder,time,description,reservationId):
-        self.user = holder
-        self.time = time
+    def __init__(self, room, user, timeslot, description, equipment, reservationId):
+        self.user = user
+        self.timeslot = timeslot
         self.room = room
         self.description = description
         self.reservationId = reservationId
+        self.equipment= equipment
 
     # Print method for debugging
     def __str__(self):
         return "Reservation Info" +\
         "Holder: " + str(self.user.getName()) +\
-        self.time +\
+        self.timeslot +\
         "Description: " + str(self.description) +\
+	    "Equipment needed: "+ ("YES" if self.equipment.__len__()==0 else "NO") +\
         "RID: " + str(self.reservationId)
 
     # Accessors and Mutators
@@ -25,10 +27,10 @@ class Reservation:
         self.reservationId = reservationId
 
     def getTimeslot(self):
-        return self.time
+        return self.timeslot
 
     def setTimeslot(self, time):
-        self.time = time
+        self.timeslot = time
 
     def getRoom(self):
         return self.room
@@ -48,6 +50,12 @@ class Reservation:
     def setDescription(self, description):
         self.description = description
 
+    def setEquipment(self, equipment):
+        self.equipment = equipment
+
+    def getEquipment(self):
+        return self.equipment
+
     def to_dict(self):
         reservation_data = {}
         reservation_data['room'] = {}
@@ -60,6 +68,9 @@ class Reservation:
         reservation_data['timeslot']['endTime'] = self.getTimeslot().getEndTime()
         reservation_data['timeslot']['date'] = self.getTimeslot().getDate()
         reservation_data['timeslot']['timeId'] = self.getTimeslot().getId()
+        reservation_data['equipment']['laptop'] = self.getEquipment()['laptop']
+        reservation_data['equipment']['projector']= self.getEquipment()['projector']
+        reservation_data['equipment']['whiteboard']= self.getEquipment()['whiteboard']
         reservation_data['description'] = self.getDescription()
         reservation_data['reservationId'] = self.getId()
         return reservation_data
