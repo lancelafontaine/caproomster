@@ -15,7 +15,8 @@
       logout: logout,
       getRoomList: getRoomList,
       reserveSlot: reserveSlot,
-      getAllReservation: getAllReservation
+      getAllReservation: getAllReservation,
+      getMyReservation: getMyReservation
     };
 
     /* login factory */
@@ -76,6 +77,18 @@
       var url = '/reservations/room/:roomId';
       return $resource(baseUrl + url, {
         roomId: '@roomId'
+      }, {
+        get: {
+          method: 'GET',
+          withCredentials: true
+        }
+      });
+    }
+
+    function getMyReservation() {
+      var url = '/reservations/user/:userId';
+      return $resource(baseUrl + url, {
+        userId: '@userId'
       }, {
         get: {
           method: 'GET',
