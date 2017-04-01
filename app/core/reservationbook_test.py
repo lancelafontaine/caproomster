@@ -8,6 +8,8 @@ from app.core.timeslot import Timeslot
 from app.core.user import User
 from app.mapper import ReservationMapper
 from app.mapper import TimeslotMapper
+from app.core.equipment import Equipment
+
 from datetime import datetime
 
 """Tests whether students get added to the appropriate waitlist based on capstone flag"""
@@ -31,19 +33,19 @@ def test_add_to_appropriate_waiting_list(monkeypatch):
 
 	# execute
 	reservationBook.addToWaitingList(2, User(3, 'usrname', 'pass', True),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc')
+	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc',Equipment())
 	# verify
 	assert len(reservationBook.waitingListCapstone) == 1
 
 	# execute
 	reservationBook.addToWaitingList(2, User(4, 'usrname', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc')
+	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc',Equipment())
 	# verify
 	assert len(reservationBook.waitingListRegular) == 1
 
 	# execute
 	reservationBook.addToWaitingList(2, User(5, 'usrname', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc')
+	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc',Equipment())
 	# verify
 	assert len(reservationBook.waitingListRegular) == 2
 
@@ -67,11 +69,11 @@ def test_update_waiting(monkeypatch):
 	This was already tested in test_add_to_appropriate_waiting_list()"""
 	# putting regular student into waitlist at room 5
 	reservationBook.addToWaitingList(5, User(3, 'mary', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1243), 'desc')
+	                                 Timeslot(11, 13, '2017-03-25', 2, 1243), 'desc',Equipment())
 
 	# putting regular student into waitlist at room 5
 	reservationBook.addToWaitingList(5, User(4, 'john', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1246), 'desc')
+	                                 Timeslot(11, 13, '2017-03-25', 2, 1246), 'desc',Equipment())
 
 	# putting regular student into waitlist at room 5
 	reservationBook.addToWaitingList(5, User(1, 'gary', 'pass', False),
@@ -245,7 +247,7 @@ def test_reservation_repeat(monkeypatch):
 	monkeypatch.setattr(ReservationMapper, 'save', ignore1)
 
 	# Execute
-	reservationBook.makeRepeatedReservation(room, user, time_slot, processed_description, repeat_amount)
+	reservationBook.makeRepeatedReservation(room, user, time_slot, processed_description,Equipment(), repeat_amount)
 
 	# Verify
 	assert len(reservationBook.getReservationList()) == expected_amount_of_reservation

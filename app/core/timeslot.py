@@ -41,6 +41,18 @@ class Timeslot:
     def setBlock(self, block):
         self.block = block
 
+    def overlaps(self, other_timeslot):
+        """
+
+        :type other_timeslot: Timeslot
+        """
+        if self.getDate() != other_timeslot.getDate():
+            return False
+
+        return other_timeslot.getEndTime() > self.getStartTime() and other_timeslot.getStartTime() < self.getEndTime()
+
+
+
     def getId(self):
         return self.timeId
 

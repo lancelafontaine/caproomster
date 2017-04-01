@@ -7,13 +7,12 @@ from app.mapper import UserMapper
 from app.core.reservation import Reservation
 
 
-def makeNew(room, holder, time, description, reservationId):
-    reservation = Reservation(room, holder, time, description, reservationId)
+def makeNew(room, user, timeslot, description, equipment, reservationId):
+    reservation = Reservation(room, user, timeslot, description, equipment, reservationId)
     UnitOfWork.registerNew(reservation)
     return reservation
 
 def find(reservationId):
-    result = []
     result = ReservationTDG.find(reservationId)
     if not result:
         return

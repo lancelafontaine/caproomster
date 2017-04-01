@@ -7,6 +7,7 @@ from app.mapper import ReservationMapper
 from app.mapper import WaitingMapper
 from app.mapper import TimeslotMapper
 from app.mapper import UnitOfWork
+from app.core.equipment import Equipment
 
 
 # ReservationBook object
@@ -23,17 +24,18 @@ class ReservationBook(object):
 		self.waitingListCapstone = capstoneList
 
 	# Method to make a reservation
-	def makeReservation(self, room, holder, timeslot, description, equipment):
-		# Check if room is available at specifie time
-		if (self.available(room, timeslot, equipment) == True):
-			r = Reservation(room, holder, timeslot, description, equipment)
+	def makeReservation(self, room, holder, timeslot, description, equipment=Equipment()):
+		# Check if room is timeslot is available and equipment also
+		if self.isTimeslotAvailableforRoom(room, timeslot) \
+				and self.isEquipmentAvailableForTimeSlot(timeslot, equipment):
+			r = Reservation(room, holder, timeslot, description, equipment, self.genRid())
 			self.reservationList.append(r)
 			UnitOfWork.registerNew(r)
 			ReservationMapper.done()
 
 	# Method to add to the waiting list
-	def addToWaitingList(self, room, holder, timeslot, description):
-		w = Waiting(room, holder, timeslot, description, self.genWid())
+	def addToWaitingList(self, room, holder, timeslot, description, equipment=Equipment()):
+		w = Waiting(room, holder, timeslot, description, equipment, self.genWid())
 		if w.getUser().isCapstone():
 			self.waitingListCapstone.append(w)
 		else:
@@ -44,7 +46,8 @@ class ReservationBook(object):
 	# Method to modify reservation
 	def modifyReservation(self, reservationId, timeslot):
 		r = self.getReservationById(reservationId)
-		if self.available(r.getRoom(), r.getTimeslot(), reservationId):
+		if self.isTimeslotAvailableforRoom(r.getRoom(), r.getTimeslot(), reservationId) \
+				and self.isEquipmentAvailableForTimeSlot(r.getTimeslot(), r.getEquipment()):
 			r.setTimeslot(timeslot)
 
 	# Method to cancel reservation
@@ -57,10 +60,12 @@ class ReservationBook(object):
 	# Method to update the waiting list
 	def updateWaiting(self, roomId):
 		# Iterate over a queue of all reservations in specify room
-		for w in self.getListByRoom(roomId):
-			if self.available(w.getRoom(), w.getTimeslot()):
+		for w in self.getWaitlistForRoom(roomId):
+			if self.isTimeslotAvailableforRoom(w.getRoom(), w.getTimeslot()) \
+					and self.isEquipmentAvailableForTimeSlot(w.getTimeslot(), w.getEquipment()):
 				if not self.isRestricted(w.getUser(), w.getTimeslot()):
-					r = Reservation(w.getRoom(), w.getUser(), w.getTimeslot(), w.getDescription(), self.genRid())
+					r = Reservation(w.getRoom(), w.getUser(), w.getTimeslot(), w.getDescription(), w.getEquipment(),
+					                self.genRid())
 					self.reservationList.append(r)
 					if w.getUser().isCapstone():
 						self.waitingListCapstone.remove(w)
@@ -83,7 +88,7 @@ class ReservationBook(object):
 				return r
 
 	# Method to get a queue of all Waiting
-	def getListByRoom(self, roomId):
+	def getWaitlistForRoom(self, roomId):
 		wList = deque()
 
 		# First get all capstone students
@@ -98,29 +103,40 @@ class ReservationBook(object):
 
 		return wList
 
-	# Method to check if the timeslot is available, also overloaded for modifyReservation case
-	def available(self, room, timeslot, equipment, rid=None):
-		isAvailable = True
+	# Method to check if the timeslot is isTimeslotAvailableforRoom, also overloaded for modifyReservation case
+	def isTimeslotAvailableforRoom(self, room, timeslot, rid=None):
 		for r in self.reservationList:
-			if r.getId() == rid:
-				continue
-			if r.getRoom() == room:
-				t = r.getTimeslot()
-				# Check if same date
-				if t.getDate() == timeslot.getDate():
-					# Check if same start time
-					if t.getStartTime() == timeslot.getStartTime():
-						isAvailable = False
-					# Check if same end time
-					if t.getEndTime() == timeslot.getEndTime():
-						isAvailable = False
-					# Check if the time overlaps with each other
-					if t.getStartTime() < timeslot.getStartTime() and timeslot.getEndTime() < t.getEndTime():
-						isAvailable = False
+			if r.getRoom() == room and timeslot.overlaps(r.getTimeslot()):
+				return False
+		return True
 
-		if isAvailable == False:
-			print("Timeslot is unavailable")
-		return isAvailable
+	def isEquipmentAvailableForTimeSlot(self, timeslot, equipment):
+		# type: (Timeslot, Equipment) -> bool
+		currentEquipmentAvailable = self.getAllEquipmentAvailableAtTimeslot(timeslot)
+		for type, quantity in equipment.equipment.iteritems():
+			amountAvailable = currentEquipmentAvailable.equipment[type]
+			currentEquipmentAvailable.equipment[type] = amountAvailable - quantity
+		return len(currentEquipmentAvailable) > 0
+
+	def getAllEquipmentAvailableAtTimeslot(self, timeslot):
+		"""
+
+		:rtype: Equipment
+		"""
+		maxEquipmentAvailable = Equipment(laptops=3, projectors=3, whiteboards=3)
+		# iterate through reservations list, get total equipment already reserved
+		for r in self.getAllReservationsForTimeslot(timeslot):
+			for type, quantity in r.getEquipment().iteritems():
+				amountAvailable = maxEquipmentAvailable.equipment[type]
+				maxEquipmentAvailable.equipment[type] = amountAvailable - quantity
+		return maxEquipmentAvailable
+
+	def getAllReservationsForTimeslot(self, timeslot):
+		listOfReservations = []
+		for r in self.reservationList:
+			if r.getTimeslot().overlaps(timeslot):
+				listOfReservations.append(r)
+		return listOfReservations
 
 	# Method to view MY reservations
 	def getUserReservations(self, user):
@@ -227,7 +243,7 @@ class ReservationBook(object):
 	def setCapstoneWaitingList(self, waitingList):
 		self.waitingListCapstone = waitingList
 
-	def makeRepeatedReservation(self, room, user, timeslot, description, repeat_amount):
+	def makeRepeatedReservation(self, room, user, timeslot, description, equipment, repeat_amount):
 		max_repetition = 2
 		days_in_a_week = 7
 
@@ -255,7 +271,7 @@ class ReservationBook(object):
 			timeslot.setId(timeslot_id)
 
 			# create and register a reservation object
-			reservation = ReservationMapper.makeNew(room, user, timeslot, description, timeslot_id)
+			reservation = ReservationMapper.makeNew(room, user, timeslot, description, equipment, timeslot_id)
 			self.reservationList.append(reservation)
 			# add a week to the current reservation date
 			reservation_date += timedelta(days=days_in_a_week)
