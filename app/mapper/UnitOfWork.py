@@ -32,8 +32,6 @@ def commit():
 	for index, object in enumerate(newList):
 		if isinstance(object, User):
 			UserMapper.save(object)
-		if isinstance(object, Room):
-			RoomMapper.save(object)
 		if isinstance(object, Reservation):
 			ReservationMapper.save(object)
 		if isinstance(object, Waiting):
@@ -44,8 +42,6 @@ def commit():
 	for index, object in enumerate(changedList):
 		if isinstance(object, User):
 			UserMapper.update(object)
-		if isinstance(object, Room):
-			RoomMapper.update(object)
 		if isinstance(object, Reservation):
 			ReservationMapper.update(object)
 		if isinstance(object, Waiting):

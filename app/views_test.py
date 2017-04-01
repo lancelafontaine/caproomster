@@ -134,7 +134,7 @@ def test_valid_get_all_rooms_with_login(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def rooms_found():
-                return [Room(1, False), Room(2, False), Room(3, False)]
+                return [Room(1), Room(2), Room(3)]
 
             monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
 
@@ -209,14 +209,14 @@ def test_valid_validate_new_reservation(monkeypatch):
                 return User('mr', 'pickles')
 
             def mock_room_find(_):
-                return Room(1, False)
+                return Room(1)
 
             def mock_reservation_done():
                 return
 
             def mock_reservation_add(*args):
                 time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
-                room = Room(1, False)
+                room = Room(1)
                 user = User('mr', 'pickles')
                 return Reservation(room, user, time, 'description', 1)
 
@@ -376,7 +376,7 @@ def test_valid_make_new_reservation_room_user_exists(monkeypatch):
                 return User('glorious', 'carpet')
 
             def mock_room_find(_):
-                return Room(1, False)
+                return Room(1)
 
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
@@ -393,7 +393,7 @@ def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch)
                 return
 
             def mock_room_find(_):
-                return Room(1, False)
+                return Room(1)
 
             monkeypatch.setattr(UserMapper, 'find', mock_user_not_found)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
@@ -435,7 +435,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations():
         with app.test_request_context():
             reservations = []
             time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
-            room = Room(1, False)
+            room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
@@ -453,7 +453,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
         with app.test_request_context():
             reservations = []
             time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
-            room = Room(1, False)
+            room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
@@ -471,7 +471,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
         with app.test_request_context():
             reservations = []
             time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
-            room = Room(1, False)
+            room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
@@ -489,7 +489,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
         with app.test_request_context():
             reservations = []
             time = Timeslot(5, 7, '2020-01-01', '', 1, 1)
-            room = Room(1, False)
+            room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
@@ -507,7 +507,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
         with app.test_request_context():
             reservations = []
             time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
-            room = Room(1, False)
+            room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
@@ -525,7 +525,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
         with app.test_request_context():
             reservations = []
             time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
-            room = Room(1, False)
+            room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
@@ -543,7 +543,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
         with app.test_request_context():
             reservations = []
             time = Timeslot(5, 8, '2020-01-01', '', 1, 1)
-            room = Room(1, False)
+            room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', 1)
             reservations.append(reservation1)
@@ -560,7 +560,7 @@ def test_invalid_get_all_rooms_without_login(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def rooms_found():
-                return [Room(1, False), Room(2, False), Room(3, False)]
+                return [Room(1), Room(2), Room(3)]
 
             monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
 
@@ -573,7 +573,7 @@ def test_valid_get_all_rooms_with_login(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def rooms_found():
-                return [Room(1, False), Room(2, False), Room(3, False)]
+                return [Room(1), Room(2), Room(3)]
 
             monkeypatch.setattr(RoomMapper, 'findAll', rooms_found)
 
@@ -594,13 +594,13 @@ def test_invalid_make_new_reservation_without_login(monkeypatch):
                 return
 
             def room_find(_):
-                return Room(1, False)
+                return Room(1)
 
             def user_find(_):
                 return User('buddy', 'boy')
 
             def reservation_create(*args, **kwargs):
-                room = Room(1, False)
+                room = Room(1)
                 user = User('buddy', 'boy')
                 time = Timeslot(1, 2, '2020-01-01', '', 1)
                 return Reservation(room, user, time, 'description', 1)
@@ -631,7 +631,7 @@ def test_valid_get_reservations_by_room_with_login(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def find_by_room(*args, **kwargs):
-                room = Room(1, False)
+                room = Room(1)
                 user = User('buddy', 'boy')
                 time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
                 return [Reservation(room, user, time, 'description', 1)]
@@ -661,7 +661,7 @@ def test_valid_get_reservations_by_user_with_login(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def find_by_user(*args, **kwargs):
-                room = Room(1, False)
+                room = Room(1)
                 user = User('buddy', 'boy')
                 time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
                 return [Reservation(room, user, time, 'description', 1)]
@@ -691,7 +691,7 @@ def test_valid_get_reservations_by_with_login(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def find_by_room(*args, **kwargs):
-                room = Room(1, False)
+                room = Room(1)
                 user = User('buddy', 'boy')
                 time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
                 return [Reservation(room, user, time, 'description', 1)]

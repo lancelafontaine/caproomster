@@ -26,14 +26,14 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    expected = Room(10, 'lock')
+    expected = Room(10)
 
     # Mock
     def no_find(_, __):
         return
 
     def yes_find(_):
-        return [[expected.getId(), expected.getLock()]]
+        return [[expected.getId()]]
 
     monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(RoomTDG, 'find', yes_find)
@@ -42,13 +42,12 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     val = RoomMapper.find(1)
 
     # Verify
-    assert(val.getLock() is expected.getLock())
     assert(val.getId() is expected.getId())
 
 
 def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     # Test Data
-    expected = Room(110, 'lock')
+    expected = Room(110)
 
     # Mock
     def id_find(_, __):
@@ -64,21 +63,20 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     val = RoomMapper.find(1)
 
     # Verify
-    assert(val.getLock() is expected.getLock())
     assert(val.getId() is expected.getId())
 
 
 def test_find_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    unexpected = Room(10, 'lock')
-    expected = Room(110, 'lock2')
+    unexpected = Room(10)
+    expected = Room(110)
 
     # Mock
     def id_find(_, __):
         return expected
 
     def tdg_find(_):
-        return [[unexpected.getId(), unexpected.getLock()]]
+        return [[unexpected.getId()]]
 
     monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(RoomTDG, 'find', tdg_find)
@@ -87,5 +85,4 @@ def test_find_found_in_id_map_found_in_DB(monkeypatch):
     val = RoomMapper.find(1)
 
     # Verify
-    assert(val.getLock() is expected.getLock())
     assert(val.getId() is expected.getId())

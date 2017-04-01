@@ -33,7 +33,7 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
 def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
     expected_timeslot = Timeslot(1,2,3,4,5,6)
-    expected_room = Room(1,2)
+    expected_room = Room(1)
     expected_user = User('abe',3)
     expected = Waiting(expected_room, expected_user, expected_timeslot, 'joe', 234)
 

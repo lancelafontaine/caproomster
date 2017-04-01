@@ -218,7 +218,7 @@ def test_reservation_repeat(monkeypatch):
 	user_id = 1
 	processed_description = ""
 	user = User(user_id, "", "")
-	room = Room(room_id, False)
+	room = Room(room_id)
 	time_slot = Timeslot(start_time, end_time, date, block, user_id, '1')
 	repeat_amount = 2
 
