@@ -26,14 +26,14 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    expected = Timeslot(1, 5, 'date', 'block', 'id')
+    expected = Timeslot(1, 5, 'date', 'block', 'id', 'id')
 
     # Mock
     def no_find(_, __):
         return
 
     def yes_find(_):
-        return [[expected.getId(), expected.getStartTime(), expected.getEndTime(), expected.getDate(), expected.getBlock(), expected.getId()]]
+        return [[expected.getId(), expected.getStartTime(), expected.getEndTime(), expected.getDate(), expected.getBlock(), expected.getUserId(), expected.getId()]]
 
     monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(TimeslotTDG, 'find', yes_find)
@@ -51,7 +51,7 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
 
 def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     # Test Data
-    expected = Timeslot(1, 5, 'date', 'block', 'id')
+    expected = Timeslot(1, 5, 'date', 'block', 'id', 'id')
 
     # Mock
     def id_find(_, __):
@@ -72,12 +72,13 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     assert(val.getDate() is expected.getDate())
     assert(val.getBlock() is expected.getBlock())
     assert(val.getId() is expected.getId())
+    assert(val.getUserId() is expected.getUserId())
 
 
 def test_find_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    unexpected = Timeslot(11, 52, 'date2', 'block2', 'id2')
-    expected = Timeslot(1, 5, 'date', 'block', 'id')
+    unexpected = Timeslot(11, 52, 'date2', 'block2', 'id2', 'id2')
+    expected = Timeslot(1, 5, 'date', 'block', 'id', 'id')
 
     # Mock
     def id_find(_, __):
@@ -98,3 +99,4 @@ def test_find_found_in_id_map_found_in_DB(monkeypatch):
     assert(val.getDate() is expected.getDate())
     assert(val.getBlock() is expected.getBlock())
     assert(val.getId() is expected.getId())
+    assert(val.getUserId() is expected.getUserId())

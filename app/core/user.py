@@ -5,30 +5,23 @@ class User:
     def __init__(self):
         pass
 
-    def __init__(self, userId, name, password, capstone=False):
-        self.name = name
+    def __init__(self, username, password, capstone=False):
+        self.username = username
         self.password = password
-        self.userId = userId
         self.capstone = capstone
 
     # Accessors and Mutators
-    def getName(self):
-        return self.name
+    def getId(self):
+        return self.username
 
-    def setName(self, name):
-        self.name = name
+    def setId(self, username):
+        self.username = username
 
     def getPassword(self):
         return self.password
 
     def setPassword(self, password):
         self.password = password
-
-    def getId(self):
-        return self.userId
-
-    def setId(self, userId):
-        self.userId = userId
 
     def setCapstone(self, capstone=True):
         self.capstone = capstone

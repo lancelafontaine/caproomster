@@ -1,39 +1,41 @@
 from app.db import connect_db
 
-def find(id):
+
+def find(username):
     conn = connect_db()
     if conn:
-	cur = conn.cursor()
-	cur.execute("""SELECT * FROM userTable WHERE userId = %s;""", (id,))
-	data = cur.fetchall()
-	conn.close()
-	return data
+        cur = conn.cursor()
+        cur.execute("""SELECT * FROM userTable WHERE username = %s;""", (username,))
+        data = cur.fetchall()
+        conn.close()
+        return data
     else:
         return []
 
-def insert(name, pw, capstone):
+
+def insert(username, password, capstone):
     conn = connect_db()
     if conn:
-	cur = conn.cursor()
-	cur.execute("""INSERT INTO userTable(password, name, capstone) VALUES
-  		(%s, %s);""", (pw, name, capstone))
-	conn.commit()
-	conn.close()
+        cur = conn.cursor()
+        cur.execute("""INSERT INTO userTable(username, password, capstone) VALUES
+  		(%s, %s);""", (username, password, capstone))
+        conn.commit()
+        conn.close()
 
-def update(id, name, password, capstone):
+
+def update(username, password, capstone):
     conn = connect_db()
     if conn:
-	cur = conn.cursor()
-	cur.execute("""UPDATE userTable SET name = %s,
-  		password = %s WHERE userId = %s;""", (name, password, id, capstone))
-	conn.commit()
-	conn.close()
+        cur = conn.cursor()
+        cur.execute("""UPDATE userTable SET password = %s AND capstone = %s WHERE username = %s;""", (password, capstone, username))
+        conn.commit()
+        conn.close()
 
-def delete(id):
+
+def delete(username):
     conn = connect_db()
     if conn:
-	cur = conn.cursor()
-	cur.execute("""DELETE FROM userTable WHERE userId = %s;""", (id,))
-	conn.commit()
-	conn.close()
-
+        cur = conn.cursor()
+        cur.execute("""DELETE FROM userTable WHERE username = %s;""", (id))
+        conn.commit()
+        conn.close()
