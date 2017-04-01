@@ -713,3 +713,72 @@ def test_valid_get_reservations_by_room_with_login(monkeypatch):
             assert (isinstance(response_data['reservations'], list))
             assert ('waitings' in response_data)
             assert (isinstance(response_data['waitings'], list))
+
+def test_invalid_get_all_reservations_no_login():
+    with app.app_context():
+        with app.test_request_context():
+            views.session.clear()
+            response = views.get_all_reservations()
+            assert (response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+def test_valid_get_all_reservations(monkeypatch):
+    with app.app_context():
+        with app.test_request_context():
+            def reservations_found():
+                room = Room(1, False)
+                user = User('buddy', 'boy')
+                time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
+                return [Reservation(room, user, time, 'description', 1)]
+            monkeypatch.setattr(ReservationMapper, 'findAll', reservations_found)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'username': 'pasta'})
+            response = views.get_all_reservations()
+            assert (response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert (isinstance(response_data, dict))
+            assert ('reservations' in response_data)
+            assert (isinstance(response_data['reservations'], list))
+
+
+def test_invalid_delete_reservation_no_login():
+    with app.app_context():
+        with app.test_request_context(method='DELETE'):
+            views.session.clear()
+            response = views.delete_reservation('test')
+            assert (response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
+
+
+def test_invalid_delete_reservation_wrong_id(monkeypatch):
+    with app.app_context():
+        with app.test_request_context(method='DELETE'):
+            def reservation_not_found(_):
+                return
+            monkeypatch.setattr(ReservationMapper, 'find', reservation_not_found)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'username': 'pasta'})
+            response = views.delete_reservation('test')
+            assert (response.status_code == views.STATUS_CODE['NOT_FOUND'])
+
+def test_valid_delete_reservation(monkeypatch):
+    with app.app_context():
+        with app.test_request_context(method='DELETE'):
+            def reservation_not_found(_):
+                room = Room(1, False)
+                user = User('buddy', 'boy')
+                time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
+                return Reservation(room, user, time, 'description', 'test')
+            def empty_return(*args, **kwargs):
+                return
+            monkeypatch.setattr(ReservationMapper, 'find', reservation_not_found)
+            monkeypatch.setattr(ReservationMapper, 'delete', empty_return)
+            monkeypatch.setattr(ReservationMapper, 'done', empty_return)
+
+            views.session.clear()
+            views.session.update({'logged_in': True, 'username': 'pasta'})
+            response = views.delete_reservation('test')
+            assert (response.status_code == views.STATUS_CODE['OK'])
+            response_data = json.loads(response.get_data())
+            assert (isinstance(response_data, dict))
+            assert ('reservationId' in response_data)
