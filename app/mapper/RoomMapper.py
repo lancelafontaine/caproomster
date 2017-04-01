@@ -26,13 +26,13 @@ def findAll():
         return
     else:
         for index, r in enumerate(result):
-            room = Room(r[0], r[1])
+            room = Room(r[0])
             rooms.append(room)
     return rooms
 
 
 def delete(roomId):
-    UnitOfWork.registerDeleted(Room(roomId,None))
+    UnitOfWork.registerDeleted(Room(roomId))
 
 #save all work
 def done():

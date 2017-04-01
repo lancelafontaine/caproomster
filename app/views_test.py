@@ -725,7 +725,7 @@ def test_valid_get_all_reservations(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def reservations_found():
-                room = Room(1, False)
+                room = Room(1)
                 user = User('buddy', 'boy')
                 time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
                 return [Reservation(room, user, time, 'description', 1)]
@@ -765,7 +765,7 @@ def test_valid_delete_reservation(monkeypatch):
     with app.app_context():
         with app.test_request_context(method='DELETE'):
             def reservation_not_found(_):
-                room = Room(1, False)
+                room = Room(1)
                 user = User('buddy', 'boy')
                 time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
                 return Reservation(room, user, time, 'description', 'test')
