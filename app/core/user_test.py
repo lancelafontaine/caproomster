@@ -5,9 +5,9 @@ from app.core.user import  User
 
 def test_change_capstone_status(monkeypatch):
 	#Initialization
-	user1 = User(8,"arek","secretArekPassword")
-	user2 = User(9,"bruce","secretBrucePassword",False)
-	user3 = User(10,"cc","secretCCPassword",True)
+	user1 = User("arek","secretArekPassword")
+	user2 = User("bruce","secretBrucePassword",False)
+	user3 = User("cc","secretCCPassword",True)
 
 	#By default, users are not capstone students,
 	# so making sure this is correctly enforced
@@ -47,7 +47,7 @@ def test_change_capstone_status(monkeypatch):
 
 def test_setting_password(monkeypatch):
 	#Initialization
-	user = User(9,"taimoor","secretTaimoorPassword")
+	user = User("taimoor","secretTaimoorPassword")
 
 	#The password is not really secret
 	assert user.getPassword() == "secretTaimoorPassword"

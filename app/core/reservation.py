@@ -68,7 +68,6 @@ class Reservation:
 		reservation_data['room'] = {}
 		reservation_data['room']['roomId'] = self.getRoom().getId()
 		reservation_data['user'] = {}
-		reservation_data['user']['username'] = self.getUser().getName()
 		reservation_data['user']['userId'] = self.getUser().getId()
 		reservation_data['timeslot'] = {}
 		reservation_data['timeslot']['startTime'] = self.getTimeslot().getStartTime()

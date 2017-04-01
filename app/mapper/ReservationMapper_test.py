@@ -25,7 +25,7 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
     monkeypatch.setattr(ReservationTDG, 'find', no_find)
 
     # Execute
-    val = ReservationMapper.find(1)
+    val = ReservationMapper.find("rtcyvu")
 
     # Verify
     assert(val is None)
@@ -33,17 +33,16 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    expected_timeslot = Timeslot(1, 2, 'date', 'block', 1)
-    expected_room = Room(1, 'a')
-    expected = Reservation(expected_room, User(
-        1, 'name', 'password'), expected_timeslot, 'description', Equipment(), 1)
+    expected_timeslot = Timeslot(1, 2, 'date', 1, 'usernameid','timeid')
+    expected_room = Room(1)
+    expected = Reservation(expected_room, User('name', 'password'), expected_timeslot, 'description', Equipment("3w4ex5rcy"), "reservationID####")
 
     # Mock
     def no_find(_, __):
         return
 
     def yes_find(_):
-        return [[expected.getId(), expected_room.getId(), expected.getDescription(), expected.getUser().getId(), expected_timeslot.getId()]]
+        return [[expected.getId(), expected_room.getId(), expected.getDescription(), expected.getUser().getId(), expected.getEquipment().getId(), expected_timeslot.getId()]]
 
     def timeslot_find(_):
         return expected_timeslot
@@ -57,7 +56,7 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     monkeypatch.setattr(RoomMapper, 'find', room_find)
 
     # Execute
-    val = ReservationMapper.find(1)
+    val = ReservationMapper.find("trcyv")
 
     # Verify
     assert(val.getRoom().getId() is expected_room.getId())
@@ -68,8 +67,8 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
 
 def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     # Test Data
-    expected = Reservation('room', User(
-        1, 'name', 'password'), 'time', 'description',Equipment(), 1)
+    expected = Reservation('room', User('name', 'password'), 'time', 'description',Equipment("dxhtcfjygv"), 1)
+
 
     # Mock
     def id_find(_, __):
@@ -82,7 +81,7 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     monkeypatch.setattr(ReservationTDG, 'find', no_find)
 
     # Execute
-    val = ReservationMapper.find(1)
+    val = ReservationMapper.find("vuybi")
 
     # Verify
     assert(val.getRoom() is expected.getRoom())
@@ -93,10 +92,8 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    unexpected = Reservation('room', User(
-        1, 'name', 'password'), 'time', 'description', Equipment(), 1)
-    expected = Reservation('room1', User(
-        1, 'name2', 'password3'), 'time1', 'description2', Equipment(), 2)
+    unexpected = Reservation('room', User('name', 'password'), 'time', 'description', Equipment("trcyvu"), 1)
+    expected = Reservation('room1', User('name2', 'password3'), 'time1', 'description2', Equipment("fgvkgas"), 2)
 
     # Mock
     def id_find(_, __):
@@ -109,7 +106,7 @@ def test_find_found_in_id_map_found_in_DB(monkeypatch):
     monkeypatch.setattr(ReservationTDG, 'find', tdg_find)
 
     # Execute
-    val = ReservationMapper.find(1)
+    val = ReservationMapper.find("tvyub")
 
     # Verify
     assert(val.getRoom() is expected.getRoom())

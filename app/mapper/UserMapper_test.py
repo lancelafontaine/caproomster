@@ -26,14 +26,14 @@ def test_find_not_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    expected = User(10, 'joe', 'shmoe')
+    expected = User('joe', 'shmoe')
 
     # Mock
     def no_find(_, __):
         return
 
     def yes_find(_):
-        return [[expected.getId(), expected.getName(), expected.getPassword(), expected.isCapstone()]]
+        return [[expected.getId(), expected.getPassword(), expected.isCapstone()]]
 
     monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(UserTDG, 'find', yes_find)
@@ -42,14 +42,13 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
     val = UserMapper.find(1)
 
     # Verify
-    assert(val.getName() is expected.getName())
     assert(val.getPassword() is expected.getPassword())
     assert(val.getId() is expected.getId())
 
 
 def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     # Test Data
-    expected = User(110, 'joel', 'shmoel', True)
+    expected = User('joel', 'shmoel', True)
 
     # Mock
     def id_find(_,__):
@@ -65,7 +64,6 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     val = UserMapper.find(1)
 
     # Verify
-    assert(val.getName() is expected.getName())
     assert(val.getPassword() is expected.getPassword())
     assert(val.getId() is expected.getId())
     assert(val.isCapstone() is expected.isCapstone())
@@ -73,15 +71,15 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
 
 def test_find_found_in_id_map_found_in_DB(monkeypatch):
     # Test Data
-    unexpected = User(10, 'joe', 'shmoe',False)
-    expected = User(110, 'joel', 'shmoel',False)
+    unexpected = User('joe', 'shmoe',False)
+    expected = User('joel', 'shmoel',False)
 
     # Mock
     def id_find(_,__):
         return expected
 
     def tdg_find(_):
-        return [[unexpected.getId(), unexpected.getName(), unexpected.getPassword()]]
+        return [[unexpected.getId(), unexpected.getPassword()]]
 
     monkeypatch.setattr(IdMap, 'find', id_find)
     monkeypatch.setattr(UserTDG, 'find', tdg_find)
@@ -90,7 +88,6 @@ def test_find_found_in_id_map_found_in_DB(monkeypatch):
     val = UserMapper.find(1)
 
     # Verify
-    assert(val.getName() is expected.getName())
     assert(val.getPassword() is expected.getPassword())
     assert(val.getId() is expected.getId())
     assert(val.isCapstone() is expected.isCapstone())

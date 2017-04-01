@@ -8,28 +8,28 @@ def __init__():
     pass
 
 
-def makeNew(userId, name, password, capstone):
-    user = User(userId, name, password, capstone)
+def makeNew(username, password, capstone):
+    user = User(username, password, capstone)
     UnitOfWork.registerNew(user)
     return user
 
 
-def find(userId):
-    result = UserTDG.find(userId)
+def find(username):
+    result = UserTDG.find(username)
     if not result:
         return
     else:
-        return User(result[0][0], result[0][1], result[0][2], result[0][3])
+        return User(result[0][0], result[0][1], result[0][2])
 
 
-def setUser(userId):
-    user = find(userId)
-    user.setName(user.getName())
+def setUser(username):
+    user = find(username)
+    user.setName(user.getId())
     UnitOfWork.registerDirty(user)
 
 
-def delete(userId):
-    UnitOfWork.registerDeleted( User(userId,None,None,None) )
+def delete(username):
+    UnitOfWork.registerDeleted( User(username,None,None) )
 
 
 def done():
@@ -38,7 +38,7 @@ def done():
 
 def save(user):
     UserTDG.insert(
-        user.getName(),
+        user.getId(),
         user.getPassword(),
         user.isCapstone()
     )
@@ -47,7 +47,6 @@ def save(user):
 def update(user):
     UserTDG.update(
         user.getId(),
-        user.getName(),
         user.getPassword(),
         user.isCapstone()
     )

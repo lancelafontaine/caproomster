@@ -29,23 +29,26 @@ def test_add_to_appropriate_waiting_list(monkeypatch):
 
 	# check the size of the waitlist for capstone
 	assert len(reservationBook.waitingListCapstone) == 0
+
+	# check the size of the waitlist for regular
 	assert len(reservationBook.waitingListRegular) == 0
 
 	# execute
-	reservationBook.addToWaitingList(2, User(3, 'usrname', 'pass', True),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc',Equipment())
+	reservationBook.addToWaitingList(2, User('usrname1', 'pass', True),
+	                                 Timeslot(11, 13, '2017-03-25', 2, "usrname1", "timeslotID_ibuon"), 'desc',Equipment("equipmentID_ghvjbk"))
 	# verify
 	assert len(reservationBook.waitingListCapstone) == 1
 
 	# execute
-	reservationBook.addToWaitingList(2, User(4, 'usrname', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc',Equipment())
+	reservationBook.addToWaitingList(2, User('usrname2', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, "usrname2", "timeslotID_hjbkn"), 'desc',Equipment("equipmentID_asdda"))
 	# verify
 	assert len(reservationBook.waitingListRegular) == 1
 
 	# execute
-	reservationBook.addToWaitingList(2, User(5, 'usrname', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc',Equipment())
+	reservationBook.addToWaitingList(2, User('usrname3', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, "usrname3", "timeslotID_hasda"), 'desc',Equipment("equipmentID_asdas"))
+
 	# verify
 	assert len(reservationBook.waitingListRegular) == 2
 
@@ -68,28 +71,29 @@ def test_update_waiting(monkeypatch):
 	1 capstone student all in room 5, in that order.
 	This was already tested in test_add_to_appropriate_waiting_list()"""
 	# putting regular student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(3, 'mary', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1243), 'desc',Equipment())
+	reservationBook.addToWaitingList(5, User('mary', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, "mary", "timeslotID_iubuasbd"), 'desc',Equipment("equipmentID_xbcxbc"))
 
 	# putting regular student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(4, 'john', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1246), 'desc',Equipment())
+	reservationBook.addToWaitingList(5, User('john', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, "john", "timeslotID_asfafa"), 'desc',Equipment("equipmentID_anranra"))
 
 	# putting regular student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(1, 'gary', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1248), 'desc')
+	reservationBook.addToWaitingList(5, User('gary', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, "gary", "timeslotID_sngfssn"), 'desc',Equipment("equipmentID_xnfsgn"))
 
 	# putting capstone student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(5, 'emir', 'pass', True),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1234), 'desc')
+	reservationBook.addToWaitingList(5, User('emir', 'pass', True),
+	                                 Timeslot(11, 13, '2017-03-25', 2, "emir", "timeslotID_bafdbd"), 'desc',Equipment("equipmentID_asfaf"))
+
 
 	# putting regular student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(6, 'cody', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1222), 'desc')
+	reservationBook.addToWaitingList(5, User('cody', 'pass'),
+	                                 Timeslot(11, 13, '2017-03-25', 2, "cody", "timeslotID_asdsdfffa"), 'desc',Equipment("equipmentID_avbeerf"))
 
 	# putting capstone student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(7, 'mark', 'pass', True),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1212), 'desc')
+	reservationBook.addToWaitingList(5, User('mark', 'pass', True),
+	                                 Timeslot(11, 13, '2017-03-25', 2, "mark", "timeslotID_basfaf"), 'desc',Equipment("equipmentID_aghtrhr"))
 
 	assert len(reservationBook.waitingListRegular) == 4
 	assert len(reservationBook.waitingListCapstone) == 2
@@ -105,7 +109,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure the user is the first capstone student at the top of the list"""
-	assert reservationBook.reservationList[0].getUser().getName() == 'emir'
+	assert reservationBook.reservationList[0].getUser().getId() == 'emir'
 
 	"""Calling update again, this should not change the waitlists since """
 	# Execute
@@ -133,7 +137,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is Mark"""
-	assert reservationBook.reservationList[0].getUser().getName() == "mark"
+	assert reservationBook.reservationList[0].getUser().getId() == "mark"
 
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
 	reservationBook.reservationList = []
@@ -147,7 +151,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is Mary"""
-	assert reservationBook.reservationList[0].getUser().getName() == "mary"
+	assert reservationBook.reservationList[0].getUser().getId() == "mary"
 
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
 	reservationBook.reservationList = []
@@ -161,7 +165,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is John"""
-	assert reservationBook.reservationList[0].getUser().getName() == "john"
+	assert reservationBook.reservationList[0].getUser().getId() == "john"
 
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
 	reservationBook.reservationList = []
@@ -175,7 +179,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is Gary"""
-	assert reservationBook.reservationList[0].getUser().getName() == "gary"
+	assert reservationBook.reservationList[0].getUser().getId() == "gary"
 
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
 	reservationBook.reservationList = []
@@ -189,7 +193,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is Cody"""
-	assert reservationBook.reservationList[0].getUser().getName() == "cody"
+	assert reservationBook.reservationList[0].getUser().getId() == "cody"
 
 	"""At this point the list is empty, both regular and capstone"""
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
@@ -217,11 +221,11 @@ def test_reservation_repeat(monkeypatch):
 	room_id = 2
 	block = 0
 	date = '2016-04-20'
-	user_id = 1
+	user_id = "username"
 	processed_description = ""
-	user = User(user_id, "", "")
-	room = Room(room_id, False)
-	time_slot = Timeslot(start_time, end_time, date, block, user_id)
+	user = User(user_id, "password")
+	room = Room(room_id)
+	time_slot = Timeslot(start_time, end_time, date, block, user_id, 'timeslotID_yctvubkjas')
 	repeat_amount = 2
 
 	# Expected result
@@ -247,7 +251,7 @@ def test_reservation_repeat(monkeypatch):
 	monkeypatch.setattr(ReservationMapper, 'save', ignore1)
 
 	# Execute
-	reservationBook.makeRepeatedReservation(room, user, time_slot, processed_description,Equipment(), repeat_amount)
+	reservationBook.makeRepeatedReservation(room, user, time_slot, processed_description,Equipment("equipmentID_ytcuvibon"), repeat_amount)
 
 	# Verify
 	assert len(reservationBook.getReservationList()) == expected_amount_of_reservation

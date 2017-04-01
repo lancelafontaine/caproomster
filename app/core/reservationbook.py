@@ -8,6 +8,9 @@ from app.mapper import WaitingMapper
 from app.mapper import TimeslotMapper
 from app.mapper import UnitOfWork
 from app.core.equipment import Equipment
+from app.core.timeslot import Timeslot
+
+from uuid import uuid4
 
 
 # ReservationBook object
@@ -24,18 +27,18 @@ class ReservationBook(object):
 		self.waitingListCapstone = capstoneList
 
 	# Method to make a reservation
-	def makeReservation(self, room, holder, timeslot, description, equipment=Equipment()):
+	def makeReservation(self, room, holder, timeslot, description, equipment):
 		# Check if room is timeslot is available and equipment also
 		if self.isTimeslotAvailableforRoom(room, timeslot) \
 				and self.isEquipmentAvailableForTimeSlot(timeslot, equipment):
-			r = Reservation(room, holder, timeslot, description, equipment, self.genRid())
+			r = Reservation(room, holder, timeslot, description, equipment, str(uuid4()))
 			self.reservationList.append(r)
 			UnitOfWork.registerNew(r)
 			ReservationMapper.done()
 
 	# Method to add to the waiting list
-	def addToWaitingList(self, room, holder, timeslot, description, equipment=Equipment()):
-		w = Waiting(room, holder, timeslot, description, equipment, self.genWid())
+	def addToWaitingList(self, room, holder, timeslot, description, equipment):
+		w = Waiting(room, holder, timeslot, description, equipment, str(uuid4()))
 		if w.getUser().isCapstone():
 			self.waitingListCapstone.append(w)
 		else:
@@ -65,7 +68,7 @@ class ReservationBook(object):
 					and self.isEquipmentAvailableForTimeSlot(w.getTimeslot(), w.getEquipment()):
 				if not self.isRestricted(w.getUser(), w.getTimeslot()):
 					r = Reservation(w.getRoom(), w.getUser(), w.getTimeslot(), w.getDescription(), w.getEquipment(),
-					                self.genRid())
+					                str(uuid4()))
 					self.reservationList.append(r)
 					if w.getUser().isCapstone():
 						self.waitingListCapstone.remove(w)
@@ -116,17 +119,17 @@ class ReservationBook(object):
 		for type, quantity in equipment.equipment.iteritems():
 			amountAvailable = currentEquipmentAvailable.equipment[type]
 			currentEquipmentAvailable.equipment[type] = amountAvailable - quantity
-		return len(currentEquipmentAvailable) > 0
+		return len(currentEquipmentAvailable) >= 0
 
 	def getAllEquipmentAvailableAtTimeslot(self, timeslot):
 		"""
 
 		:rtype: Equipment
 		"""
-		maxEquipmentAvailable = Equipment(laptops=3, projectors=3, whiteboards=3)
+		maxEquipmentAvailable = Equipment("equipmentID_uvu",laptops=3, projectors=3, whiteboards=3)
 		# iterate through reservations list, get total equipment already reserved
 		for r in self.getAllReservationsForTimeslot(timeslot):
-			for type, quantity in r.getEquipment().iteritems():
+			for type, quantity in r.getEquipment().equipment.iteritems():
 				amountAvailable = maxEquipmentAvailable.equipment[type]
 				maxEquipmentAvailable.equipment[type] = amountAvailable - quantity
 		return maxEquipmentAvailable
@@ -150,43 +153,6 @@ class ReservationBook(object):
 	def printNb(self):
 		print("Nb of Reservations: " + str(len(self.reservationList)))
 		print("Nb of Waiting: " + str(len(self.waitingListRegular)))
-
-	# Method to generate reservationId
-	def genRid(self):
-		if len(self.reservationList) != 0:
-			largeList = []
-			# Find the largest ID
-			for r in self.reservationList:
-				largeList.append(r.getId())
-			return max(largeList) + 1
-		else:
-			return 1
-
-	# Method to generate waitingId
-	def genWid(self):
-		if len(self.waitingListRegular) != 0:
-			largeList = []
-			for w in self.waitingListRegular:
-				largeList.append(w.getId())
-			return max(largeList) + 1
-		else:
-			return 1
-
-	# Method to generate timeslotId
-	def genTid(self):
-		timeslotList = []
-		for w in self.waitingListRegular:
-			timeslotList.append(w.getTimeslot())
-		for r in self.reservationList:
-			timeslotList.append(r.getTimeslot())
-
-		if len(timeslotList) != 0:
-			largeList = []
-			for t in timeslotList:
-				largeList.append(t.getId())
-			return max(largeList) + 1
-		else:
-			return 1
 
 	# Method for restriction
 	def isRestricted(self, user, time):

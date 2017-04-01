@@ -5,11 +5,9 @@ from app.mapper import ReservationMapper
 from app.mapper import RoomMapper
 from app.mapper import UserMapper
 from app.mapper import TimeslotMapper
-from app.core.timeslot import Timeslot
 from datetime import datetime
-from random import randint
-from collections import namedtuple
 import calendar
+from uuid import uuid4
 
 STATUS_CODE = {
     'OK': 200,
@@ -17,7 +15,7 @@ STATUS_CODE = {
     'NOT_FOUND': 404,
     'UNPROCESSABLE': 422
 }
-RAND_UPPER = 999999
+
 
 ##########
 # ROUTES #
@@ -27,9 +25,11 @@ RAND_UPPER = 999999
 def not_found_error(error):
     return jsonify({'404': 'Not Found'})
 
+
 @app.errorhandler(500)
 def internal_error(error):
     return jsonify({'500': 'Internal Server Error'})
+
 
 @app.route('/login', methods=['GET', 'POST'])
 @nocache
@@ -41,11 +41,13 @@ def login():
     if request.method == 'GET':
         return is_logged_in()
 
+
 @app.route('/logout', methods=['GET'])
 @nocache
 def logout():
     session.clear()
     return jsonify({'logout success': 'Successfully logged out.'})
+
 
 @app.route('/rooms/all', methods=['GET'])
 @nocache
@@ -53,11 +55,15 @@ def logout():
 def get_all_rooms():
     if request.method == 'GET':
         room_models = RoomMapper.findAll()
-        rooms = sorted([room.getId() for room in room_models])
+        if room_models:
+            rooms = sorted([room.getId() for room in room_models])
+        else:
+            rooms = []
         roomdata = {
-            'rooms':  rooms
+            'rooms': rooms
         }
         return jsonify(roomdata)
+
 
 @app.route('/reservations/create', methods=['POST'])
 @nocache
@@ -67,6 +73,7 @@ def make_new_reservation():
         data = request.get_json()
         return validate_new_reservation(data)
 
+
 @app.route('/reservations/room/<roomId>', methods=['GET'])
 @nocache
 @require_login
@@ -74,28 +81,32 @@ def get_reservations_by_room(roomId):
     if request.method == 'GET':
         reservations = ReservationMapper.findByRoom(roomId)
         reservations_data = []
-        for reservation in reservations:
-            reservations_data += [reservation.to_dict()]
+        if reservations:
+            for reservation in reservations:
+                reservations_data += [reservation.to_dict()]
         data = {
             'roomId': roomId,
             'reservations': reservations_data
         }
         return jsonify(data)
 
-@app.route('/reservations/user/<userId>', methods=['GET'])
+
+@app.route('/reservations/user/<username>', methods=['GET'])
 @nocache
 @require_login
-def get_reservations_by_user(userId):
+def get_reservations_by_user(username):
     if request.method == 'GET':
-        reservations = ReservationMapper.findByUser(int(userId))
+        reservations = ReservationMapper.findByUser(str(username))
         reservations_data = []
-        for reservation in reservations:
-            reservations_data += [reservation.to_dict()]
+        if reservations:
+            for reservation in reservations:
+                reservations_data += [reservation.to_dict()]
         data = {
-            'userId': userId,
+            'username': username,
             'reservations': reservations_data
         }
         return jsonify(data)
+
 
 @app.route('/reservations/all', methods=['GET'])
 @nocache
@@ -104,13 +115,13 @@ def get_all_reservations():
     if request.method == 'GET':
         reservations = ReservationMapper.findAll()
         reservations_data = []
-        for reservation in reservations:
-            reservations_data += [reservation.to_dict()]
+        if reservations:
+            for reservation in reservations:
+                reservations_data += [reservation.to_dict()]
         data = {
             'reservations': reservations_data
         }
         return jsonify(data)
-
 
 
 ####################
@@ -118,17 +129,12 @@ def get_all_reservations():
 ####################
 
 def validate_login(data):
-    if 'userId' not in data or 'password' not in data:
-        response = jsonify({'login error': '`userId` and `password` fields are required.'})
+    if 'username' not in data or 'password' not in data:
+        response = jsonify({'login error': '`username` and `password` fields are required.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
-    if str(data['userId']).isdigit() == False:
-        response = jsonify({'login error': '`userId` must be an integer.'})
-        response.status_code = STATUS_CODE['UNPROCESSABLE']
-        return response
-
-    user = UserMapper.find(int(data['userId']))
+    user = UserMapper.find(str(data['username']))
     if not user:
         response = jsonify({'login error': 'That user does not exist.'})
         response.status_code = STATUS_CODE['NOT_FOUND']
@@ -140,36 +146,38 @@ def validate_login(data):
         return response
 
     session['logged_in'] = True
-    session['userId'] = user.getId()
+    session['username'] = user.getId()
 
     success = {
         'login success': 'Successfully logged in',
         'data': {
-            'userId': str(user.getId()),
-            'username': str(user.getName()),
-	        'capstone': str(user.isCapstone())
+            'username': str(user.getId()),
+            'capstone': str(user.isCapstone())
         }
     }
     return jsonify(success)
 
 
 def is_logged_in_bool():
-    return 'logged_in' in session and 'userId' in session and session['logged_in']
+    return 'logged_in' in session and 'username' in session and session['logged_in']
+
 
 def is_logged_in():
     if is_logged_in_bool():
         response = {
             'success': {
-                'userId': session['userId']
+                'username': session['username']
             }
         }
         return jsonify(response)
     return unauthorized()
 
+
 def unauthorized():
     response = jsonify({'unauthorized': 'Not logged in. You must login.'})
     response.status_code = STATUS_CODE['UNAUTHORIZED']
     return response
+
 
 def validate_new_reservation(data):
     response = validate_make_new_reservation_payload_format(data)
@@ -189,9 +197,9 @@ def validate_new_reservation(data):
         return response
 
     roomId = data['roomId']
-    userId = data['userId']
+    username = data['username']
 
-    response = validate_make_new_reservation_room_user_exists(roomId, userId)
+    response = validate_make_new_reservation_room_user_exists(roomId, username)
     if response:
         return response
 
@@ -201,12 +209,12 @@ def validate_new_reservation(data):
         return response
 
     # no use for `block` parameter, for now, just passing empty string
-    time = TimeslotMapper.makeNew(startTime, endTime, date, '', userId)
+    time = TimeslotMapper.makeNew(startTime, endTime, date, '', username, str(uuid4()))
     TimeslotMapper.done()
     room = RoomMapper.find(roomId)
-    user = UserMapper.find(userId)
+    user = UserMapper.find(username)
     description = str(data['description'])
-    reservation = ReservationMapper.makeNew(room, user, time, description, randint(0,RAND_UPPER))
+    reservation = ReservationMapper.makeNew(room, user, time, description, str(uuid4()))
     ReservationMapper.done()
 
     response_data = {
@@ -215,32 +223,36 @@ def validate_new_reservation(data):
     }
     return jsonify(response_data)
 
+
 def validate_make_new_reservation_payload_format(data):
     if 'roomId' not in data or \
-       'userId' not in data or \
-       'timeslot' not in data or \
-       'description' not in data:
-        response = jsonify({'makeNewReservation error': '`roomId`, `userId`, `timeslot`, and `description` fields are required.'})
+                    'username' not in data or \
+                    'timeslot' not in data or \
+                    'description' not in data:
+        response = jsonify(
+            {'makeNewReservation error': '`roomId`, `username`, `timeslot`, and `description` fields are required.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
     if 'startTime' not in data['timeslot'] or \
-       'endTime' not in data['timeslot'] or \
-       'date' not in data['timeslot']:
-        response = jsonify({'makeNewReservation error': '`startTime`, `endTime`, `date` fields are required in `timeslot`.'})
+                    'endTime' not in data['timeslot'] or \
+                    'date' not in data['timeslot']:
+        response = jsonify(
+            {'makeNewReservation error': '`startTime`, `endTime`, `date` fields are required in `timeslot`.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
     if not str(data['timeslot']['startTime']).isdigit() or \
-       not str(data['timeslot']['endTime']).isdigit() or \
-       not str(data['userId']).isdigit():
-        response = jsonify({'makeNewReservation error': '`userId`, `startTime` and `endTime` must be integers.'})
+            not str(data['timeslot']['endTime']).isdigit():
+        response = jsonify({'makeNewReservation error': '`startTime` and `endTime` must be integers.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
+
 def validate_make_new_reservation_times(startTime, endTime):
-    if startTime < 0 or startTime > 23 or endTime < 0 or endTime > 23 or  startTime == endTime:
-        response = jsonify({'makeNewReservation error': '`startTime` and `endTime` must be different integers between 0 and 23.'})
+    if startTime < 0 or startTime > 23 or endTime < 0 or endTime > 23 or startTime == endTime:
+        response = jsonify(
+            {'makeNewReservation error': '`startTime` and `endTime` must be different integers between 0 and 23.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
@@ -248,6 +260,7 @@ def validate_make_new_reservation_times(startTime, endTime):
         response = jsonify({'makeNewReservation error': 'The reservation cannot last for longer than 3 hours.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
+
 
 def validate_make_new_reservation_date(dateList):
     def date_error():
@@ -272,11 +285,13 @@ def validate_make_new_reservation_date(dateList):
     if payload_date < current_date:
         return date_error()
 
-def validate_make_new_reservation_room_user_exists(roomId, userId):
-    if not UserMapper.find(userId) or not RoomMapper.find(roomId):
+
+def validate_make_new_reservation_room_user_exists(roomId, username):
+    if not UserMapper.find(username) or not RoomMapper.find(roomId):
         response = jsonify({'makeNewReservation error': 'Either the room or user does not exist.'})
         response.status_code = STATUS_CODE['NOT_FOUND']
         return response
+
 
 def validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime):
     # TO DO: check that the user's hours of reservation per week does not exceed 3
@@ -294,12 +309,11 @@ def validate_make_new_reservation_timeslots(reservations, dateList, startTime, e
     if reservations:
         for reservation in reservations:
             timeslot = reservation.getTimeslot()
-            timeslot_date_list= timeslot.getDate().split('-')
+            timeslot_date_list = timeslot.getDate().split('-')
 
             existing_timestamp_start = to_timestamp(timeslot_date_list, timeslot.getStartTime())
             existing_timestamp_end = to_timestamp(timeslot_date_list, timeslot.getEndTime())
 
             if (new_timestamp_start < existing_timestamp_end) and \
-               (new_timestamp_end > existing_timestamp_start):
+                    (new_timestamp_end > existing_timestamp_start):
                 return time_overlap_error()
-

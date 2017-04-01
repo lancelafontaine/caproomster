@@ -1,4 +1,3 @@
---COMP 343
 --BookMe
 --PostgreSql compatible
 -- -----------------------------------------------------||||
@@ -19,11 +18,10 @@ DROP TABLE IF EXISTS equipmentTable cascade;
 -- ---------------------------------
 
 CREATE TABLE IF NOT EXISTS userTable (
-	userId SERIAL NOT NULL,
-	name VARCHAR(30)  NOT NULL DEFAULT ' ',
+	username VARCHAR(30) NOT NULL,
 	password VARCHAR(30) NOT NULL,
   capstone BOOLEAN NOT NULL,
-	PRIMARY KEY (userId)
+	PRIMARY KEY (username)
 );
 
 
@@ -46,13 +44,13 @@ CREATE TABLE IF NOT EXISTS roomTable (
 -- ---------------------------------
 
 CREATE TABLE IF NOT EXISTS timeslotTable (
-	timeId SERIAL NOT NULL,
+	timeId VARCHAR(128) NOT NULL,
 	startTime integer NOT NULL,
 	endTime integer NOT NULL,
 	date DATE NOT NULL,
 	block integer NOT NULL,
-	userId integer NOT NULL,
-	FOREIGN KEY (userId) REFERENCES userTable (userId),
+	username VARCHAR(30) NOT NULL,
+	FOREIGN KEY (username) REFERENCES userTable (username),
 	PRIMARY KEY (timeId)
 );
 
@@ -62,7 +60,7 @@ CREATE TABLE IF NOT EXISTS timeslotTable (
 -- ---------------------------------
 
 CREATE TABLE IF NOT EXISTS equipmentTable (
-	equipmentId SERIAL NOT NULL,
+	equipmentId VARCHAR(128) NOT NULL,
 	laptops integer DEFAULT 0,
 	projectors integer DEFAULT 0,
 	whiteboards integer DEFAULT 0,
@@ -75,15 +73,15 @@ CREATE TABLE IF NOT EXISTS equipmentTable (
 -- ---------------------------------
 
 CREATE TABLE IF NOT EXISTS waitingTable (
-	waitingId SERIAL NOT NULL,
+	waitingId VARCHAR(128) NOT NULL,
 	room integer,
-	reservee integer,
+	reservee VARCHAR(30),
 	description VARCHAR(100),
-	timeslot integer,
-	equipment integer,
+	timeslot VARCHAR(128),
+	equipment VARCHAR(128),
 	PRIMARY KEY (waitingId),
 	FOREIGN KEY (room) REFERENCES roomTable (roomId),
-	FOREIGN KEY (reservee) REFERENCES userTable (userId),
+	FOREIGN KEY (reservee) REFERENCES userTable (username),
 	FOREIGN KEY (timeslot) REFERENCES timeslotTable (timeId),
 	FOREIGN KEY (equipment) REFERENCES equipmentTable (equipmentId)
 );
@@ -95,15 +93,15 @@ CREATE TABLE IF NOT EXISTS waitingTable (
 -- ---------------------------------
 
 CREATE TABLE IF NOT EXISTS reservationTable (
-	reservationId SERIAL NOT NULL,
+	reservationId VARCHAR(128) NOT NULL,
 	room integer,
 	description VARCHAR(100),
-	holder integer,
-	timeslot integer,
-	equipment integer,
+	holder VARCHAR(30),
+	timeslot VARCHAR(128),
+	equipment VARCHAR(128),
 	PRIMARY KEY (reservationId),
 	FOREIGN KEY (room) REFERENCES roomTable (roomId),
-	FOREIGN KEY (holder) REFERENCES userTable (userId),
+	FOREIGN KEY (holder) REFERENCES userTable (username),
 	FOREIGN KEY (timeslot) REFERENCES timeslotTable (timeId),
 	FOREIGN KEY (equipment) REFERENCES equipmentTable (equipmentId)
 );
@@ -111,19 +109,11 @@ CREATE TABLE IF NOT EXISTS reservationTable (
 
 -- ///////////// INSERT STATMENTS //////////////////////
 
-INSERT INTO userTable(password, name, capstone) VALUES
-        ('pass','John',FALSE),
-        ('pass','Emily',FALSE),
-        ('pass','Rudy',FALSE),
-        ('pass','Jackie',FALSE),
-        ('pass','Mary',TRUE),
-        ('pass','Hans',TRUE);
+INSERT INTO userTable(username, password, capstone) VALUES
+        ('iscapstone','soen344', TRUE),
+        ('nocapstone','soen344', FALSE),
+        ('1','pass', FALSE),
+        ('2','pass', TRUE);
 
-
-INSERT INTO roomTable(roomId) VALUES
-	(1),
-	(2),
-	(3),
-	(4),
-	(5);
+INSERT INTO roomTable(roomId) VALUES (1), (2), (3), (4), (5);
 
