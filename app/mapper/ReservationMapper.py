@@ -31,9 +31,9 @@ def findAll():
         return
     else:
         for index, r in enumerate(result):
-            room = RoomMapper.find(result[0][1])
-            holder = UserMapper.find(result[0][3])
-            timeslot = TimeslotMapper.find(result[0][4])
+            room = RoomMapper.find(result[index][1])
+            holder = UserMapper.find(result[index][3])
+            timeslot = TimeslotMapper.find(result[index][4])
             reservation = Reservation(room, holder, timeslot, result[0][2], result[0][0])
             allReservations.append(reservation)
         return allReservations
