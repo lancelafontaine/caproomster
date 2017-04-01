@@ -2,7 +2,7 @@
 class Reservation:
 
     # Constructor
-    def __init__(self, room,holder,time,description, reservationId):
+    def __init__(self, room, holder, time, description, reservationId):
         self.user = holder
         self.time = time
         self.room = room
@@ -12,7 +12,7 @@ class Reservation:
     # Print method for debugging
     def __str__(self):
         return "Reservation Info" +\
-        "Holder: " + str(self.user.getUsername()) +\
+        "Holder: " + str(self.user.getId()) +\
         str(self.time) +\
         "Description: " + str(self.description) +\
         "RID: " + str(self.reservationId)

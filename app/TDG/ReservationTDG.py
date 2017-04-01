@@ -16,7 +16,6 @@ def insert(id, room, description, holder, timeslot):
     conn = connect_db()
     if conn:
         cur = conn.cursor()
-        print(timeslot)
         cur.execute("""INSERT INTO reservationTable(reservationId, room, description, holder, timeslot) VALUES
                 (%s, %s, %s, %s, %s);""", (id, room, description, holder, timeslot))
         conn.commit()
@@ -36,7 +35,6 @@ def delete(id):
     conn = connect_db()
     if conn:
         cur = conn.cursor()
-        print(id)
         cur.execute("""DELETE FROM reservationTable WHERE reservationId = %s;""", (id,))
         conn.commit()
         conn.close()

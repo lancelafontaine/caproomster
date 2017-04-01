@@ -124,6 +124,26 @@ def get_all_reservations():
         return jsonify(data)
 
 
+@app.route('/reservations/<reservationId>', methods=['DELETE'])
+@nocache
+@require_login
+def delete_reservation(reservationId):
+    if request.method == 'DELETE':
+        reservation = ReservationMapper.find(reservationId)
+        if not reservation:
+            response = jsonify({'reservation error': 'that reservationId does not exist'})
+            response.status_code = STATUS_CODE['NOT_FOUND']
+            return response
+
+        ReservationMapper.delete(reservationId)
+        ReservationMapper.done()
+        data = {
+            'success': 'reservation successfully deleted',
+            'reservationId': reservationId
+        }
+        return jsonify(data)
+
+
 ####################
 # HELPER FUNCTIONS #
 ####################

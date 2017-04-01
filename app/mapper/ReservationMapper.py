@@ -68,7 +68,8 @@ def setReservation(reservationId):
 
 
 def delete(reservationId):
-    UnitOfWork.registerDeleted(Reservation(None, None, None, reservationId))
+    reservation = find(reservationId)
+    UnitOfWork.registerDeleted(reservation)
 
 
 # save all work
@@ -99,5 +100,5 @@ def update(reservation):
 
 
 # deletes room object
-def erase(reservationid):
-    ReservationTDG.delete(reservationid)
+def erase(reservation):
+    ReservationTDG.delete(reservation.getId())
