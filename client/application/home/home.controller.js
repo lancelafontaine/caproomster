@@ -21,6 +21,7 @@
       vm.eventDeleted = eventDeleted;
       vm.eventTimesChanged = eventTimesChanged;
       vm.timespanClicked = timespanClicked;
+      vm.makeReservation = makeReservation;
       vm.calendarView = 'week';
       vm.viewDate = new Date();
       vm.toggleText = 'Show Room List';
@@ -43,9 +44,9 @@
           getRoomInfo();
         });
         ApiService.booking('getMyReservation', {
-          userId: loggedInUser.success.userId
+          userId: loggedInUser.success.username
         }).then(function(myReservations) {
-            vm.myReservations = myReservations.reservations;
+          vm.myReservations = myReservations.reservations;
         });
       }, function() {
         $state.go('login');
@@ -72,6 +73,7 @@
 
     function getRoomInfo() {
       vm.events = [];
+      console.log(2312312)
       ApiService.booking('getAllReservation', {
         roomId: vm.roomNumber
       }).then(function(res){
@@ -103,6 +105,11 @@
           vm.viewDate = date;
         }
       }
+    }
+
+    function makeReservation(calendarRangeStartDate, calendarRangeEndDate) {
+      console.log(calendarRangeStartDate);
+      console.log(calendarRangeEndDate);
     }
 
     function eventClicked() {

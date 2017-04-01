@@ -67,15 +67,14 @@
                   view-title="vm.calendarTitle"
                   view-date="vm.viewDate"
                   on-event-click="vm.eventClicked(calendarEvent)"
-                  on-event-times-changed="vm.eventTimesChanged(calendarEvent); calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
                   cell-is-open="vm.cellIsOpen"
                   day-view-start="08:00"
                   day-view-end="23:00"
-                  day-view-split="30"
-                  day-view-event-chunk-size="30"
+                  day-view-split="60"
+                  day-view-event-chunk-size="60"
                   cell-modifier="vm.modifyCell(calendarCell)"
                   cell-auto-open-disabled="true"
-                  on-timespan-click="vm.timespanClicked(calendarDate, calendarCell)">
+                  on-date-range-select="vm.makeReservation(calendarRangeStartDate, calendarRangeEndDate)">
                 </mwl-calendar>
           </div>
           <!-- End Calendar -->
@@ -103,8 +102,6 @@
         <div class="col-md-4 console">
             <h2>Room {{ vm.roomNumber }} - {{ vm.calendarTitle }}</h2>
             <!-- TODO: Populate room equipment list -->
-            <!-- TODO: Get time slot number -->
-            <p>Available Time Slot: 5</p>
             <p>Available Equipments</p>
             <div class="equipments">
               <i class="fa fa-desktop" aria-hidden="true"></i>
