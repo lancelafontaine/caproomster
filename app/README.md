@@ -26,10 +26,9 @@ Checks if the current user is logged in or not.
 **200 - OK**
 ```
 {
-	"data": {
+	"success": {
 		"username": "iscapstone"
-	},
-	"login success": "Successfully logged in"
+	}
 }
 ```
 
