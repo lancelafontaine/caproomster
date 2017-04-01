@@ -16,7 +16,6 @@
     function init() {
       vm.toggleMenu = toggleMenu;
       vm.changeRoom = changeRoom;
-      vm.addEvent = addEvent;
       vm.eventClicked = eventClicked;
       vm.eventEdited = eventEdited;
       vm.eventDeleted = eventDeleted;
@@ -29,118 +28,64 @@
       vm.roomNumber = '';
       vm.cellIsOpen = true;
       vm.events = [];
-      checkLogin();
+      vm.myReservations = [];
+      initData();
     }
 
-    // Check login
+    // check login and init all data for the view
 
-    function checkLogin() {
-      ApiService.account('checkLogin').then(function() {
+    function initData() {
+      ApiService.account('checkLogin').then(function(loggedInUser) {
         vm.authenticated = true;
-        fetchEvents();
-        fetchRoomList();
+        ApiService.booking('getRoomList').then(function(roomList) {
+          vm.roomList = roomList.rooms;
+          vm.roomNumber = vm.roomList[0];
+          getRoomInfo();
+        });
+        ApiService.booking('getMyReservation', {
+          userId: loggedInUser.success.userId
+        }).then(function(myReservations) {
+            vm.myReservations = myReservations.reservations;
+        });
       }, function() {
         $state.go('login');
       });
     }
 
-    // Fetch room list
+    // parse return data into calendar event object
 
-    function fetchRoomList() {
-      ApiService.booking('getRoomList').then(function(res) {
-        vm.roomList = res.rooms;
-        vm.roomNumber = vm.roomList[0];
+    function createEvent(reservation, type) {
+      var dateString = reservation.timeslot.date.replace('GMT', 'EST');
+      var start = new Date(dateString);
+      start.setHours(reservation.timeslot.startTime);
+      var end = new Date(dateString);
+      end.setHours(reservation.timeslot.endTime);
+      var event = {};
+      event.title = reservation.description;
+      event.startsAt = start;
+      event.endsAt = end;
+      event.color = type;
+      return event;
+    }
+
+    // get reservation, waitingList, and equipment of a room
+
+    function getRoomInfo() {
+      vm.events = [];
+      ApiService.booking('getAllReservation', {
+        roomId: vm.roomNumber
+      }).then(function(res){
+        var reservations = res.reservations;
+        for (var i = 0; i < reservations.length; i++) {
+          vm.events.push(createEvent(reservations[i], calendarConfig.colorTypes.info));
+        }
       });
+      // TODO: get equipment list
     }
 
-    // Toggle Menu
-
-    function toggleMenu() {
-      if (!vm.isToggled) {
-        vm.isToggled = true;
-        vm.toggleText = 'Hide Room List';
-      } else {
-        vm.isToggled = false;
-        vm.toggleText = 'Show Room List';
-      }
-    }
-
-    // Change room number and fetch room data
-
-    function changeRoom(room) {
-      vm.roomNumber = room;
-      // TODO: change view, get data etc.
-    }
-
-    // Fetch reservations from backend
-
-    function fetchEvents() {
-      // TODO: integrate rest api and fecth real date, for now just mocking
-      var actions = [{
-        label: '<i class=\'glyphicon glyphicon-pencil\'></i>',
-        onClick: function(args) {
-          console.log('Edited');
-        }
-      }, {
-        label: '<i class=\'glyphicon glyphicon-remove\'></i>',
-        onClick: function(args) {
-          console.log('Deleted');
-        }
-      }];
-      // mock data
-      vm.events = [
-        {
-          title: 'Bruce - Reservation',
-          color: calendarConfig.colorTypes.info,
-          startsAt: moment().startOf('day').add(10, 'hours').toDate(),
-          endsAt: moment().startOf('day').add(11, 'hours').toDate(),
-          draggable: true,
-          actions: actions
-        }, {
-          title: 'Bruce - Reservation',
-          color: calendarConfig.colorTypes.info,
-          startsAt: moment().startOf('day').add(11, 'hours').toDate(),
-          endsAt: moment().startOf('day').add(12, 'hours').toDate(),
-          draggable: true,
-          actions: actions
-        }, {
-          title: 'Lance - Waiting',
-          color: calendarConfig.colorTypes.important,
-          startsAt: moment().startOf('day').add(11, 'hours').toDate(),
-          endsAt: moment().startOf('day').add(12, 'hours').toDate(),
-          draggable: true,
-          actions: actions
-        }, {
-          title: 'Arek - Reservation',
-          color: calendarConfig.colorTypes.info,
-          startsAt: moment().startOf('day').subtract(2, 'days').add(14, 'hours').toDate(),
-          endsAt: moment().startOf('day').subtract(2, 'days').add(15, 'hours').toDate(),
-          draggable: true,
-          actions: actions
-        }, {
-          title: 'Adrianna - Waiting',
-          color: calendarConfig.colorTypes.important,
-          startsAt: moment().startOf('day').subtract(2, 'days').add(14, 'hours').toDate(),
-          endsAt: moment().startOf('day').subtract(2, 'days').add(15, 'hours').toDate(),
-          draggable: true,
-          actions: actions
-        }
-      ];
-    }
-
-    // add a reservation to calendar view
-
-    function addEvent() {
-      // TODO: mocking for now
-      vm.events.push({
-        title: 'New event',
-        startsAt: moment().startOf('day').toDate(),
-        endsAt: moment().endOf('day').toDate(),
-        color: calendarConfig.colorTypes.important,
-        draggable: true,
-        resizable: true
-      });
-    }
+    /*
+    UI Actions
+    */
 
     function timespanClicked(date, cell) {
       if (vm.calendarView === 'month') {
@@ -178,6 +123,25 @@
     function eventTimesChanged() {
       //TODO
       console.log('Dropped or resized');
+    }
+
+    // change room and fetch room data
+
+    function changeRoom(room) {
+      vm.roomNumber = room;
+      getRoomInfo();
+    }
+
+    // Toggle Menu
+
+    function toggleMenu() {
+      if (!vm.isToggled) {
+        vm.isToggled = true;
+        vm.toggleText = 'Hide Room List';
+      } else {
+        vm.isToggled = false;
+        vm.toggleText = 'Show Room List';
+      }
     }
 
   }
