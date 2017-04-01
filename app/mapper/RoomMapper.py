@@ -30,11 +30,6 @@ def findAll():
             rooms.append(room)
     return rooms
 
-#need to remove do thing
-'''def setRoom(roomId, lock):
-    room = find(roomId)
-#    room.setLock(lock)
-    update(room.getId())'''
 
 def delete(roomId):
     UnitOfWork.registerDeleted(Room(roomId,None))
