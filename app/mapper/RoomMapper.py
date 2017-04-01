@@ -33,12 +33,10 @@ def findAll():
 
 def delete(roomId):
     UnitOfWork.registerDeleted(Room(roomId,None))
+
 #save all work
 def done():
     UnitOfWork.commit()
-
-
-
 
 #deletes room object
 def erase(roomId):
