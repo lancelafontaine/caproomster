@@ -177,7 +177,7 @@ def addNewReservation(month,day):
 							reservation = ReservationMapper.makeNewReservation(room, user, timeSlot,
 																			   processed_description, timeslotId)
 							ReservationMapper.save(reservation)
-							registry.endAction()
+							#registry.endAction()
 							return redirect(url_for('dashboard', user=session['user']))
 					else:
 						room = Room(roomId[0],False)
@@ -190,7 +190,7 @@ def addNewReservation(month,day):
 							#Make Reservation
 							reservation = ReservationMapper.makeNewReservation(room, user, timeSlot, processed_description,timeslotId)
 							ReservationMapper.save(reservation)
-							registry.endAction(room.getId())
+							#registry.endAction(room.getId())
 							return redirect(url_for('dashboard', user=session['user']))
 				else:
 					userTimeslots = TimeslotTDG.findUser(user.getId())
