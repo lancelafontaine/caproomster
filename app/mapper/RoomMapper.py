@@ -5,8 +5,8 @@ from app.TDG import RoomTDG
 from app.core.room import Room
 
 
-def makeNew(roomId, lock):
-    room = Room(roomId, lock)
+def makeNew(roomId):
+    room = Room(roomId)
     UnitOfWork.registerNew(room)
     return room
 
@@ -30,10 +30,11 @@ def findAll():
             rooms.append(room)
     return rooms
 
-def setRoom(roomId, lock):
+#need to remove do thing
+'''def setRoom(roomId, lock):
     room = find(roomId)
-    room.setLock(lock)
-    update(room.getId(),room.getLock())
+#    room.setLock(lock)
+    update(room.getId())'''
 
 def delete(roomId):
     UnitOfWork.registerDeleted(Room(roomId,None))
@@ -42,12 +43,13 @@ def done():
     UnitOfWork.commit()
 
 #adds room object
-def save(room):
-    RoomTDG.insert(room.getLock())
+#def save(room):
+  #  RoomTDG.insert(room.getLock())
 
 #updates room Object
-def update(room,availability):
-    RoomTDG.update(room, availability)
+#need to remove do thing
+'''def update(room):
+    RoomTDG.update(room)'''
 
 #deletes room object
 def erase(roomId):
