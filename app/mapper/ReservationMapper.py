@@ -34,7 +34,7 @@ def findAll():
             room = RoomMapper.find(result[index][1])
             holder = UserMapper.find(result[index][3])
             timeslot = TimeslotMapper.find(result[index][4])
-            reservation = Reservation(room, holder, timeslot, result[0][2], result[0][0])
+            reservation = Reservation(room, holder, timeslot, result[index][2], result[index][0])
             allReservations.append(reservation)
         return allReservations
 
