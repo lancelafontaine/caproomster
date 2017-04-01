@@ -23,16 +23,6 @@ def findAll():
         return []
 
 
-
-def update(id):
-    conn = connect_db()
-    if conn:
-	cur = conn.cursor()
-	cur.execute("""UPDATE roomTable
-		WHERE roomId = %s;""", (id))
-	conn.commit()
-	conn.close()
-
 def delete(id):
     conn = connect_db()
     if conn:
