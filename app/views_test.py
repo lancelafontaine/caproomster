@@ -1,12 +1,14 @@
 from app import views, app
 from app.core.user import User
 from app.core.room import Room
+from app.core.equipment import Equipment
 from app.core.reservation import Reservation
 from app.core.timeslot import Timeslot
 from app.mapper import UserMapper
 from app.mapper import RoomMapper
 from app.mapper import ReservationMapper
 from app.mapper import TimeslotMapper
+
 from flask import request, jsonify
 import json
 
@@ -194,7 +196,7 @@ def test_valid_validate_new_reservation(monkeypatch):
                 time = Timeslot(1,2,'2020-01-01', '', 1)
                 room = Room(1, False)
                 user = User(1, 'mr', 'pickles')
-                return Reservation(room, user, time, 'description', 1)
+                return Reservation(room, user, time, 'description', Equipment(), 1)
             def mock_reservation_find_all(*args):
                 return []
 
@@ -393,7 +395,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations():
             time = Timeslot(1,2,'2020-01-01', '', 1)
             room = Room(1, False)
             user = User(1, 'mr', 'pickles')
-            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservation1 = Reservation(room, user, time, 'description', Equipment(), 1)
             reservations.append(reservation1)
 
             dateList = ['2040', '04', '04']
@@ -410,7 +412,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
             time = Timeslot(5,8,'2020-01-01', '', 1)
             room = Room(1, False)
             user = User(1, 'mr', 'pickles')
-            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservation1 = Reservation(room, user, time, 'description', Equipment(), 1)
             reservations.append(reservation1)
 
             dateList = ['2020', '01', '01']
@@ -427,7 +429,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
             time = Timeslot(5,8,'2020-01-01', '', 1)
             room = Room(1, False)
             user = User(1, 'mr', 'pickles')
-            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservation1 = Reservation(room, user, time, 'description', Equipment(), 1)
             reservations.append(reservation1)
 
             dateList = ['2020', '01', '01']
@@ -446,7 +448,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
             time = Timeslot(5,7,'2020-01-01', '', 1)
             room = Room(1, False)
             user = User(1, 'mr', 'pickles')
-            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservation1 = Reservation(room, user, time, 'description', Equipment(), 1)
             reservations.append(reservation1)
 
             dateList = ['2020', '01', '01']
@@ -463,7 +465,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
             time = Timeslot(5,8,'2020-01-01', '', 1)
             room = Room(1, False)
             user = User(1, 'mr', 'pickles')
-            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservation1 = Reservation(room, user, time, 'description', Equipment(), 1)
             reservations.append(reservation1)
 
             dateList = ['2020', '01', '01']
@@ -480,7 +482,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
             time = Timeslot(5,8,'2020-01-01', '', 1)
             room = Room(1, False)
             user = User(1, 'mr', 'pickles')
-            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservation1 = Reservation(room, user, time, 'description', Equipment(), 1)
             reservations.append(reservation1)
 
             dateList = ['2020', '01', '01']
@@ -497,7 +499,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
             time = Timeslot(5,8,'2020-01-01', '', 1)
             room = Room(1, False)
             user = User(1, 'mr', 'pickles')
-            reservation1 = Reservation(room, user, time, 'description', 1)
+            reservation1 = Reservation(room, user, time, 'description', Equipment(), 1)
             reservations.append(reservation1)
 
             dateList = ['2020', '01', '01']
@@ -577,7 +579,7 @@ def test_valid_get_reservations_by_room_with_login(monkeypatch):
                 room = Room(1, False)
                 user = User(1, 'buddy', 'boy')
                 time = Timeslot(1,2,'2020-01-01', '', 1)
-                return [Reservation(room, user, time, 'description', 1)]
+                return [Reservation(room, user, time, 'description', Equipment(), 1)]
             monkeypatch.setattr(ReservationMapper, 'findByRoom', find_by_room)
 
             views.session.clear()
@@ -606,7 +608,7 @@ def test_valid_get_reservations_by_user_with_login(monkeypatch):
                 room = Room(1, False)
                 user = User(1, 'buddy', 'boy')
                 time = Timeslot(1,2,'2020-01-01', '', 1)
-                return [Reservation(room, user, time, 'description', 1)]
+                return [Reservation(room, user, time, 'description', Equipment(), 1)]
             monkeypatch.setattr(ReservationMapper, 'findByUser', find_by_user)
 
             views.session.clear()
@@ -634,7 +636,7 @@ def test_valid_get_reservations_by_with_login(monkeypatch):
                 room = Room(1, False)
                 user = User(1, 'buddy', 'boy')
                 time = Timeslot(1,2,'2020-01-01', '', 1)
-                return [Reservation(room, user, time, 'description', 1)]
+                return [Reservation(room, user, time, 'description', Equipment(), 1)]
             monkeypatch.setattr(ReservationMapper, 'findByRoom', find_by_room)
 
             views.session.clear()

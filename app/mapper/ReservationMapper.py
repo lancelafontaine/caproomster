@@ -21,6 +21,7 @@ def find(reservationId):
         room = RoomMapper.find(result[0][1])
         holder = UserMapper.find(result[0][3])
         timeslot = TimeslotMapper.find(result[0][4])
+        equipment =
         return Reservation(room, holder, timeslot, result[0][2], timeslot.getId())
 
 

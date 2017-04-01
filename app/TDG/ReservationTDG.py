@@ -12,7 +12,7 @@ def find(id):
     else:
         return []
 
-def insert(room, description, holder, timeslot):
+def insert(room, description, holder, timeslot, equipment):
     conn = connect_db()
     if conn:
         cur = conn.cursor()

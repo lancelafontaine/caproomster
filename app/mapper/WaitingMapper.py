@@ -14,7 +14,6 @@ def makeNew(room, description, reservee, timeslot):
 
 
 def find(waitingId):
-    result = []
     result = WaitingTDG.find(waitingId)
     if not result:
         return

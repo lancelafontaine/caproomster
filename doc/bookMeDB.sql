@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS waitingTable cascade;
 DROP TABLE IF EXISTS userTable cascade;
 DROP TABLE IF EXISTS roomTable cascade;
 DROP TABLE IF EXISTS timeslotTable cascade;
+DROP TABLE IF EXISTS equipmentTable cascade;
 
 -- /////////////////////////////////////////////////////////
 
@@ -55,6 +56,18 @@ CREATE TABLE IF NOT EXISTS timeslotTable (
 	PRIMARY KEY (timeId)
 );
 
+-- ---------------------------------
+-- Table: equipment
+-- Desc: represents equipment for a reservation
+-- ---------------------------------
+
+CREATE TABLE IF NOT EXISTS equipmentTable (
+	equipmentId SERIAL NOT NULL,
+	laptops integer DEFAULT 0,
+	projectors integer DEFAULT 0,
+	whiteboards integer DEFAULT 0,
+	PRIMARY KEY (equipmentId)
+);
 
 -- ---------------------------------
 -- Table: waiting
@@ -67,10 +80,12 @@ CREATE TABLE IF NOT EXISTS waitingTable (
 	reservee integer,
 	description VARCHAR(100),
 	timeslot integer,
+	equipment integer,
 	PRIMARY KEY (waitingId),
 	FOREIGN KEY (room) REFERENCES roomTable (roomId),
 	FOREIGN KEY (reservee) REFERENCES userTable (userId),
-	FOREIGN KEY (timeslot) REFERENCES timeslotTable (timeId)
+	FOREIGN KEY (timeslot) REFERENCES timeslotTable (timeId),
+	FOREIGN KEY (equipment) REFERENCES equipmentTable (equipmentId)
 );
 
 
@@ -85,10 +100,12 @@ CREATE TABLE IF NOT EXISTS reservationTable (
 	description VARCHAR(100),
 	holder integer,
 	timeslot integer,
+	equipment integer,
 	PRIMARY KEY (reservationId),
 	FOREIGN KEY (room) REFERENCES roomTable (roomId),
 	FOREIGN KEY (holder) REFERENCES userTable (userId),
-	FOREIGN KEY (timeslot) REFERENCES timeslotTable (timeId)
+	FOREIGN KEY (timeslot) REFERENCES timeslotTable (timeId),
+	FOREIGN KEY (equipment) REFERENCES equipmentTable (equipmentId)
 );
 
 

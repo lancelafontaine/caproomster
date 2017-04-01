@@ -75,9 +75,10 @@ class Reservation:
 		reservation_data['timeslot']['endTime'] = self.getTimeslot().getEndTime()
 		reservation_data['timeslot']['date'] = self.getTimeslot().getDate()
 		reservation_data['timeslot']['timeId'] = self.getTimeslot().getId()
-		reservation_data['equipment']['laptop'] = self.getEquipment()['laptop']
-		reservation_data['equipment']['projector'] = self.getEquipment()['projector']
-		reservation_data['equipment']['whiteboard'] = self.getEquipment()['whiteboard']
+		reservation_data['equipment'] = {}
+		reservation_data['equipment']['laptops'] = self.getEquipment().equipment['laptops']
+		reservation_data['equipment']['projectors'] = self.getEquipment().equipment['projectors']
+		reservation_data['equipment']['whiteboards'] = self.getEquipment().equipment['whiteboards']
 		reservation_data['description'] = self.getDescription()
 		reservation_data['reservationId'] = self.getId()
 		return reservation_data

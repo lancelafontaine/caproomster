@@ -72,9 +72,10 @@ class Waiting:
 		waiting_data['timeslot']['endTime'] = self.getTimeslot().getEndTime()
 		waiting_data['timeslot']['date'] = self.getTimeslot().getDate()
 		waiting_data['timeslot']['timeId'] = self.getTimeslot().getId()
-		waiting_data['equipment']['laptop'] = self.getEquipment()['laptop']
-		waiting_data['equipment']['projector'] = self.getEquipment()['projector']
-		waiting_data['equipment']['whiteboard'] = self.getEquipment()['whiteboard']
+		waiting_data['equipment'] = {}
+		waiting_data['equipment']['laptops'] = self.getEquipment().equipment['laptops']
+		waiting_data['equipment']['projectors'] = self.getEquipment().equipment['projectors']
+		waiting_data['equipment']['whiteboards'] = self.getEquipment().equipment['whiteboards']
 		waiting_data['description'] = self.getDescription()
 		waiting_data['reservationId'] = self.getId()
 		return waiting_data
