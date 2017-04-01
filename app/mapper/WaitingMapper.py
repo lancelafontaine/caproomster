@@ -2,6 +2,7 @@ import UnitOfWork
 import RoomMapper
 import UserMapper
 import TimeslotMapper
+import EquipmentMapper
 
 from app.TDG import WaitingTDG
 
@@ -21,7 +22,8 @@ def find(waitingId):
         room = RoomMapper.find(result[0][1])
         reservee = UserMapper.find(result[0][2])
         timeslot = TimeslotMapper.find(result[0][4])
-        return Waiting(room, reservee, timeslot, result[0][3], result[0][0])
+        equipment = EquipmentMapper.find(result[0][5])
+        return Waiting(room, reservee, timeslot, result[0][3], equipment, result[0][0])
 
 def findRoomOnDate(roomId,date):
     waitingList = WaitingTDG.findByRoom(roomId,date)
