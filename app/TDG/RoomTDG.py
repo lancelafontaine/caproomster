@@ -22,23 +22,6 @@ def findAll():
     else:
         return []
 
-def insert(lock):
-    conn = connect_db()
-    if conn:
-	cur = conn.cursor()
-	cur.execute("""INSERT INTO roomTable(lock) VALUES (%s);""", lock)
-	conn.commit()
-	conn.close()
-
-def update(id, availability):
-    conn = connect_db()
-    if conn:
-	cur = conn.cursor()
-	cur.execute("""UPDATE roomTable SET roomLock = %s
-		WHERE roomId = %s;""", (availability, id))
-	conn.commit()
-	conn.close()
-
 def delete(id):
     conn = connect_db()
     if conn:

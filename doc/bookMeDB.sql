@@ -28,12 +28,10 @@ CREATE TABLE IF NOT EXISTS userTable (
 -- ---------------------------------
 -- Table: room
 -- Desc: represents rooms that can be reserved
--- Note: lock :: determine if room can be accessed
 -- ---------------------------------
 
 CREATE TABLE IF NOT EXISTS roomTable (
 	roomId SERIAL NOT NULL,
-	roomLock BOOLEAN NOT NULL DEFAULT FALSE,
 	PRIMARY KEY (roomId)
 );
 
