@@ -118,13 +118,14 @@ Creates a new reservation for a specific timeslot, user an room.
 
 ```
 {
-	"rooms": [
-		1,
-		2,
-		3,
-		4,
-		5
-	]
+  	"roomId":"1",
+  	"username": "iscapstone",
+	"timeslot":  {
+		"startTime": "4",
+		"endTime": "5",
+		"date": "2020-03-19"
+	},
+  	"description": "cool meeting"
 }
 ```
 
@@ -132,8 +133,8 @@ Creates a new reservation for a specific timeslot, user an room.
 
 ```
 {
-  "makeNewReservation": "successfully created the reservation",
-  "reservationId": 221513
+	"makeNewReservation": "successfully created the reservation",
+	"reservationId": "94b12553-4fd1-4097-b1ec-0b9050ad45d3"
 }
 ```
 
@@ -150,23 +151,23 @@ Gets all the reservations of a specific user
 	"reservations": [
 		{
 			"description": "cool meeting",
-			"reservationId": 1,
+			"reservationId": "94b12553-4fd1-4097-b1ec-0b9050ad45d3",
 			"room": {
 				"roomId": 1
 			},
 			"timeslot": {
 				"date": "Thu, 19 Mar 2020 00:00:00 GMT",
-				"endTime": 15,
-				"startTime": 14,
-				"timeId": 1
+				"endTime": 5,
+				"startTime": 4,
+				"timeId": "9470839d-8fbf-4d19-ae51-101b2616c780"
 			},
 			"user": {
-				"userId": 1,
-				"username": "John"
+				"username": "iscapstone"
 			}
 		}
 	],
-	"userId": "1"
+	"username": "iscapstone",
+	"waitings": []
 }
 ```
 
@@ -183,23 +184,23 @@ Gets all the reservations within a particular room.
 	"reservations": [
 		{
 			"description": "cool meeting",
-			"reservationId": 1,
+			"reservationId": "94b12553-4fd1-4097-b1ec-0b9050ad45d3",
 			"room": {
 				"roomId": 1
 			},
 			"timeslot": {
 				"date": "Thu, 19 Mar 2020 00:00:00 GMT",
-				"endTime": 15,
-				"startTime": 14,
-				"timeId": 1
+				"endTime": 5,
+				"startTime": 4,
+				"timeId": "9470839d-8fbf-4d19-ae51-101b2616c780"
 			},
 			"user": {
-				"userId": 1,
-				"username": "John"
+				"username": "iscapstone"
 			}
 		}
 	],
-	"roomId": "1"
+	"roomId": "1",
+	"waitings": []
 }
 ```
 
@@ -216,22 +217,22 @@ Gets all the reservations in the system
 	"reservations": [
 		{
 			"description": "cool meeting",
-			"reservationId": 1,
+			"reservationId": "94b12553-4fd1-4097-b1ec-0b9050ad45d3",
 			"room": {
 				"roomId": 1
 			},
 			"timeslot": {
 				"date": "Thu, 19 Mar 2020 00:00:00 GMT",
-				"endTime": 15,
-				"startTime": 14,
-				"timeId": 1
+				"endTime": 5,
+				"startTime": 4,
+				"timeId": "9470839d-8fbf-4d19-ae51-101b2616c780"
 			},
 			"user": {
-				"userId": 1,
-				"username": "John"
+				"username": "iscapstone"
 			}
 		}
-	]
+	],
+	"waitings": []
 }
 ```
 

@@ -644,9 +644,11 @@ def test_valid_get_reservations_by_room_with_login(monkeypatch):
             assert (response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())
             assert (isinstance(response_data, dict))
-            assert ('reservations' in response_data)
             assert ('roomId' in response_data)
+            assert ('reservations' in response_data)
             assert (isinstance(response_data['reservations'], list))
+            assert ('waitings' in response_data)
+            assert (isinstance(response_data['waitings'], list))
 
 
 def test_invalid_get_reservations_by_user_without_login(monkeypatch):
@@ -674,9 +676,11 @@ def test_valid_get_reservations_by_user_with_login(monkeypatch):
             assert (response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())
             assert (isinstance(response_data, dict))
-            assert ('reservations' in response_data)
             assert ('username' in response_data)
+            assert ('reservations' in response_data)
             assert (isinstance(response_data['reservations'], list))
+            assert ('waitings' in response_data)
+            assert (isinstance(response_data['waitings'], list))
 
 
 def test_invalid_get_reservations_by_room_without_login(monkeypatch):
@@ -687,7 +691,7 @@ def test_invalid_get_reservations_by_room_without_login(monkeypatch):
             assert (response.status_code == views.STATUS_CODE['UNAUTHORIZED'])
 
 
-def test_valid_get_reservations_by_with_login(monkeypatch):
+def test_valid_get_reservations_by_room_with_login(monkeypatch):
     with app.app_context():
         with app.test_request_context():
             def find_by_room(*args, **kwargs):
@@ -704,6 +708,8 @@ def test_valid_get_reservations_by_with_login(monkeypatch):
             assert (response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())
             assert (isinstance(response_data, dict))
-            assert ('reservations' in response_data)
             assert ('roomId' in response_data)
+            assert ('reservations' in response_data)
             assert (isinstance(response_data['reservations'], list))
+            assert ('waitings' in response_data)
+            assert (isinstance(response_data['waitings'], list))
