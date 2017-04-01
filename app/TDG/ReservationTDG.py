@@ -12,13 +12,13 @@ def find(id):
     else:
         return []
 
-def insert(room, description, holder, timeslot):
+def insert(id, room, description, holder, timeslot):
     conn = connect_db()
     if conn:
         cur = conn.cursor()
         print(timeslot)
-        cur.execute("""INSERT INTO reservationTable(room, description, holder, timeslot) VALUES
-                (%s, %s, %s, %s);""", (room, description, holder, timeslot))
+        cur.execute("""INSERT INTO reservationTable(reservationId, room, description, holder, timeslot) VALUES
+                (%s, %s, %s, %s, %s);""", (id, room, description, holder, timeslot))
         conn.commit()
         conn.close()
 
@@ -65,6 +65,17 @@ def findByUserId(userId):
     else:
         return []
 
+def findByRoom(roomId):
+    conn = connect_db()
+    if conn:
+        cur = conn.cursor()
+        cur.execute("""SELECT * FROM reservationTable WHERE room = %s;""", (roomId))
+        data = cur.fetchall()
+        conn.close()
+        return data
+    else:
+        return []
+
 def findAll():
     conn = connect_db()
     if conn:
@@ -87,16 +98,6 @@ def findUserRes(userId):
         return data
     else:
         return []
-
-
-def insertDirect(room, description, holder, timeslot):
-    conn = connect_db()
-    if conn:
-        cur = conn.cursor()
-        cur.execute("""INSERT INTO reservationTable(room, description, holder, timeslot) VALUES
-                (%s, %s, %s, %s);""", (room, description, holder, timeslot))
-        conn.commit()
-        conn.close()
 
 def findDateRoom(roomId, date):
     conn = connect_db()

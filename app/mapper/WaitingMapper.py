@@ -7,14 +7,13 @@ from app.TDG import WaitingTDG
 
 from app.core.waiting import Waiting
 
-def makeNew(room, description, reservee, timeslot):
-    waiting = Waiting(room, reservee, timeslot, description,0)
+def makeNew(room, description, reservee, timeslot, waitingId):
+    waiting = Waiting(room, reservee, timeslot, description, waitingId)
     UnitOfWork.registerNew(waiting)
     return waiting
 
 
 def find(waitingId):
-    result = []
     result = WaitingTDG.find(waitingId)
     if not result:
         return

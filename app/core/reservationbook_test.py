@@ -30,20 +30,20 @@ def test_add_to_appropriate_waiting_list(monkeypatch):
 	assert len(reservationBook.waitingListRegular) == 0
 
 	# execute
-	reservationBook.addToWaitingList(2, User(3, 'usrname', 'pass', True),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc')
+	reservationBook.addToWaitingList(2, User('usrname', 'pass', True),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 4567, 1), 'desc')
 	# verify
 	assert len(reservationBook.waitingListCapstone) == 1
 
 	# execute
-	reservationBook.addToWaitingList(2, User(4, 'usrname', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc')
+	reservationBook.addToWaitingList(2, User('usrname', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 4567, 1), 'desc')
 	# verify
 	assert len(reservationBook.waitingListRegular) == 1
 
 	# execute
-	reservationBook.addToWaitingList(2, User(5, 'usrname', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 4567), 'desc')
+	reservationBook.addToWaitingList(2, User('usrname', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 4567, 1), 'desc')
 	# verify
 	assert len(reservationBook.waitingListRegular) == 2
 
@@ -66,28 +66,28 @@ def test_update_waiting(monkeypatch):
 	1 capstone student all in room 5, in that order.
 	This was already tested in test_add_to_appropriate_waiting_list()"""
 	# putting regular student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(3, 'mary', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1243), 'desc')
+	reservationBook.addToWaitingList(5, User('mary', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 1243, 1), 'desc')
 
 	# putting regular student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(4, 'john', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1246), 'desc')
+	reservationBook.addToWaitingList(5, User('john', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 1246, 1), 'desc')
 
 	# putting regular student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(1, 'gary', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1248), 'desc')
+	reservationBook.addToWaitingList(5, User('gary', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 1248, 1), 'desc')
 
 	# putting capstone student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(5, 'emir', 'pass', True),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1234), 'desc')
+	reservationBook.addToWaitingList(5, User('emir', 'pass', True),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 1234, 1), 'desc')
 
 	# putting regular student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(6, 'cody', 'pass', False),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1222), 'desc')
+	reservationBook.addToWaitingList(5, User('cody', 'pass', False),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 1222, 1), 'desc')
 
 	# putting capstone student into waitlist at room 5
-	reservationBook.addToWaitingList(5, User(7, 'mark', 'pass', True),
-	                                 Timeslot(11, 13, '2017-03-25', 2, 1212), 'desc')
+	reservationBook.addToWaitingList(5, User('mark', 'pass', True),
+	                                 Timeslot(11, 13, '2017-03-25', 2, 1212, 1), 'desc')
 
 	assert len(reservationBook.waitingListRegular) == 4
 	assert len(reservationBook.waitingListCapstone) == 2
@@ -103,7 +103,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure the user is the first capstone student at the top of the list"""
-	assert reservationBook.reservationList[0].getUser().getName() == 'emir'
+	assert reservationBook.reservationList[0].getUser().getId() == 'emir'
 
 	"""Calling update again, this should not change the waitlists since """
 	# Execute
@@ -131,7 +131,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is Mark"""
-	assert reservationBook.reservationList[0].getUser().getName() == "mark"
+	assert reservationBook.reservationList[0].getUser().getId() == "mark"
 
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
 	reservationBook.reservationList = []
@@ -145,7 +145,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is Mary"""
-	assert reservationBook.reservationList[0].getUser().getName() == "mary"
+	assert reservationBook.reservationList[0].getUser().getId() == "mary"
 
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
 	reservationBook.reservationList = []
@@ -159,7 +159,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is John"""
-	assert reservationBook.reservationList[0].getUser().getName() == "john"
+	assert reservationBook.reservationList[0].getUser().getId() == "john"
 
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
 	reservationBook.reservationList = []
@@ -173,7 +173,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is Gary"""
-	assert reservationBook.reservationList[0].getUser().getName() == "gary"
+	assert reservationBook.reservationList[0].getUser().getId() == "gary"
 
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
 	reservationBook.reservationList = []
@@ -187,7 +187,7 @@ def test_update_waiting(monkeypatch):
 	assert len(reservationBook.reservationList) == 1
 
 	"""Making sure that the user in the reservation list is Cody"""
-	assert reservationBook.reservationList[0].getUser().getName() == "cody"
+	assert reservationBook.reservationList[0].getUser().getId() == "cody"
 
 	"""At this point the list is empty, both regular and capstone"""
 	""""Toying around with update, clearing the reservationlist, this can be done with a method"""
@@ -219,7 +219,7 @@ def test_reservation_repeat(monkeypatch):
 	processed_description = ""
 	user = User(user_id, "", "")
 	room = Room(room_id, False)
-	time_slot = Timeslot(start_time, end_time, date, block, user_id)
+	time_slot = Timeslot(start_time, end_time, date, block, user_id, '1')
 	repeat_amount = 2
 
 	# Expected result

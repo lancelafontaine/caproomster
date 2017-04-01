@@ -14,7 +14,7 @@ import ReservationMapper
 
 def wrap_find(func, object_class):
     def new_find(objectId):
-        user = IdMap.find(object_class, int(objectId))
+        user = IdMap.find(object_class, objectId)
         if user is not None:
             print(object_class.__name__ + ' - find() - Cache HIT')
             return user

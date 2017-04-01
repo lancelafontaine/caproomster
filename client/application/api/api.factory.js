@@ -14,7 +14,9 @@
       login: login,
       logout: logout,
       getRoomList: getRoomList,
-      reserveSlot: reserveSlot
+      reserveSlot: reserveSlot,
+      getAllReservation: getAllReservation,
+      getMyReservation: getMyReservation
     };
 
     /* login factory */
@@ -64,6 +66,32 @@
       return $resource(baseUrl + url, {}, {
         reserve: {
           method: 'POST',
+          withCredentials: true
+        }
+      });
+    }
+
+    /* getAllReservation factory */
+
+    function getAllReservation() {
+      var url = '/reservations/room/:roomId';
+      return $resource(baseUrl + url, {
+        roomId: '@roomId'
+      }, {
+        get: {
+          method: 'GET',
+          withCredentials: true
+        }
+      });
+    }
+
+    function getMyReservation() {
+      var url = '/reservations/user/:userId';
+      return $resource(baseUrl + url, {
+        userId: '@userId'
+      }, {
+        get: {
+          method: 'GET',
           withCredentials: true
         }
       });

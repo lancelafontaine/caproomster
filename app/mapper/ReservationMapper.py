@@ -12,9 +12,7 @@ def makeNew(room, holder, time, description, reservationId):
     UnitOfWork.registerNew(reservation)
     return reservation
 
-
 def find(reservationId):
-    result = []
     result = ReservationTDG.find(reservationId)
     if not result:
         return
@@ -23,7 +21,7 @@ def find(reservationId):
         room = RoomMapper.find(result[0][1])
         holder = UserMapper.find(result[0][3])
         timeslot = TimeslotMapper.find(result[0][4])
-        return Reservation(room, holder, timeslot, result[0][2], timeslot.getId())
+        return Reservation(room, holder, timeslot, result[0][2], result[0][0])
 
 
 def findAll():
@@ -36,7 +34,7 @@ def findAll():
             room = RoomMapper.find(result[0][1])
             holder = UserMapper.find(result[0][3])
             timeslot = TimeslotMapper.find(result[0][4])
-            reservation = Reservation(room, holder, timeslot, result[0][2], timeslot.getId())
+            reservation = Reservation(room, holder, timeslot, result[0][2], result[0][0])
             allReservations.append(reservation)
         return allReservations
 
@@ -56,6 +54,12 @@ def findByUser(userId):
         userReservation.append(find(userR[0]))
     return userReservation
 
+def findByRoom(roomId):
+    roomReservations = []
+    result = ReservationTDG.findByRoom(roomId)
+    for index, roomR in enumerate(result):
+        roomReservations.append(find(roomR[0]))
+    return roomReservations
 
 def setReservation(reservationId):
     reservation = find(reservationId)
@@ -74,11 +78,13 @@ def done():
 
 # Saves reservation
 def save(reservation):
-    ReservationTDG.insert(reservation.getRoom().getId(),
-                          reservation.getDescription(),
-                          reservation.getUser().getId(),
-                          reservation.getTimeslot().getId()
-                          )
+    ReservationTDG.insert(
+        reservation.getId(),
+        reservation.getRoom().getId(),
+        reservation.getDescription(),
+        reservation.getUser().getId(),
+        reservation.getTimeslot().getId(),
+      )
 
 
 # updates room Object

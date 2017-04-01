@@ -28,7 +28,7 @@ def registerDeleted(object):
 
 
 def commit():
-	print('cmmitting')
+	print('Unit of Work - committing')
 	for index, object in enumerate(newList):
 		if isinstance(object, User):
 			UserMapper.save(object)

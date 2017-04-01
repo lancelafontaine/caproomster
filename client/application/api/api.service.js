@@ -32,6 +32,12 @@
       if (action === 'reserve') {
         return ApiFactory.reserveSlot().reserve({}, payload).$promise;
       }
+      if (action === 'getAllReservation') {
+        return ApiFactory.getAllReservation().get(payload).$promise;
+      }
+      if (action === 'getMyReservation') {
+        return ApiFactory.getMyReservation().get(payload).$promise;
+      }
       return undefined;
     }
 

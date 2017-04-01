@@ -1,16 +1,15 @@
 from flask import url_for, redirect, session, make_response,flash
 from functools import wraps, update_wrapper
 from datetime import datetime
-# login required
-def login_required(f):
-	@wraps(f)
-	def wrap(*args, **kwargs):
-		if 'logged_in' in session:
-			return f(*args, **kwargs)
-		else:
-			flash('you need to login first.')
-			return redirect(url_for('index'))
-	return wrap
+import views
+
+def require_login(func):
+    def wrapper(*args, **kwargs):
+        if not views.is_logged_in_bool():
+            return views.unauthorized()
+        return func(*args, **kwargs)
+    wrapper.func_name = func.func_name
+    return wrapper
 
 def nocache(view):
     @wraps(view)
