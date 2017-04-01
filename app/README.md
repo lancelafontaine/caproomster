@@ -7,7 +7,7 @@ Some resources require a user that is *logged in* in order to be accessed. They'
 If an unauthenticated user attempts to access one of these resources without being logged in, the response will be:
 
 **401 - UNAUTHORIZED**
-```json
+```
 {
   "unauthorized": "Not logged in. You must login."
 }
@@ -24,7 +24,7 @@ Checks if the current user is logged in or not.
 #### Possible Responses
 
 **200 - OK**
-```json
+```
 {
 	"data": {
 		"username": "iscapstone"
@@ -34,7 +34,7 @@ Checks if the current user is logged in or not.
 ```
 
 **401 - UNAUTHORIZED**
-```json
+```
 {
   "unauthorized": "Not logged in. You must login."
 }
@@ -46,22 +46,24 @@ Checks if the current user is logged in or not.
 Login attempt. Returns a session token.
 
 #### Expected Request Payload
-```json
+```
 {
 	"username":"iscapstone",
 	"password":"soen344"
-}```
+}
+```
 
 #### Success Response
 
 **200 - OK**
-```json
+```
 {
 	"data": {
 		"username": "iscapstone"
 	},
 	"login success": "Successfully logged in"
-}```
+}
+```
 
 <hr/>
 
@@ -74,7 +76,7 @@ Allows the current user to log out.
 #### Success Response
 
 **200 - OK**
-```json
+```
 {
   "logout success": "Successfully logged out."
 }
@@ -92,7 +94,7 @@ Retrieves all CAPSTONE rooms in the system.
 #### Success Response
 
 **200 - OK**
-```json
+```
 {
 	"rooms": [
 		1,
@@ -101,7 +103,8 @@ Retrieves all CAPSTONE rooms in the system.
 		4,
 		5
 	]
-}```
+}
+```
 
 <hr/>
 
@@ -113,7 +116,7 @@ Creates a new reservation for a specific timeslot, user an room.
 
 #### Expected Request Payload
 
-```json
+```
 {
 	"rooms": [
 		1,
@@ -122,11 +125,12 @@ Creates a new reservation for a specific timeslot, user an room.
 		4,
 		5
 	]
-}```
+}
+```
 
 #### Success Response
 
-```json
+```
 {
   "makeNewReservation": "successfully created the reservation",
   "reservationId": 221513
@@ -141,7 +145,7 @@ Gets all the reservations of a specific user
 
 #### Success Response
 
-```json
+```
 {
 	"reservations": [
 		{
@@ -166,7 +170,7 @@ Gets all the reservations of a specific user
 }
 ```
 
-## Resource - `reservation/room/:roomId`
+## Resource - `reservations/room/:roomId`
 
 ### `GET`
 
@@ -174,7 +178,7 @@ Gets all the reservations within a particular room.
 
 #### Success Response
 
-```json
+```
 {
 	"reservations": [
 		{
@@ -207,7 +211,7 @@ Gets all the reservations in the system
 
 #### Success Response
 
-```json
+```
 {
 	"reservations": [
 		{
@@ -231,7 +235,19 @@ Gets all the reservations in the system
 }
 ```
 
+## Resource - `reservations/:reservationId`
 
+### `DELETE`
+
+Deletes a reservation based on the specified ID. Returns 404 if no reservation is found with that ID.
+
+#### Success Response
+```
+{
+	"reservationId": "b29615b7-2895-4929-955a-ea0491e283de",
+	"success": "reservation successfully deleted"
+}
+```
 
 
 
