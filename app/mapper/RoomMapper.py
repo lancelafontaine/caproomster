@@ -16,7 +16,7 @@ def find(roomId):
     if not result:
         return
     else:
-        return Room(result[0][0], result[0][1])
+        return Room(result[0][0])
 
 #returns array of all rooms
 def findAll():
