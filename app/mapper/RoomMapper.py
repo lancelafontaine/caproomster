@@ -42,14 +42,8 @@ def delete(roomId):
 def done():
     UnitOfWork.commit()
 
-#adds room object
-#def save(room):
-  #  RoomTDG.insert(room.getLock())
 
-#updates room Object
-#need to remove do thing
-'''def update(room):
-    RoomTDG.update(room)'''
+
 
 #deletes room object
 def erase(roomId):
