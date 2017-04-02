@@ -1,131 +1,217 @@
 <div class="container-fluid home-page" ng-if="vm.authenticated">
-    <!-- Main view -->
-    <div class="row home-page-upper">
-        <!-- Toggle Room Select Menu -->
-        <div class="room-list">
-            <p ng-click="vm.toggleMenu()">
-              {{ vm.toggleText }}
-              <i class="fa fa-arrow-down" aria-hidden="true"></i>
-            </p>
-            <div class="room-list-number" ng-if="vm.isToggled">
-                <button
-                type="button"
-                class="btn"
-                ng-repeat="room in vm.roomList"
-                ng-click="vm.changeRoom(room); vm.toggleMenu()"
-                ng-class="{'selected-room': vm.roomNumber == room}">
-                  Room {{ room }}
-                </button>
-            </div>
-        </div>
-        <!-- End Toggle Room Select Menu -->
-        <!-- Calendar View -->
-        <div class="calendar-view">
-          <!-- View Select Button Group 1-->
-          <div class="col-md-3 col-md-offset-7 calendar-buttons">
-            <div class="btn-group">
-              <button
-                class="btn btn-primary"
-                mwl-date-modifier
-                date="vm.viewDate"
-                decrement="vm.calendarView"
-                ng-click="vm.cellIsOpen = false">
-                Previous
-              </button>
-              <button
-                class="btn btn-default"
-                mwl-date-modifier
-                date="vm.viewDate"
-                set-to-today
-                ng-click="vm.cellIsOpen = false">
-                Today
-              </button>
-              <button
-                class="btn btn-primary"
-                mwl-date-modifier
-                date="vm.viewDate"
-                increment="vm.calendarView"
-                ng-click="vm.cellIsOpen = false">
-                Next
-              </button>
-            </div>
-          </div>
-          <!-- End View Select Button Group 1-->
-          <!-- View Select Button Group 2-->
-          <div class="col-md-2 calendar-buttons">
-            <div class="btn-group">
-              <label class="btn btn-primary" ng-model="vm.calendarView" uib-btn-radio="'week'" ng-click="vm.cellIsOpen = false">Week</label>
-              <label class="btn btn-primary" ng-model="vm.calendarView" uib-btn-radio="'day'" ng-click="vm.cellIsOpen = false">Day</label>
-            </div>
-          </div>
-          <!-- End View Select Button Group 2-->
-          <!-- Calendar -->
-          <div class="col-md-12 calendar">
-              <mwl-calendar
-                  events="vm.events"
-                  view="vm.calendarView"
-                  view-title="vm.calendarTitle"
-                  view-date="vm.viewDate"
-                  on-event-click="vm.eventClicked(calendarEvent)"
-                  on-event-times-changed="vm.eventTimesChanged(calendarEvent); calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
-                  cell-is-open="vm.cellIsOpen"
-                  day-view-start="08:00"
-                  day-view-end="23:00"
-                  day-view-split="30"
-                  day-view-event-chunk-size="30"
-                  cell-modifier="vm.modifyCell(calendarCell)"
-                  cell-auto-open-disabled="true"
-                  on-timespan-click="vm.timespanClicked(calendarDate, calendarCell)">
-                </mwl-calendar>
-          </div>
-          <!-- End Calendar -->
-        </div>
-        <!-- End Calendar View -->
+  <!-- Main view -->
+  <div class="row home-page-upper">
+    <!-- Toggle Room Select Menu -->
+    <div class="room-list">
+      <p ng-click="vm.toggleMenu()">
+        {{ vm.toggleText }}
+        <i class="fa fa-arrow-down" aria-hidden="true"></i>
+      </p>
+      <div class="room-list-number" ng-if="vm.isToggled">
+        <button
+        type="button"
+        class="btn"
+        ng-repeat="room in vm.roomList"
+        ng-click="vm.changeRoom(room); vm.toggleMenu()"
+        ng-class="{'selected-room': vm.roomNumber == room}">
+          Room {{ room }}
+        </button>
+      </div>
     </div>
-    <!-- End Main View -->
-    <!-- Info View -->
-    <div class="row home-page-bottom">
-        <!-- User Reservation -->
-        <div class="col-md-4 reservation">
-            <h2>Reservation</h2>
-            <div class="list-all-reservation">
-              <div class="scrollable">
-                  <!-- TODO: Edit buttons for reservation modification -->
-                  <div ng-repeat="res in vm.myReservations">
-                    <p>{{ res.description }}</p>
-                    <p>{{res.room.roomId}} / {{ res.timeslot.date }} / {{ res.timeslot.startTime }} to {{ res.timeslot.endTime }}</p>
-                  </div>
-                </div>
-              </div>
+    <!-- End Toggle Room Select Menu -->
+    <!-- Calendar View -->
+    <div class="calendar-view">
+      <!-- View Select Button Group 1-->
+      <div class="col-md-5">
+        <h2 style="padding: 5px;">
+          Room {{ vm.roomNumber }} - {{ vm.calendarTitle }}
+        </h2>
+      </div>
+      <div class="col-md-3 col-md-offset-2 calendar-buttons">
+        <div class="btn-group">
+          <button
+            class="btn btn-primary"
+            mwl-date-modifier
+            date="vm.viewDate"
+            decrement="vm.calendarView"
+            ng-click="vm.cellIsOpen = false">
+            Previous
+          </button>
+          <button
+            class="btn btn-default"
+            mwl-date-modifier
+            date="vm.viewDate"
+            set-to-today
+            ng-click="vm.cellIsOpen = false">
+            Today
+          </button>
+          <button
+            class="btn btn-primary"
+            mwl-date-modifier
+            date="vm.viewDate"
+            increment="vm.calendarView"
+            ng-click="vm.cellIsOpen = false">
+            Next
+          </button>
         </div>
-        <!-- End User Reservation -->
-        <!-- Room Specification Display -->
-        <div class="col-md-4 console">
-            <h2>Room {{ vm.roomNumber }} - {{ vm.calendarTitle }}</h2>
-            <!-- TODO: Populate room equipment list -->
-            <!-- TODO: Get time slot number -->
-            <p>Available Time Slot: 5</p>
-            <p>Available Equipments</p>
-            <div class="equipments">
-              <i class="fa fa-desktop" aria-hidden="true"></i>
-              <i class="fa fa-television" aria-hidden="true"></i>
-              <i class="fa fa-phone" aria-hidden="true"></i>
-            </div>
+      </div>
+      <!-- End View Select Button Group 1-->
+      <!-- View Select Button Group 2-->
+      <div class="col-md-2 calendar-buttons">
+        <div class="btn-group">
+          <label
+            class="btn btn-primary"
+            ng-model="vm.calendarView"
+            uib-btn-radio="'week'"
+            ng-click="vm.cellIsOpen = false"
+          >
+            Week
+          </label>
+          <label
+            class="btn btn-primary"
+            ng-model="vm.calendarView"
+            uib-btn-radio="'day'"
+            ng-click="vm.cellIsOpen = false"
+          >
+          Day
+          </label>
         </div>
-        <!-- End Room Specification Display -->
-        <!-- User Wating List -->
-        <div class="col-md-4 reservation">
-            <h2>Waiting List</h2>
-            <p class="reservation-list">
-                <!-- TODO: Populate user waitinglist with ng-repeat -->
-                <!-- TODO: Edit buttons for waitinglist modification -->
-                <p>H922 / March 27 / 12:00 to 13:00</p>
-                <p>H921 / March 31 / 14:00 to 15:00</p>
-                <p>H920 / April 2 / 11:00 to 12:00</p>
-                <p>H922 / April 5  / 11:00 to 12:00</p>
-            </p>
-        </div>
-        <!-- End User Wating List -->
+      </div>
+      <!-- End View Select Button Group 2-->
+      <!-- Calendar -->
+      <div class="col-md-12 calendar">
+        <mwl-calendar
+          events="vm.events"
+          view="vm.calendarView"
+          view-title="vm.calendarTitle"
+          view-date="vm.viewDate"
+          cell-is-open="vm.cellIsOpen"
+          day-view-start="08:00"
+          day-view-end="23:00"
+          day-view-split="60"
+          day-view-event-width="250"
+          cell-modifier="vm.modifyCell(calendarCell)"
+          on-date-range-select="
+            vm.resetCache();
+            vm.cache.start = calendarRangeStartDate.getHours();
+            vm.cache.date = vm.dateToNumber(calendarRangeStartDate);
+            vm.cache.inAction = 'create'"
+          cell-auto-open-disabled="true"
+        >
+        </mwl-calendar>
+      </div>
+      <!-- End Calendar -->
     </div>
-    <!-- End Info View -->
+    <!-- End Calendar View -->
+  </div>
+  <!-- End Main View -->
+  <!-- Info View -->
+  <div class="row home-page-bottom">
+    <!-- User Reservation -->
+    <div class="col-md-4 reservation">
+      <h2>
+        Reservation
+      </h2>
+      <div class="list-all-reservation">
+        <div class="scrollable">
+          <div ng-repeat="res in vm.myReservations">
+            <p>
+              {{ res.description }}
+              <i
+                class="fa fa-pencil"
+                aria-hidden="true"
+                ng-click="vm.setCache(res, 'modify')"
+              >
+              </i>
+              <i
+                class="fa fa-ban"
+                aria-hidden="true"
+                ng-click="vm.setCache(res, 'delete')"
+              >
+              </i>
+            </p>
+            <p>
+              {{res.room.roomId}} / {{ res.timeslot.date }} / {{ res.timeslot.startTime }}:00 to {{ res.timeslot.endTime }}:00
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End User Reservation -->
+    <!-- Room Specification Display -->
+    <div class="col-md-4 console">
+      <h3 ng-if="!vm.cache.inAction" class="message">
+        {{ vm.message }}
+      </h3>
+      <div ng-if="vm.cache.inAction" class="make-reservation">
+        <h2>
+          <span ng-if="vm.cache.inAction == 'create'">Create</span>
+          <span ng-if="vm.cache.inAction == 'modify'">Modify</span>
+          <span ng-if="vm.cache.inAction == 'delete'">Delete</span>
+          Reservation
+        </h2>
+        <h3>Room {{ vm.roomNumber }}</h3>
+        <h3>
+          <span ng-if="vm.cache.inAction != 'modify'">{{ vm.cache.date }}</span>
+          <input type="tel" ng-model="vm.cache.date" ng-if="vm.cache.inAction == 'modify'" class="modify-date"/>
+        </h3>
+        <h3>
+          Reserve <input type="tel" ng-model="vm.cache.length" ng-disabled="vm.cache.inAction == 'delete'"/> hours from {{ vm.cache.start }}:00 to {{ vm.parseInt(vm.cache.start) + vm.parseInt(vm.cache.length) }}:00
+        </h3>
+        <i class="fa fa-laptop" aria-hidden="true"></i>
+        <input type="tel" ng-model="vm.cache.equipment.laptop" ng-disabled="vm.cache.inAction == 'delete'"/>
+        <i class="fa fa-video-camera" aria-hidden="true"></i>
+        <input type="tel" ng-model="vm.cache.equipment.projector" ng-disabled="vm.cache.inAction == 'delete'"/>
+        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        <input type="tel" ng-model="vm.cache.equipment.board" ng-disabled="vm.cache.inAction == 'delete'"/>
+        <div class="button-group">
+          <button ng-click="vm.resetCache(); vm.cache.inAction = null" class="btn-lg cancel-button">
+            Cancel
+          </button>
+          <button ng-if="vm.cache.inAction == 'create'" ng-click="vm.makeReservation()" class="btn-lg">
+            Confirm
+          </button>
+          <button ng-if="vm.cache.inAction == 'modify'" ng-click="vm.modifyReservation()" class="btn-lg">
+            Modify
+          </button>
+          <button ng-if="vm.cache.inAction == 'delete'" ng-click="vm.deleteReservation()" class="btn-lg">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End Room Specification Display -->
+    <!-- User Waiting List -->
+    <div class="col-md-4 reservation">
+      <h2>
+        Waiting List
+      </h2>
+      <div class="list-all-reservation">
+        <div class="scrollable">
+          <div ng-repeat="res in vm.myWaitingList">
+            <p>
+              {{ res.description }}
+              <i
+                class="fa fa-pencil"
+                aria-hidden="true"
+                ng-click="vm.setCache(res, 'modify')"
+              >
+              </i>
+              <i
+                class="fa fa-ban"
+                aria-hidden="true"
+                ng-click="vm.setCache(res, 'delete')"
+              >
+              </i>
+            </p>
+            <p>
+              {{res.room.roomId}} / {{ res.timeslot.date }} / {{ res.timeslot.startTime }}:00 to {{ res.timeslot.endTime }}:00
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End User Wating List -->
+  </div>
+  <!-- End Info View -->
 </div>

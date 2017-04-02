@@ -4,135 +4,193 @@
 
   angular.module('caproomster').controller('caproomster.home.HomeController', HomeController);
 
-  HomeController.$inject = ['$state', 'moment', 'calendarConfig', 'caproomster.api.ApiService'];
+  HomeController.$inject = [
+    '$state',
+    'moment',
+    'calendarConfig',
+    '$interval',
+    'caproomster.api.ApiService',
+    'caproomster.home.HomeService'];
 
-  function HomeController($state, moment, calendarConfig, ApiService) {
+  function HomeController($state, moment, calendarConfig, $interval, ApiService, HomeService) {
 
     var vm = this;
+    var currentUser = null;
     vm.$onInit = init;
-
-    // Init function
 
     function init() {
       vm.toggleMenu = toggleMenu;
       vm.changeRoom = changeRoom;
-      vm.eventClicked = eventClicked;
-      vm.eventEdited = eventEdited;
-      vm.eventDeleted = eventDeleted;
-      vm.eventTimesChanged = eventTimesChanged;
-      vm.timespanClicked = timespanClicked;
+      vm.makeReservation = makeReservation;
+      vm.modifyReservation = modifyReservation;
+      vm.deleteReservation = deleteReservation;
+      vm.resetCache = resetCache;
+      vm.setCache = setCache;
+      vm.dateToNumber = HomeService.dateToNumber;
       vm.calendarView = 'week';
       vm.viewDate = new Date();
       vm.toggleText = 'Show Room List';
+      vm.message = 'Select a start timeslot for the reservation.';
       vm.roomList = [];
       vm.roomNumber = '';
       vm.cellIsOpen = true;
       vm.events = [];
       vm.myReservations = [];
+      vm.myWaitingList = [];
+      vm.parseInt = parseInt;
       initData();
+      $interval(getRoomInfo, 1500);
     }
 
-    // check login and init all data for the view
-
     function initData() {
+      vm.resetCache();
       ApiService.account('checkLogin').then(function(loggedInUser) {
+        currentUser = loggedInUser.success.username;
         vm.authenticated = true;
         ApiService.booking('getRoomList').then(function(roomList) {
           vm.roomList = roomList.rooms;
           vm.roomNumber = vm.roomList[0];
           getRoomInfo();
-        });
-        ApiService.booking('getMyReservation', {
-          userId: loggedInUser.success.userId
-        }).then(function(myReservations) {
-            vm.myReservations = myReservations.reservations;
+          getMyInfo();
         });
       }, function() {
         $state.go('login');
       });
     }
 
-    // parse return data into calendar event object
-
-    function createEvent(reservation, type) {
-      var dateString = reservation.timeslot.date.replace('GMT', 'EST');
-      var start = new Date(dateString);
-      start.setHours(reservation.timeslot.startTime);
-      var end = new Date(dateString);
-      end.setHours(reservation.timeslot.endTime);
-      var event = {};
-      event.title = reservation.description;
-      event.startsAt = start;
-      event.endsAt = end;
-      event.color = type;
-      return event;
-    }
-
-    // get reservation, waitingList, and equipment of a room
-
     function getRoomInfo() {
-      vm.events = [];
+      var tempEvents = [];
       ApiService.booking('getAllReservation', {
         roomId: vm.roomNumber
       }).then(function(res){
-        var reservations = res.reservations;
-        for (var i = 0; i < reservations.length; i++) {
-          vm.events.push(createEvent(reservations[i], calendarConfig.colorTypes.info));
+        var reservations = res.reservations || [];
+        var waitingList = res.waitingList || [];
+        for (var resIndex = 0; resIndex < reservations.length; resIndex++) {
+          tempEvents.push(HomeService.createEvent(reservations[resIndex], calendarConfig.colorTypes.info));
         }
+        for (var wtIndex = 0; wtIndex < waitingList.length; wtIndex++) {
+          tempEvents.push(HomeService.createEvent(reservations[wtIndex], calendarConfig.colorTypes.warning));
+        }
+        vm.events = tempEvents;
       });
-      // TODO: get equipment list
     }
 
-    /*
-    UI Actions
-    */
+    function getMyInfo() {
+      ApiService.booking('getMyReservation', {
+        userId: currentUser
+      }).then(function(myReservations) {
+        vm.myReservations = myReservations.reservations;
+        vm.myWaitingList = myReservations.waitings;
+      });
+    }
 
-    function timespanClicked(date, cell) {
-      if (vm.calendarView === 'month') {
-        if ((vm.cellIsOpen && moment(date).startOf('day').isSame(moment(vm.viewDate).startOf('day'))) || cell.events.length === 0 || !cell.inMonth) {
-          vm.cellIsOpen = false;
+    function makeReservation() {
+      ApiService.booking('reserve', createPayload()).then(function() {
+        showMessage('Successfully reserved.');
+        vm.resetCache();
+        getRoomInfo();
+        getMyInfo();
+      }, function() {
+        vm.resetCache();
+        showMessage('Failed to reserve, please try again.');
+      });
+    }
+
+    function modifyReservation() {
+      ApiService.booking('reserve', createPayload()).then(function() {
+        var payload = {
+          reservationId: vm.cache.reservationId
+        };
+        ApiService.booking('deleteMyReservation',payload).then(function() {
+          showMessage('Successfully modified.');
+          vm.resetCache();
+          getRoomInfo();
+          getMyInfo();
+        }, function() {
+          vm.resetCache();
+          showMessage('Failed to modify, please try again.');
+        });
+      }, function() {
+        vm.resetCache();
+        showMessage('Failed to modify, please try again.');
+      });
+    }
+
+    function deleteReservation() {
+      var payload = {
+        reservationId: vm.cache.reservationId
+      };
+      ApiService.booking('deleteMyReservation', payload).then(function() {
+        if (vm.cache.inAction == 'modify') {
+          showMessage('Successfully modified.');
         } else {
-          vm.cellIsOpen = true;
-          vm.viewDate = date;
+          showMessage('Successfully deleted.');
         }
-      } else if (vm.calendarView === 'year') {
-        if ((vm.cellIsOpen && moment(date).startOf('month').isSame(moment(vm.viewDate).startOf('month'))) || cell.events.length === 0) {
-          vm.cellIsOpen = false;
-        } else {
-          vm.cellIsOpen = true;
-          vm.viewDate = date;
-        }
-      }
+        vm.resetCache();
+        getRoomInfo();
+        getMyInfo();
+      }, function() {
+        vm.resetCache();
+        showMessage('Failed to reserve, please try again.');
+      });
     }
 
-    function eventClicked() {
-      //TODO
-      console.log('Clicked');
+    function createPayload() {
+      return {
+        roomId: vm.roomNumber,
+        username: currentUser,
+        timeslot: {
+          startTime: vm.cache.start,
+          endTime: parseInt(vm.cache.start) + parseInt(vm.cache.length),
+          date: vm.cache.date
+        },
+        equipment: vm.cache.equipment,
+        description: currentUser + '\'s Reservation'
+      };
     }
 
-    function eventEdited() {
-      //TODO
-      console.log('Edited');
+    function showMessage(msg) {
+      vm.message = msg;
+      setTimeout(function(){
+        vm.message = 'Select a start timeslot for the reservation.';
+      }, 600);
     }
 
-    function eventDeleted() {
-      //TODO
-      console.log('Deleted');
+    function resetCache() {
+      vm.cache = {
+        equipment: {
+          laptop: 0,
+          projector: 0,
+          board: 0
+        },
+        length: 1,
+        start: null,
+        date: null,
+        inAction: null,
+        reservationId: null
+      };
     }
 
-    function eventTimesChanged() {
-      //TODO
-      console.log('Dropped or resized');
+    function setCache(res, action) {
+      console.log(res);
+      vm.cache = {
+        equipment: {
+          laptop: res.equipment.laptops,
+          projector: res.equipment.projectors,
+          board: res.equipment.whiteboards
+        },
+        length: parseInt(res.timeslot.endTime) - parseInt(res.timeslot.startTime),
+        start: parseInt(res.timeslot.startTime),
+        date: res.timeslot.date,
+        inAction: action,
+        reservationId: res.reservationId
+      };
     }
-
-    // change room and fetch room data
 
     function changeRoom(room) {
       vm.roomNumber = room;
       getRoomInfo();
     }
-
-    // Toggle Menu
 
     function toggleMenu() {
       if (!vm.isToggled) {

@@ -38,6 +38,9 @@
       if (action === 'getMyReservation') {
         return ApiFactory.getMyReservation().get(payload).$promise;
       }
+      if (action === 'deleteMyReservation') {
+        return ApiFactory.deleteMyReservation().delete(payload).$promise;
+      }
       return undefined;
     }
 
