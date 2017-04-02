@@ -156,7 +156,7 @@
           <input type="tel" ng-model="vm.cache.date" ng-if="vm.cache.inAction == 'modify'" class="modify-date"/>
         </h3>
         <h3>
-          Reserve <input type="tel" ng-model="vm.cache.length" ng-disabled="vm.cache.inAction == 'delete'"/> hours from {{ vm.cache.start }}:00 to {{ vm.cache.start + vm.cache.length }}:00
+          Reserve <input type="tel" ng-model="vm.cache.length" ng-disabled="vm.cache.inAction == 'delete'"/> hours from {{ vm.cache.start }}:00 to {{ vm.parseInt(vm.cache.start) + vm.parseInt(vm.cache.length) }}:00
         </h3>
         <i class="fa fa-laptop" aria-hidden="true"></i>
         <input type="tel" ng-model="vm.cache.equipment.laptop" ng-disabled="vm.cache.inAction == 'delete'"/>
@@ -181,7 +181,7 @@
       </div>
     </div>
     <!-- End Room Specification Display -->
-    <!-- User Wating List -->
+    <!-- User Waiting List -->
     <div class="col-md-4 reservation">
       <h2>
         Waiting List

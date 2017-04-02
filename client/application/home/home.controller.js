@@ -30,13 +30,14 @@
       vm.calendarView = 'week';
       vm.viewDate = new Date();
       vm.toggleText = 'Show Room List';
-      vm.message = 'Select a timeslot to start reservation';
+      vm.message = 'Select a start timeslot for the reservation.';
       vm.roomList = [];
       vm.roomNumber = '';
       vm.cellIsOpen = true;
       vm.events = [];
       vm.myReservations = [];
       vm.myWaitingList = [];
+      vm.parseInt = parseInt;
       initData();
       $interval(getRoomInfo, 1500);
     }
@@ -64,11 +65,11 @@
       }).then(function(res){
         var reservations = res.reservations || [];
         var waitingList = res.waitingList || [];
-        for (var i = 0; i < reservations.length; i++) {
-          tempEvents.push(HomeService.createEvent(reservations[i], calendarConfig.colorTypes.info));
+        for (var resIndex = 0; resIndex < reservations.length; resIndex++) {
+          tempEvents.push(HomeService.createEvent(reservations[resIndex], calendarConfig.colorTypes.info));
         }
-        for (var j = 0; j < waitingList.length; j++) {
-          tempEvents.push(HomeService.createEvent(reservations[i], calendarConfig.colorTypes.warning));
+        for (var wtIndex = 0; wtIndex < waitingList.length; wtIndex++) {
+          tempEvents.push(HomeService.createEvent(reservations[wtIndex], calendarConfig.colorTypes.warning));
         }
         vm.events = tempEvents;
       });
@@ -91,7 +92,7 @@
         getMyInfo();
       }, function() {
         vm.resetCache();
-        showMessage('Fail to reserve, please try again.');
+        showMessage('Failed to reserve, please try again.');
       });
     }
 
@@ -101,17 +102,17 @@
           reservationId: vm.cache.reservationId
         };
         ApiService.booking('deleteMyReservation',payload).then(function() {
-          showMessage('Successfully modify.');
+          showMessage('Successfully modified.');
           vm.resetCache();
           getRoomInfo();
           getMyInfo();
         }, function() {
           vm.resetCache();
-          showMessage('Fail to modify, please try again.');
+          showMessage('Failed to modify, please try again.');
         });
       }, function() {
         vm.resetCache();
-        showMessage('Fail to modify, please try again.');
+        showMessage('Failed to modify, please try again.');
       });
     }
 
@@ -130,7 +131,7 @@
         getMyInfo();
       }, function() {
         vm.resetCache();
-        showMessage('Fail to reserve, please try again.');
+        showMessage('Failed to reserve, please try again.');
       });
     }
 
@@ -144,14 +145,14 @@
           date: vm.cache.date
         },
         equipment: vm.cache.equipment,
-        description: currentUser + '\'s Reservation'
+        description: 'Reservations for user: ' + currentUser
       };
     }
 
     function showMessage(msg) {
       vm.message = msg;
       setTimeout(function(){
-        vm.message = 'Select a timeslot to start reservation!';
+        vm.message = 'Select a start timeslot for the reservation.';
       }, 600);
     }
 
