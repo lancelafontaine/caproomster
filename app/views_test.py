@@ -8,7 +8,7 @@ from app.mapper import UserMapper
 from app.mapper import RoomMapper
 from app.mapper import ReservationMapper
 from app.mapper import TimeslotMapper
-
+from datetime import datetime
 from flask import jsonify
 import json
 
@@ -509,7 +509,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(1, 2, '2020-01-01', 1, "userID_ujhbknl", "timeslotID_tycuvi")
+            time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_ujhbknl", "timeslotID_tycuvi")
             room = Room(1)
 
             user = User('mr', 'pickles')
@@ -530,7 +530,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', 1, "userID_ytcuvib", "timeslotID_exrtcy")
+            time = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_ytcuvib", "timeslotID_exrtcy")
             room = Room(1)
 
             user = User('mr', 'pickles')
@@ -551,7 +551,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            timeslot = Timeslot(5, 8, '2020-01-01', 1, "userID_txcyvu", "timeslotID_ezwrxt")
+            timeslot = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_txcyvu", "timeslotID_ezwrxt")
             room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, timeslot, 'description', Equipment("equipmentID_jkljh"),
@@ -570,7 +570,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 7, '2020-01-01', 1, "userID_gfhasdh", "timeslotID_fgchgvjbk")
+            time = Timeslot(5, 7, datetime(2020, 01, 01), 1, "userID_gfhasdh", "timeslotID_fgchgvjbk")
             room = Room(1)
 
             user = User('mr', 'pickles')
@@ -590,7 +590,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', 1, "userID_fcghv", "timeslotID_fdxgch")
+            time = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_fcghv", "timeslotID_fdxgch")
             room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', Equipment("equipmentID_cghvjb"),
@@ -609,7 +609,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', 1, "userID_tcyvu", "timeslotID_fctygv")
+            time = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_tcyvu", "timeslotID_fctygv")
             room = Room(1)
 
             user = User('mr', 'pickles')
@@ -628,7 +628,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', 1, "userID_cghvjb", "timeslotID_hgvjbs")
+            time = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_cghvjb", "timeslotID_hgvjbs")
             room = Room(1)
             user = User('mr', 'pickles')
 
@@ -690,12 +690,12 @@ def test_invalid_make_new_reservation_without_login(monkeypatch):
             def reservation_create(*args, **kwargs):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID_tyvub", "timeslotID_ugvhbjk")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_tyvub", "timeslotID_ugvhbjk")
                 return Reservation(room, user, time, 'description', Equipment("equipmentID_yvhjb"),
                                    "reservationID_vghjbk")
 
             def timeslot_create(_):
-                return Timeslot(1, 2, '2020-01-01', 1, "userID_vhbj", "timeslotID_iubno")
+                return Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_vhbj", "timeslotID_iubno")
 
                 monkeypatch.setattr(TimeslotMapper, 'makeNew', empty_return)
                 monkeypatch.setattr(ReservationMapper, 'makeNew', reservation_create)
@@ -722,7 +722,7 @@ def test_valid_get_reservations_by_room_with_login(monkeypatch):
             def find_by_room(*args, **kwargs):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID_ibun", "timeslotID_vuhbjk")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_ibun", "timeslotID_vuhbjk")
                 return [Reservation(room, user, time, 'description', Equipment("equipmentID_vguhbikjn"),
                                     "reservationID_tcytvuhb")]
 
@@ -755,7 +755,7 @@ def test_valid_get_reservations_by_user_with_login(monkeypatch):
             def find_by_user(*args, **kwargs):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID_bijknklm", "timeslotID_ghvjbk")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_bijknklm", "timeslotID_ghvjbk")
                 return [Reservation(room, user, time, 'description', Equipment("equipmentID_hgcvjb"),
                                     "reservationID_vuhbiuj")]
 
@@ -786,7 +786,7 @@ def test_valid_get_reservations_by_with_login(monkeypatch):
             def find_by_room(*args, **kwargs):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID_vubin", "timeslotID_hbijkn")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_vubin", "timeslotID_hbijkn")
                 return [Reservation(room, user, time, 'description', Equipment("equipmentID_uyvbin"),
                                     "reservationID_ygvuhjbk")]
 
@@ -819,7 +819,7 @@ def test_valid_get_all_reservations(monkeypatch):
             def reservations_found():
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, 'buddy', 'timeslotID_7g8hij')
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, 'buddy', 'timeslotID_7g8hij')
                 return [Reservation(room, user, time, 'description', Equipment("equipmentID_ionoi"),"reservationID")]
 
             monkeypatch.setattr(ReservationMapper, 'findAll', reservations_found)
@@ -862,7 +862,7 @@ def test_valid_delete_reservation(monkeypatch):
             def reservation_not_found(_):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
+                time = Timeslot(1, 2, datetime(2020, 01, 01), '', 1, 1)
                 equipment = Equipment("EquipmentID_iionask")
                 return Reservation(room, user, time, 'description', equipment,'test')
 

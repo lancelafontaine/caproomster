@@ -219,7 +219,7 @@ class ReservationBook(object):
             repeat_amount = max_repetition
 
         # filter date values
-        date_split_list = timeslot.getDate().split('-')
+        date_split_list = timeslot.getDate().split('/')
         year = int(date_split_list[0])
         month = int(date_split_list[1])
         day = int(date_split_list[2])
@@ -230,7 +230,7 @@ class ReservationBook(object):
         # repeatAmount + 1 : because at least 1 reservation should be made
         for i in range(repeat_amount + 1):
             # create and register a timeslot object
-            timeslot.setDate(reservation_date.strftime('%Y-%m-%d'))
+            timeslot.setDate(reservation_date.strftime('%Y/%m/%d'))
             timeslot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), timeslot.getDate(),
                                               timeslot.getBlock(), user.getId())
             TimeslotMapper.save(timeslot)
@@ -248,7 +248,7 @@ class ReservationBook(object):
         diff_between_monday_and_sunday = 6
         total_time = 0
         # filter date values
-        date_split_list = date.split('-')
+        date_split_list = date.split('/')
         year = int(date_split_list[0])
         month = int(date_split_list[1])
         day = int(date_split_list[2])

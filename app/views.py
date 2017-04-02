@@ -227,7 +227,7 @@ def validate_new_reservation(data):
     startTime = int(data['timeslot']['startTime'])
     endTime = int(data['timeslot']['endTime'])
     date = str(data['timeslot']['date'])
-    dateList = date.split('-')
+    dateList = date.split('/')
     roomId = data['roomId']
     username = data['username']
     description = str(data['description'])
@@ -370,7 +370,7 @@ def validate_make_new_reservation_timeslots(reservations, dateList, startTime, e
     if reservations:
         for reservation in reservations:
             timeslot = reservation.getTimeslot()
-            timeslot_date_list = timeslot.getDate().strftime('%Y-%m-%d').split('-')
+            timeslot_date_list = timeslot.getDate().strftime('%Y/%m/%d').split('/')
 
             existing_timestamp_start = to_timestamp(timeslot_date_list, timeslot.getStartTime())
             existing_timestamp_end = to_timestamp(timeslot_date_list, timeslot.getEndTime())
