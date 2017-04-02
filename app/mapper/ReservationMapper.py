@@ -70,7 +70,7 @@ def setReservation(reservationId):
 
 
 def delete(reservationId):
-    UnitOfWork.registerDeleted(Reservation(None, None, None, reservationId))
+    UnitOfWork.registerDeleted(Reservation(None, None, None, None, None, reservationId))
 
 
 # save all work
