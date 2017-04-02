@@ -46,12 +46,17 @@ Checks if the current user is logged in or not.
 Login attempt. Returns a session token.
 
 #### Expected Request Payload
+
+John is a regular student.
 ```
 {
-	"username":"iscapstone",
-	"password":"soen344"
+	"username":"John",
+	"password":"pass"
 }
 ```
+
+Other valid `username` are Emily (regular), Hans (capstone), Jackie (regular), Mary (capstone) and Rudy (regular)
+All have `pass as the password.
 
 #### Success Response
 
@@ -59,7 +64,7 @@ Login attempt. Returns a session token.
 ```
 {
 	"data": {
-		"username": "iscapstone"
+		"username": "John"
 	},
 	"login success": "Successfully logged in"
 }
@@ -118,16 +123,26 @@ Creates a new reservation for a specific timeslot, user an room.
 
 ```
 {
-  	"roomId":"1",
-  	"username": "iscapstone",
-	"timeslot":  {
-		"startTime": "4",
-		"endTime": "5",
-		"date": "2020-03-19"
-	},
-  	"description": "cool meeting"
+  "roomId":"2",
+  "username":"John",
+  "timeslot":{
+    "startTime":"16",
+    "endTime":"18",
+    "date":"2017/04/02",
+    "block":"2",
+    "userId":"John",
+    "timeId":"timeslotID_taimlkmlkm"
+  },
+  "description":"John 2 meeting",
+  "equipment":{
+    "laptop":"0",
+    "projector":"0",
+    "board":"0"
+  }
 }
 ```
+
+Be careful, as there is some inconsistency for the time being between the username and userId...
 
 #### Success Response
 
