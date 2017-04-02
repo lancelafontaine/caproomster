@@ -8,6 +8,7 @@ from app.mapper import UserMapper
 from app.mapper import RoomMapper
 from app.mapper import ReservationMapper
 from app.mapper import TimeslotMapper
+from app.mapper import EquipmentMapper
 from datetime import datetime
 from flask import jsonify
 import json
@@ -202,7 +203,7 @@ def test_valid_validate_new_reservation(monkeypatch):
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
                 },
                 'equipment': {
                     'laptop': 1,
@@ -222,18 +223,27 @@ def test_valid_validate_new_reservation(monkeypatch):
                 return
 
             def mock_reservation_add(*args):
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID", "timeslotID")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID", "timeslotID")
                 room = Room(1)
 
                 user = User('mr', 'pickles')
                 return Reservation(room, user, time, 'description', Equipment("EquipmentID"), "ReservationIDunique")
+
+            def mock_timeslot_add(*args):
+                return Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID", "timeslotID")
+
+            def mock_equipment_add(*args):
+                return Equipment('id', 1,1,1)
 
             def mock_reservation_find_all(*args):
                 return []
 
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
+            monkeypatch.setattr(TimeslotMapper, 'makeNew', mock_timeslot_add)
             monkeypatch.setattr(TimeslotMapper, 'done', mock_reservation_done)
+            monkeypatch.setattr(EquipmentMapper, 'makeNew', mock_equipment_add)
+            monkeypatch.setattr(EquipmentMapper, 'done', mock_reservation_done)
             monkeypatch.setattr(ReservationMapper, 'done', mock_reservation_done)
             monkeypatch.setattr(ReservationMapper, 'makeNew', mock_reservation_add)
             monkeypatch.setattr(ReservationMapper, 'findAll', mock_reservation_find_all)
@@ -249,7 +259,7 @@ def test_valid_validate_make_new_reservation_payload_format():
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
                 },
                 'equipment': {
                     'laptop': 1,
@@ -270,7 +280,7 @@ def test_invalid_validate_make_new_reservation_payload_format_missing_key():
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
                 },
                 'equipment': {
                     'laptop': 1,
@@ -292,7 +302,7 @@ def test_invalid_validate_make_new_reservation_payload_format_not_digits():
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
                 },
                 'equipment': {
                     'laptop': 1,
@@ -314,7 +324,7 @@ def test_valid_validate_make_new_reservation_times():
                 'timeslot': {
                     'startTime': '1',
                     'endTime': '2',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
                 },
                 'equipment': {
                     'laptop': 1,
@@ -338,7 +348,7 @@ def test_invalid_validate_make_new_reservation_times_no_24_hour_format():
                 'timeslot': {
                     'startTime': '1315432',
                     'endTime': '1',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
                 },
                 'equipment': {
                     'laptop': 1,
@@ -364,7 +374,7 @@ def test_invalid_validate_make_new_reservation_times_more_than_3_hours_long():
                 'timeslot': {
                     'startTime': '1',
                     'endTime': '23',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
                 },
                 'equipment': {
                     'laptop': 1,

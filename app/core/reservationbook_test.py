@@ -109,21 +109,21 @@ def test_add_to_appropriate_waiting_list(monkeypatch):
 
     # execute
     reservationBook.addToWaitingList(2, User('usrname1', 'pass', True),
-                                     Timeslot(11, 13, '2017-03-25', 2, "usrname1", "timeslotID_ibuon"), 'desc',
+                                     Timeslot(11, 13, '2017/03/25', 2, "usrname1", "timeslotID_ibuon"), 'desc',
                                      Equipment("equipmentID_ghvjbk"))
     # verify
     assert len(reservationBook.waitingListCapstone) == 1
 
     # execute
     reservationBook.addToWaitingList(2, User('usrname2', 'pass', False),
-                                     Timeslot(11, 13, '2017-03-25', 2, "usrname2", "timeslotID_hjbkn"), 'desc',
+                                     Timeslot(11, 13, '2017/03/25', 2, "usrname2", "timeslotID_hjbkn"), 'desc',
                                      Equipment("equipmentID_asdda"))
     # verify
     assert len(reservationBook.waitingListRegular) == 1
 
     # execute
     reservationBook.addToWaitingList(2, User('usrname3', 'pass', False),
-                                     Timeslot(11, 13, '2017-03-25', 2, "usrname3", "timeslotID_hasda"), 'desc',
+                                     Timeslot(11, 13, '2017/03/25', 2, "usrname3", "timeslotID_hasda"), 'desc',
                                      Equipment("equipmentID_asdas"))
 
     # verify
@@ -149,32 +149,32 @@ def test_update_waiting(monkeypatch):
     This was already tested in test_add_to_appropriate_waiting_list()"""
     # putting regular student into waitlist at room 5
     reservationBook.addToWaitingList(5, User('mary', 'pass', False),
-                                     Timeslot(11, 13, '2017-03-25', 2, "mary", "timeslotID_iubuasbd"), 'desc',
+                                     Timeslot(11, 13, '2017/03/25', 2, "mary", "timeslotID_iubuasbd"), 'desc',
                                      Equipment("equipmentID_xbcxbc"))
 
     # putting regular student into waitlist at room 5
     reservationBook.addToWaitingList(5, User('john', 'pass', False),
-                                     Timeslot(11, 13, '2017-03-25', 2, "john", "timeslotID_asfafa"), 'desc',
+                                     Timeslot(11, 13, '2017/03/25', 2, "john", "timeslotID_asfafa"), 'desc',
                                      Equipment("equipmentID_anranra"))
 
     # putting regular student into waitlist at room 5
     reservationBook.addToWaitingList(5, User('gary', 'pass', False),
-                                     Timeslot(11, 13, '2017-03-25', 2, "gary", "timeslotID_sngfssn"), 'desc',
+                                     Timeslot(11, 13, '2017/03/25', 2, "gary", "timeslotID_sngfssn"), 'desc',
                                      Equipment("equipmentID_xnfsgn"))
 
     # putting capstone student into waitlist at room 5
     reservationBook.addToWaitingList(5, User('emir', 'pass', True),
-                                     Timeslot(11, 13, '2017-03-25', 2, "emir", "timeslotID_bafdbd"), 'desc',
+                                     Timeslot(11, 13, '2017/03/25', 2, "emir", "timeslotID_bafdbd"), 'desc',
                                      Equipment("equipmentID_asfaf"))
 
     # putting regular student into waitlist at room 5
     reservationBook.addToWaitingList(5, User('cody', 'pass'),
-                                     Timeslot(11, 13, '2017-03-25', 2, "cody", "timeslotID_asdsdfffa"), 'desc',
+                                     Timeslot(11, 13, '2017/03/25', 2, "cody", "timeslotID_asdsdfffa"), 'desc',
                                      Equipment("equipmentID_avbeerf"))
 
     # putting capstone student into waitlist at room 5
     reservationBook.addToWaitingList(5, User('mark', 'pass', True),
-                                     Timeslot(11, 13, '2017-03-25', 2, "mark", "timeslotID_basfaf"), 'desc',
+                                     Timeslot(11, 13, '2017/03/25', 2, "mark", "timeslotID_basfaf"), 'desc',
                                      Equipment("equipmentID_aghtrhr"))
 
     assert len(reservationBook.waitingListRegular) == 4
@@ -302,7 +302,7 @@ def test_reservation_repeat(monkeypatch):
     end_time = 10
     room_id = 2
     block = 0
-    date = '2016-04-20'
+    date = '2016/04/20'
     user_id = "username"
     processed_description = ""
     user = User(user_id, "password")
@@ -376,7 +376,7 @@ def test_find_total_reserved_time_for_user_for_a_given_week(monkeypatch):
     monkeypatch.setattr(TimeslotMapper, 'find_all_timeslots_for_user', get_Timeslots)
 
     # Execute
-    result = reservationBook.find_total_reserved_time_for_user_for_a_given_week(1, '2017-03-25')
+    result = reservationBook.find_total_reserved_time_for_user_for_a_given_week(1, '2017/03/25')
 
     # Verify
     assert result == expected_total_hours
