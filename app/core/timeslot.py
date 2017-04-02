@@ -13,7 +13,7 @@ class Timeslot:
     def __str__(self):
         return "StartTime: " + str(self.startTime) +\
           " EndTime: " + str(self.endTime) +\
-          " Date: " + str(self.date) +\
+          " Date: " + self.date.getDate().strftime('%Y-%m-%d') +\
           " Duration: " + str(self.block) +\
           " User ID: " + str(self.userId)
 

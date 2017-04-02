@@ -16,7 +16,7 @@ def insert(equipmentId, laptops, projectors, whiteboards):
     if conn:
 	cur = conn.cursor()
 	cur.execute("""INSERT INTO equipmentTable(equipmentId,laptops, projectors, whiteboards) VALUES
-		(%s, %s, %s);""", (equipmentId,laptops, projectors, whiteboards))
+		(%s, %s, %s, %s);""", (equipmentId,laptops, projectors, whiteboards))
 	conn.commit()
 	conn.close()
 

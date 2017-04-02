@@ -204,6 +204,11 @@ def test_valid_validate_new_reservation(monkeypatch):
                     'endTime': '15',
                     'date': '3000-03-19'
                 },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
+                },
                 'description': 'cool meeting'
             }
 
@@ -240,15 +245,20 @@ def test_valid_validate_make_new_reservation_payload_format():
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'username': 'macaroni',
+                'username': 'mr',
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
                     'date': '3000-03-19'
                 },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
+                },
                 'description': 'cool meeting'
             }
-            assert (views.validate_make_new_reservation_payload_format(data) is None)
+            assert (views.validate_reservation_payload_format(data) is None)
 
 
 def test_invalid_validate_make_new_reservation_payload_format_missing_key():
@@ -256,32 +266,20 @@ def test_invalid_validate_make_new_reservation_payload_format_missing_key():
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'username': 'peanut butter',
+                'username': 'mr',
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
                     'date': '3000-03-19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
                 }
             }
             assert (
-                views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE[
-                    'UNPROCESSABLE'])
-
-
-def test_invalid_validate_make_new_reservation_payload_format_missing_timeslot_key():
-    with app.app_context():
-        with app.test_request_context():
-            data = {
-                'roomId': '1',
-                'username': 'kiwi',
-                'timeslot': {
-                    'startTime': '14',
-                    'endTime': '15'
-                },
-                'description': 'best workout'
-            }
-            assert (
-                views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE[
+                views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                     'UNPROCESSABLE'])
 
 
@@ -290,56 +288,100 @@ def test_invalid_validate_make_new_reservation_payload_format_not_digits():
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'username': 'asparagus',
+                'username': 'mr',
                 'timeslot': {
-                    'startTime': 'not a digit',
+                    'startTime': '14',
                     'endTime': '15',
                     'date': '3000-03-19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 'haha',
+                    'board': 1
                 },
                 'description': 'cool meeting'
             }
             assert (
-            views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+            views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
 
 def test_valid_validate_make_new_reservation_times():
     with app.app_context():
         with app.test_request_context():
-            startTime = 1
-            endTime = 2
-            assert (views.validate_make_new_reservation_times(startTime, endTime) is None)
-            startTime = 23
-            endTime = 1
-            assert (views.validate_make_new_reservation_times(startTime, endTime) is None)
+            data = {
+                'roomId': '1',
+                'username': 'mr',
+                'timeslot': {
+                    'startTime': '1',
+                    'endTime': '2',
+                    'date': '3000-03-19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
+                },
+                'description': 'cool meeting'
+            }
+            assert (views.validate_reservation_payload_format(data) is None)
+            data['timeslot']['startTime'] = 23
+            data['timeslot']['startTime'] = 1
+            assert (views.validate_reservation_payload_format(data) is None)
 
 
 def test_invalid_validate_make_new_reservation_times_no_24_hour_format():
     with app.app_context():
         with app.test_request_context():
-            startTime = 13456
-            endTime = 1
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data = {
+                'roomId': '1',
+                'username': 'mr',
+                'timeslot': {
+                    'startTime': '1315432',
+                    'endTime': '1',
+                    'date': '3000-03-19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
+                },
+                'description': 'cool meeting'
+            }
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
-            startTime = 1
-            endTime = -12313
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data['timeslot']['startTime'] = '1'
+            data['timeslot']['startTime'] = '-12313'
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
 
 
 def test_invalid_validate_make_new_reservation_times_more_than_3_hours_long():
     with app.app_context():
         with app.test_request_context():
-            startTime = 1
-            endTime = 23
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data = {
+                'roomId': '1',
+                'username': 'mr',
+                'timeslot': {
+                    'startTime': '1',
+                    'endTime': '23',
+                    'date': '3000-03-19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
+                },
+                'description': 'cool meeting'
+            }
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
-            startTime = 5
-            endTime = 1
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data['timeslot']['startTime'] = '5'
+            data['timeslot']['startTime'] = '1'
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
-            startTime = 23
-            endTime = 4
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data['timeslot']['startTime'] = '23'
+            data['timeslot']['startTime'] = '4'
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
 
 
@@ -410,7 +452,7 @@ def test_valid_make_new_reservation_room_user_exists(monkeypatch):
 
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
-            assert (views.validate_make_new_reservation_room_user_exists(roomId, username) is None)
+            assert (views.validate_reservation_room_user_exists(roomId, username) is None)
 
 
 def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch):
@@ -428,7 +470,7 @@ def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch)
             monkeypatch.setattr(UserMapper, 'find', mock_user_not_found)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
             assert (
-            views.validate_make_new_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE[
+            views.validate_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE[
                 'NOT_FOUND'])
 
 
@@ -447,7 +489,7 @@ def test_invalid_make_new_reservation_room_user_exists_room_missing(monkeypatch)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_not_found)
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             assert (
-            views.validate_make_new_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE[
+            views.validate_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE[
                 'NOT_FOUND'])
 
 

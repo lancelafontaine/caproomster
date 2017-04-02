@@ -3,12 +3,14 @@ import RoomMapper
 import ReservationMapper
 import WaitingMapper
 import TimeslotMapper
+import EquipmentMapper
 
 from app.core.user import User
 from app.core.room import Room
 from app.core.reservation import Reservation
 from app.core.waiting import Waiting
 from app.core.timeslot import Timeslot
+from app.core.equipment import Equipment
 
 newList = []
 changedList = []
@@ -38,6 +40,8 @@ def commit():
 			WaitingMapper.save(object)
 		if isinstance(object, Timeslot):
 			TimeslotMapper.save(object)
+		if isinstance(object, Equipment):
+			EquipmentMapper.save(object)
 
 	for index, object in enumerate(changedList):
 		if isinstance(object, User):
@@ -48,6 +52,8 @@ def commit():
 			WaitingMapper.update(object)
 		if isinstance(object, Timeslot):
 			TimeslotMapper.update(object)
+		if isinstance(object, Equipment):
+			EquipmentMapper.update(object)
 
 	for index, object in enumerate(deletedList):
 		if isinstance(object, User):
@@ -60,6 +66,8 @@ def commit():
 			WaitingMapper.erase(object)
 		if isinstance(object, Timeslot):
 			TimeslotMapper.erase(object)
+		if isinstance(object, Equipment):
+			EquipmentMapper.erase(object)
 
 	del newList[:]
 	del changedList[:]

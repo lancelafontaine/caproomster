@@ -6,6 +6,7 @@ from app.mapper import WaitingMapper
 from app.mapper import RoomMapper
 from app.mapper import UserMapper
 from app.mapper import TimeslotMapper
+from app.mapper import EquipmentMapper
 from datetime import datetime
 import calendar
 from uuid import uuid4
@@ -219,26 +220,27 @@ def unauthorized():
 
 
 def validate_new_reservation(data):
-    response = validate_make_new_reservation_payload_format(data)
+    response = validate_reservation_payload_format(data)
     if response:
         return response
 
     startTime = int(data['timeslot']['startTime'])
     endTime = int(data['timeslot']['endTime'])
-    response = validate_make_new_reservation_times(startTime, endTime)
-    if response:
-        return response
-
     date = str(data['timeslot']['date'])
     dateList = date.split('-')
+    roomId = data['roomId']
+    username = data['username']
+    description = str(data['description'])
+    laptop = int(data['equipment']['laptop'])
+    board = int(data['equipment']['board'])
+    projector = str(data['equipment']['projector'])
+
+
     response = validate_make_new_reservation_date(dateList)
     if response:
         return response
 
-    roomId = data['roomId']
-    username = data['username']
-
-    response = validate_make_new_reservation_room_user_exists(roomId, username)
+    response = validate_reservation_room_user_exists(roomId, username)
     if response:
         return response
 
@@ -248,12 +250,13 @@ def validate_new_reservation(data):
         return response
 
     # no use for `block` parameter, for now, just passing empty string
-    time = TimeslotMapper.makeNew(startTime, endTime, date, '', username, str(uuid4()))
+    time = TimeslotMapper.makeNew(startTime, endTime, datetime(int(dateList[0]), int(dateList[1]), int(dateList[2])), '', username, str(uuid4()))
     TimeslotMapper.done()
     room = RoomMapper.find(roomId)
     user = UserMapper.find(username)
-    description = str(data['description'])
-    reservation = ReservationMapper.makeNew(room, user, time, description, str(uuid4()))
+    equipment = EquipmentMapper.makeNew(laptop, projector, board, str(uuid4()))
+    EquipmentMapper.done()
+    reservation = ReservationMapper.makeNew(room, user, time, description, equipment, str(uuid4()))
     ReservationMapper.done()
 
     response_data = {
@@ -263,40 +266,58 @@ def validate_new_reservation(data):
     return jsonify(response_data)
 
 
-def validate_make_new_reservation_payload_format(data):
+def validate_reservation_payload_format(data):
+
+    response_data = {'error': ''}
+
     if 'roomId' not in data or \
                     'username' not in data or \
                     'timeslot' not in data or \
+                    'equipment' not in data or \
                     'description' not in data:
-        response = jsonify(
-            {'makeNewReservation error': '`roomId`, `username`, `timeslot`, and `description` fields are required.'})
+        response_data['error'] = '`roomId`, `username`, `timeslot`, `equipment` and `description` fields are required.'
+        response = jsonify(response_data)
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
     if 'startTime' not in data['timeslot'] or \
                     'endTime' not in data['timeslot'] or \
                     'date' not in data['timeslot']:
-        response = jsonify(
-            {'makeNewReservation error': '`startTime`, `endTime`, `date` fields are required in `timeslot`.'})
+        response_data['error'] = '`startTime`, `endTime`, `date` fields are required in `timeslot`.'
+        response = jsonify(response_data)
+        response.status_code = STATUS_CODE['UNPROCESSABLE']
+        return response
+
+    if 'laptop' not in data['equipment'] or \
+                    'projector' not in data['equipment'] or \
+                    'board' not in data['equipment']:
+        response_data['error'] = '`laptop`, `projector`, `board` fields are required in `equipment`.'
+        response = jsonify(response_data)
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
     if not str(data['timeslot']['startTime']).isdigit() or \
-            not str(data['timeslot']['endTime']).isdigit():
-        response = jsonify({'makeNewReservation error': '`startTime` and `endTime` must be integers.'})
+                    not str(data['timeslot']['endTime']).isdigit() or \
+                    not str(data['equipment']['laptop']).isdigit() or \
+                    not str(data['equipment']['projector']).isdigit() or \
+                    not str(data['equipment']['board']).isdigit():
+        response_data['error'] = '`laptop`, `projector`, `board`, `startTime` and `endTime` fields must be integers`.'
+        response = jsonify(response_data)
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
+    startTime = int(data['timeslot']['startTime'])
+    endTime = int(data['timeslot']['endTime'])
 
-def validate_make_new_reservation_times(startTime, endTime):
     if startTime < 0 or startTime > 23 or endTime < 0 or endTime > 23 or startTime == endTime:
-        response = jsonify(
-            {'makeNewReservation error': '`startTime` and `endTime` must be different integers between 0 and 23.'})
+        response_data['error'] = '`startTime` and `endTime` must be integers between 0 and 23'
+        response = jsonify(response_data)
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
     if (endTime - startTime) % 24 > 3:
-        response = jsonify({'makeNewReservation error': 'The reservation cannot last for longer than 3 hours.'})
+        response_data['error'] = 'The reservation cannot last for longer than 3 hours.'
+        response = jsonify(response_data)
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
@@ -325,7 +346,7 @@ def validate_make_new_reservation_date(dateList):
         return date_error()
 
 
-def validate_make_new_reservation_room_user_exists(roomId, username):
+def validate_reservation_room_user_exists(roomId, username):
     if not UserMapper.find(username) or not RoomMapper.find(roomId):
         response = jsonify({'makeNewReservation error': 'Either the room or user does not exist.'})
         response.status_code = STATUS_CODE['NOT_FOUND']
@@ -334,6 +355,7 @@ def validate_make_new_reservation_room_user_exists(roomId, username):
 
 def validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime):
     # TO DO: check that the user's hours of reservation per week does not exceed 3
+
     def time_overlap_error():
         response = jsonify({'makeNewReservation error': 'This reservation\'s timeslot conflict with an existing reservation\'s timeslot. Calls the addToWaitingList endpoint with this data.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
@@ -348,7 +370,7 @@ def validate_make_new_reservation_timeslots(reservations, dateList, startTime, e
     if reservations:
         for reservation in reservations:
             timeslot = reservation.getTimeslot()
-            timeslot_date_list = timeslot.getDate().split('-')
+            timeslot_date_list = timeslot.getDate().strftime('%Y-%m-%d').split('-')
 
             existing_timestamp_start = to_timestamp(timeslot_date_list, timeslot.getStartTime())
             existing_timestamp_end = to_timestamp(timeslot_date_list, timeslot.getEndTime())
