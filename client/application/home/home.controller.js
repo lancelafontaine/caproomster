@@ -4,11 +4,17 @@
 
   angular.module('caproomster').controller('caproomster.home.HomeController', HomeController);
 
-  HomeController.$inject = ['$state', 'moment', 'calendarConfig', 'caproomster.api.ApiService'];
+  HomeController.$inject = [
+    '$state',
+    'moment',
+    'calendarConfig',
+    'caproomster.api.ApiService',
+    'caproomster.home.HomeService'];
 
-  function HomeController($state, moment, calendarConfig, ApiService) {
+  function HomeController($state, moment, calendarConfig, ApiService, HomeService) {
 
     var vm = this;
+    var currentUser = null;
     vm.$onInit = init;
 
     // Init function
@@ -16,20 +22,28 @@
     function init() {
       vm.toggleMenu = toggleMenu;
       vm.changeRoom = changeRoom;
-      vm.eventClicked = eventClicked;
-      vm.eventEdited = eventEdited;
-      vm.eventDeleted = eventDeleted;
-      vm.eventTimesChanged = eventTimesChanged;
-      vm.timespanClicked = timespanClicked;
       vm.makeReservation = makeReservation;
+      vm.dateToNumber = HomeService.dateToNumber;
       vm.calendarView = 'week';
       vm.viewDate = new Date();
       vm.toggleText = 'Show Room List';
+      vm.message = 'Select a timeslot to start reservation';
       vm.roomList = [];
       vm.roomNumber = '';
       vm.cellIsOpen = true;
       vm.events = [];
       vm.myReservations = [];
+      vm.myWaitingList = [];
+      vm.newReservationCache = {
+        equipments: {
+          laptop: 0,
+          projector: 0,
+          board: 0
+        },
+        length: 1,
+        start: undefined,
+        date: undefined
+      };
       initData();
     }
 
@@ -37,6 +51,7 @@
 
     function initData() {
       ApiService.account('checkLogin').then(function(loggedInUser) {
+        currentUser = loggedInUser.success.username;
         vm.authenticated = true;
         ApiService.booking('getRoomList').then(function(roomList) {
           vm.roomList = roomList.rooms;
@@ -44,92 +59,76 @@
           getRoomInfo();
         });
         ApiService.booking('getMyReservation', {
-          userId: loggedInUser.success.username
+          userId: currentUser
         }).then(function(myReservations) {
           vm.myReservations = myReservations.reservations;
+          vm.myWaitingList = myReservations.waitings;
         });
       }, function() {
         $state.go('login');
       });
     }
 
-    // parse return data into calendar event object
-
-    function createEvent(reservation, type) {
-      var dateString = reservation.timeslot.date.replace('GMT', 'EST');
-      var start = new Date(dateString);
-      start.setHours(reservation.timeslot.startTime);
-      var end = new Date(dateString);
-      end.setHours(reservation.timeslot.endTime);
-      var event = {};
-      event.title = reservation.description;
-      event.startsAt = start;
-      event.endsAt = end;
-      event.color = type;
-      return event;
-    }
-
     // get reservation, waitingList, and equipment of a room
 
     function getRoomInfo() {
       vm.events = [];
-      console.log(2312312)
       ApiService.booking('getAllReservation', {
         roomId: vm.roomNumber
       }).then(function(res){
-        var reservations = res.reservations;
+        var reservations = res.reservations || [];
+        var waitingList = res.waitingList || [];
         for (var i = 0; i < reservations.length; i++) {
-          vm.events.push(createEvent(reservations[i], calendarConfig.colorTypes.info));
+          vm.events.push(HomeService.createEvent(reservations[i], calendarConfig.colorTypes.info));
+        }
+        for (var j = 0; j < waitingList.length; j++) {
+          vm.events.push(HomeService.createEvent(reservations[i], calendarConfig.colorTypes.warning));
         }
       });
-      // TODO: get equipment list
     }
 
     /*
     UI Actions
     */
 
-    function timespanClicked(date, cell) {
-      if (vm.calendarView === 'month') {
-        if ((vm.cellIsOpen && moment(date).startOf('day').isSame(moment(vm.viewDate).startOf('day'))) || cell.events.length === 0 || !cell.inMonth) {
-          vm.cellIsOpen = false;
-        } else {
-          vm.cellIsOpen = true;
-          vm.viewDate = date;
-        }
-      } else if (vm.calendarView === 'year') {
-        if ((vm.cellIsOpen && moment(date).startOf('month').isSame(moment(vm.viewDate).startOf('month'))) || cell.events.length === 0) {
-          vm.cellIsOpen = false;
-        } else {
-          vm.cellIsOpen = true;
-          vm.viewDate = date;
-        }
-      }
+    function makeReservation() {
+      var payload = {
+        roomId: vm.roomNumber,
+        username: currentUser,
+        timeslot: {
+          startTime: vm.newReservationCache.start,
+          endTime: vm.newReservationCache.start + vm.newReservationCache.length,
+          date: vm.newReservationCache.date
+        },
+        description: currentUser + '\'s Reservation'
+      };
+      ApiService.booking('reserve', payload).then(function() {
+        showMessage('Successfully reserved.');
+        getRoomInfo();
+      }, function() {
+        showMessage('Fail to reserve, please try again.');
+      });
     }
 
-    function makeReservation(calendarRangeStartDate, calendarRangeEndDate) {
-      console.log(calendarRangeStartDate);
-      console.log(calendarRangeEndDate);
-    }
+    /*
+    Helper Functions
+    */
 
-    function eventClicked() {
-      //TODO
-      console.log('Clicked');
-    }
-
-    function eventEdited() {
-      //TODO
-      console.log('Edited');
-    }
-
-    function eventDeleted() {
-      //TODO
-      console.log('Deleted');
-    }
-
-    function eventTimesChanged() {
-      //TODO
-      console.log('Dropped or resized');
+    function showMessage(msg) {
+      vm.message = msg;
+      vm.newReservationCache = {
+        equipments: {
+          laptop: 0,
+          projector: 0,
+          board: 0
+        },
+        length: 1,
+        start: undefined,
+        date: undefined
+      };
+      setTimeout(function(){
+        vm.message = 'Select a timeslot to start reservation';
+      }, 600);
     }
 
     // change room and fetch room data

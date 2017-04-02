@@ -22,7 +22,10 @@
         <!-- Calendar View -->
         <div class="calendar-view">
           <!-- View Select Button Group 1-->
-          <div class="col-md-3 col-md-offset-7 calendar-buttons">
+          <div class="col-md-5">
+            <h2 style="padding: 5px;">Room {{ vm.roomNumber }} - {{ vm.calendarTitle }}</h2>
+          </div>
+          <div class="col-md-3 col-md-offset-2 calendar-buttons">
             <div class="btn-group">
               <button
                 class="btn btn-primary"
@@ -66,15 +69,14 @@
                   view="vm.calendarView"
                   view-title="vm.calendarTitle"
                   view-date="vm.viewDate"
-                  on-event-click="vm.eventClicked(calendarEvent)"
                   cell-is-open="vm.cellIsOpen"
                   day-view-start="08:00"
                   day-view-end="23:00"
                   day-view-split="60"
-                  day-view-event-chunk-size="60"
+                  day-view-event-width="250"
                   cell-modifier="vm.modifyCell(calendarCell)"
                   cell-auto-open-disabled="true"
-                  on-date-range-select="vm.makeReservation(calendarRangeStartDate, calendarRangeEndDate)">
+                  on-date-range-select="vm.newReservationCache.start = calendarRangeStartDate.getHours(); vm.newReservationCache.date = vm.dateToNumber(calendarRangeStartDate)">
                 </mwl-calendar>
           </div>
           <!-- End Calendar -->
@@ -86,41 +88,48 @@
     <div class="row home-page-bottom">
         <!-- User Reservation -->
         <div class="col-md-4 reservation">
-            <h2>Reservation</h2>
-            <div class="list-all-reservation">
-              <div class="scrollable">
-                  <!-- TODO: Edit buttons for reservation modification -->
-                  <div ng-repeat="res in vm.myReservations">
-                    <p>{{ res.description }}</p>
-                    <p>{{res.room.roomId}} / {{ res.timeslot.date }} / {{ res.timeslot.startTime }} to {{ res.timeslot.endTime }}</p>
-                  </div>
-                </div>
+          <h2>Reservation</h2>
+          <div class="list-all-reservation">
+            <div class="scrollable">
+              <!-- TODO: Edit buttons for reservation modification -->
+              <div ng-repeat="res in vm.myReservations">
+                <p>{{ res.description }}</p>
+                <p>{{res.room.roomId}} / {{ res.timeslot.date }} / {{ res.timeslot.startTime }} to {{ res.timeslot.endTime }}</p>
               </div>
+            </div>
+          </div>
         </div>
         <!-- End User Reservation -->
         <!-- Room Specification Display -->
         <div class="col-md-4 console">
-            <h2>Room {{ vm.roomNumber }} - {{ vm.calendarTitle }}</h2>
-            <!-- TODO: Populate room equipment list -->
-            <p>Available Equipments</p>
-            <div class="equipments">
-              <i class="fa fa-desktop" aria-hidden="true"></i>
-              <i class="fa fa-television" aria-hidden="true"></i>
-              <i class="fa fa-phone" aria-hidden="true"></i>
+            <h3 ng-if="!vm.newReservationCache.start" class="message">{{ vm.message }}</h3>
+            <div ng-if="vm.newReservationCache.start" class="make-reservation">
+              <h2>Create Reservation</h2>
+              <h3>Room {{ vm.roomNumber }}</h3>
+              <h3>{{ vm.newReservationCache.date }}</h3>
+              <h3>Reserve <input type="text" ng-model="vm.newReservationCache.length"/> hours from {{ vm.newReservationCache.start }}:00 to {{ vm.newReservationCache.start + vm.newReservationCache.length }}:00</h3>
+              <i class="fa fa-laptop" aria-hidden="true"></i>
+              <input type="text" ng-model="vm.newReservationCache.equipments.laptop" />
+              <i class="fa fa-video-camera" aria-hidden="true"></i>
+              <input type="text" ng-model="vm.newReservationCache.equipments.projector" />
+              <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+              <input type="text" ng-model="vm.newReservationCache.equipments.board" />
+              <button ng-click="vm.makeReservation()" class="btn-lg create-button">Confirm</button>
             </div>
         </div>
         <!-- End Room Specification Display -->
         <!-- User Wating List -->
         <div class="col-md-4 reservation">
-            <h2>Waiting List</h2>
-            <p class="reservation-list">
-                <!-- TODO: Populate user waitinglist with ng-repeat -->
-                <!-- TODO: Edit buttons for waitinglist modification -->
-                <p>H922 / March 27 / 12:00 to 13:00</p>
-                <p>H921 / March 31 / 14:00 to 15:00</p>
-                <p>H920 / April 2 / 11:00 to 12:00</p>
-                <p>H922 / April 5  / 11:00 to 12:00</p>
-            </p>
+          <h2>Waiting List</h2>
+          <div class="list-all-reservation">
+            <div class="scrollable">
+              <!-- TODO: Edit buttons for reservation modification -->
+              <div ng-repeat="res in vm.myWaitingList">
+                <p>{{ res.description }}</p>
+                <p>{{res.room.roomId}} / {{ res.timeslot.date }} / {{ res.timeslot.startTime }} to {{ res.timeslot.endTime }}</p>
+              </div>
+            </div>
+          </div>
         </div>
         <!-- End User Wating List -->
     </div>
