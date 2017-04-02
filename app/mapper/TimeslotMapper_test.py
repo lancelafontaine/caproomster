@@ -33,7 +33,7 @@ def test_find_not_found_in_id_map_found_in_DB(monkeypatch):
         return
 
     def yes_find(_):
-        return [[expected.getId(), expected.getStartTime(), expected.getEndTime(), expected.getDate(), expected.getBlock(), expected.getUserId(), expected.getId()]]
+        return [[expected.getId(), expected.getStartTime(), expected.getEndTime(), expected.getDate(), expected.getBlock(), expected.getId(), expected.getId()]]
 
     monkeypatch.setattr(IdMap, 'find', no_find)
     monkeypatch.setattr(TimeslotTDG, 'find', yes_find)
@@ -72,7 +72,6 @@ def test_find_found_in_id_map_not_found_in_DB(monkeypatch):
     assert(val.getDate() is expected.getDate())
     assert(val.getBlock() is expected.getBlock())
     assert(val.getId() is expected.getId())
-    assert(val.getUserId() is expected.getUserId())
 
 
 def test_find_found_in_id_map_found_in_DB(monkeypatch):
@@ -99,4 +98,3 @@ def test_find_found_in_id_map_found_in_DB(monkeypatch):
     assert(val.getDate() is expected.getDate())
     assert(val.getBlock() is expected.getBlock())
     assert(val.getId() is expected.getId())
-    assert(val.getUserId() is expected.getUserId())

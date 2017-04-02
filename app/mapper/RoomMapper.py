@@ -11,7 +11,6 @@ def makeNew(roomId):
     return room
 
 def find(roomId):
-    result = []
     result = RoomTDG.find(roomId)
     if not result:
         return
@@ -37,6 +36,14 @@ def delete(roomId):
 #save all work
 def done():
     UnitOfWork.commit()
+
+#adds room object
+def save(room):
+    RoomTDG.insert(room.getLock())
+
+#updates room Object
+def update(room,availability):
+    RoomTDG.update(room, availability)
 
 #deletes room object
 def erase(roomId):

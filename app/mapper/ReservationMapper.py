@@ -4,11 +4,12 @@ from app.TDG import ReservationTDG
 from app.mapper import TimeslotMapper
 from app.mapper import RoomMapper
 from app.mapper import UserMapper
+from app.mapper import EquipmentMapper
 from app.core.reservation import Reservation
 
 
-def makeNew(room, holder, time, description, reservationId):
-    reservation = Reservation(room, holder, time, description, reservationId)
+def makeNew(room, user, timeslot, description, equipment, reservationId):
+    reservation = Reservation(room, user, timeslot, description, equipment, reservationId)
     UnitOfWork.registerNew(reservation)
     return reservation
 
@@ -21,7 +22,8 @@ def find(reservationId):
         room = RoomMapper.find(result[0][1])
         holder = UserMapper.find(result[0][3])
         timeslot = TimeslotMapper.find(result[0][4])
-        return Reservation(room, holder, timeslot, result[0][2], result[0][0])
+        equipment = EquipmentMapper.find(result[0][5])
+        return Reservation(room, holder, timeslot, result[0][2], equipment, result[0][0])
 
 
 def findAll():
@@ -31,10 +33,10 @@ def findAll():
         return
     else:
         for index, r in enumerate(result):
-            room = RoomMapper.find(result[index][1])
-            holder = UserMapper.find(result[index][3])
-            timeslot = TimeslotMapper.find(result[index][4])
-            reservation = Reservation(room, holder, timeslot, result[index][2], result[index][0])
+            room = RoomMapper.find(result[0][1])
+            holder = UserMapper.find(result[0][3])
+            timeslot = TimeslotMapper.find(result[0][4])
+            reservation = Reservation(room, holder, timeslot, result[0][2], result[0][0])
             allReservations.append(reservation)
         return allReservations
 
@@ -68,8 +70,7 @@ def setReservation(reservationId):
 
 
 def delete(reservationId):
-    reservation = find(reservationId)
-    UnitOfWork.registerDeleted(reservation)
+    UnitOfWork.registerDeleted(Reservation(None, None, None, None, None, reservationId))
 
 
 # save all work
@@ -85,6 +86,7 @@ def save(reservation):
         reservation.getDescription(),
         reservation.getUser().getId(),
         reservation.getTimeslot().getId(),
+	    reservation.getEquipment().getId()
       )
 
 
@@ -100,5 +102,5 @@ def update(reservation):
 
 
 # deletes room object
-def erase(reservation):
-    ReservationTDG.delete(reservation.getId())
+def erase(reservationid):
+    ReservationTDG.delete(reservationid)
