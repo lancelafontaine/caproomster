@@ -13,9 +13,7 @@
     svc.dateToNumber = dateToNumber;
 
     function createEvent(reservation, type) {
-      var date = reservation.timeslot.date + '-0400';
-      // var date = reservation.timeslot.date;
-      // date.replace('-', '/');
+      var date = reservation.timeslot.date;
       var startTime = new Date(date);
       startTime.setHours(reservation.timeslot.startTime);
       var endTime = new Date(date);
@@ -38,7 +36,7 @@
       if (date < 10) {
         date = '0' + date;
       }
-      return year + '-' + month + '-' + date;
+      return year + '/' + month + '/' + date;
     }
 
 

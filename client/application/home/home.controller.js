@@ -35,7 +35,7 @@
       vm.myReservations = [];
       vm.myWaitingList = [];
       vm.newReservationCache = {
-        equipments: {
+        equipment: {
           laptop: 0,
           projector: 0,
           board: 0
@@ -44,6 +44,7 @@
         start: undefined,
         date: undefined
       };
+      vm.inAction = null;
       initData();
     }
 
@@ -57,19 +58,14 @@
           vm.roomList = roomList.rooms;
           vm.roomNumber = vm.roomList[0];
           getRoomInfo();
-        });
-        ApiService.booking('getMyReservation', {
-          userId: currentUser
-        }).then(function(myReservations) {
-          vm.myReservations = myReservations.reservations;
-          vm.myWaitingList = myReservations.waitings;
+          getMyInfo();
         });
       }, function() {
         $state.go('login');
       });
     }
 
-    // get reservation, waitingList, and equipment of a room
+    // get ROOM reservations and waitings
 
     function getRoomInfo() {
       vm.events = [];
@@ -87,9 +83,18 @@
       });
     }
 
-    /*
-    UI Actions
-    */
+    // get USER reservations and waitings
+
+    function getMyInfo() {
+      ApiService.booking('getMyReservation', {
+        userId: currentUser
+      }).then(function(myReservations) {
+        vm.myReservations = myReservations.reservations;
+        vm.myWaitingList = myReservations.waitings;
+      });
+    }
+
+    // Make one reservation
 
     function makeReservation() {
       var payload = {
@@ -97,16 +102,21 @@
         username: currentUser,
         timeslot: {
           startTime: vm.newReservationCache.start,
-          endTime: vm.newReservationCache.start + vm.newReservationCache.length,
+          endTime: parseInt(vm.newReservationCache.start) + parseInt(vm.newReservationCache.length),
           date: vm.newReservationCache.date
         },
+        equipment: vm.newReservationCache.equipment,
         description: currentUser + '\'s Reservation'
       };
+      console.log(payload);
       ApiService.booking('reserve', payload).then(function() {
         showMessage('Successfully reserved.');
+        vm.inAction = null;
         getRoomInfo();
+        getMyInfo();
       }, function() {
         showMessage('Fail to reserve, please try again.');
+        vm.inAction = null;
       });
     }
 
@@ -117,7 +127,7 @@
     function showMessage(msg) {
       vm.message = msg;
       vm.newReservationCache = {
-        equipments: {
+        equipment: {
           laptop: 0,
           projector: 0,
           board: 0
@@ -127,7 +137,7 @@
         date: undefined
       };
       setTimeout(function(){
-        vm.message = 'Select a timeslot to start reservation';
+        vm.message = 'Select a timeslot to start reservation!';
       }, 600);
     }
 
