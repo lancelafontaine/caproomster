@@ -22,7 +22,6 @@ def findAll():
     else:
         return []
 
-
 def delete(id):
     conn = connect_db()
     if conn:

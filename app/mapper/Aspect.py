@@ -2,6 +2,7 @@ import IdMap
 
 from app.core.user import User
 from app.core.timeslot import Timeslot
+from app.core.equipment import Equipment
 from app.core.room import Room
 from app.core.waiting import Waiting
 from app.core.reservation import Reservation
@@ -11,6 +12,7 @@ import TimeslotMapper
 import RoomMapper
 import WaitingMapper
 import ReservationMapper
+import EquipmentMapper
 
 def wrap_find(func, object_class):
     def new_find(objectId):
@@ -63,6 +65,11 @@ UserMapper.delete = wrap_delete(UserMapper.delete, User)
 TimeslotMapper.find = wrap_find(TimeslotMapper.find, Timeslot)
 TimeslotMapper.makeNew = wrap_makeNew(TimeslotMapper.makeNew, Timeslot)
 TimeslotMapper.delete = wrap_delete(TimeslotMapper.delete, Timeslot)
+
+EquipmentMapper.find = wrap_find(EquipmentMapper.find, Equipment)
+EquipmentMapper.makeNew = wrap_makeNew(EquipmentMapper.makeNew, Equipment)
+EquipmentMapper.delete = wrap_delete(EquipmentMapper.delete, Equipment)
+
 
 RoomMapper.find = wrap_find(RoomMapper.find, Room)
 RoomMapper.makeNew = wrap_makeNew(RoomMapper.makeNew, Room)
