@@ -59,3 +59,9 @@ class Timeslot:
 
     def setId(self,timeId):
         self.timeId = timeId
+
+    def getUserId(self):
+        return self.userId
+
+    def setUserId(self,userId):
+        self.userId = userId

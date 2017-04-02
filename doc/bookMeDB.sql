@@ -1,4 +1,4 @@
---BookMe
+--Caproomster (forked from BookMe)
 --PostgreSql compatible
 -- -----------------------------------------------------||||
 
@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS equipmentTable cascade;
 -- ---------------------------------
 
 CREATE TABLE IF NOT EXISTS userTable (
-	username VARCHAR(30) NOT NULL,
+	username VARCHAR(30)  NOT NULL DEFAULT ' ',
 	password VARCHAR(30) NOT NULL,
   capstone BOOLEAN NOT NULL,
 	PRIMARY KEY (username)
@@ -107,11 +107,19 @@ CREATE TABLE IF NOT EXISTS reservationTable (
 
 -- ///////////// INSERT STATMENTS //////////////////////
 
-INSERT INTO userTable(username, password, capstone) VALUES
-        ('iscapstone','soen344', TRUE),
-        ('nocapstone','soen344', FALSE),
-        ('1','pass', FALSE),
-        ('2','pass', TRUE);
+INSERT INTO userTable(password, username, capstone) VALUES
+        ('pass','John',FALSE),
+        ('pass','Emily',FALSE),
+        ('pass','Rudy',FALSE),
+        ('pass','Jackie',FALSE),
+        ('pass','Mary',TRUE),
+        ('pass','Hans',TRUE);
 
-INSERT INTO roomTable(roomId) VALUES (1), (2), (3), (4), (5);
+
+INSERT INTO roomTable(roomId) VALUES
+	(1),
+	(2),
+	(3),
+	(4),
+	(5);
 

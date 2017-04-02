@@ -49,12 +49,12 @@ def findAll():
     else:
         return []
 
-def findByRoom(roomId, date):
+def findByRoom(roomId):
     conn = connect_db()
     if conn:
 	cur = conn.cursor()
 	cur.execute("""SELECT waitingId, room, reservee, description, timeslot, startTime, endTime FROM waitingTable LEFT OUTER JOIN timeslotTable
-		ON (waitingTable.timeslot = timeslotTable.timeid) WHERE room = %s AND date = %s;""", (roomId, date))
+		ON (waitingTable.timeslot = timeslotTable.timeid) WHERE room = %s;""", (roomId))
 	data = cur.fetchall()
 	conn.close()
 	return data

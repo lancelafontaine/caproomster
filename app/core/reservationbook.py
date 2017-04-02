@@ -13,6 +13,8 @@ from app.core.timeslot import Timeslot
 from uuid import uuid4
 
 
+
+
 # ReservationBook object
 class ReservationBook(object):
     def __init__(self):

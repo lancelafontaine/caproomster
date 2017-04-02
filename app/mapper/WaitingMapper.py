@@ -25,11 +25,6 @@ def find(waitingId):
         equipment = EquipmentMapper.find(result[0][5])
         return Waiting(room, reservee, timeslot, result[0][3], equipment, result[0][0])
 
-def findRoomOnDate(roomId,date):
-    waitingList = WaitingTDG.findByRoom(roomId,date)
-    return waitingList
-
-
 def findAll():
     result = WaitingTDG.findAll()
     waitings = []
@@ -44,6 +39,19 @@ def findAll():
             waitings.append(waiting)
     return waitings
 
+def findByUser(userId):
+    userWaitings = []
+    result = WaitingTDG.findByUser(userId)
+    for index, userR in enumerate(result):
+        userWaitings.append(find(userR[0]))
+    return userWaitings
+
+def findByRoom(roomId):
+    roomWaitings = []
+    result = WaitingTDG.findByRoom(roomId)
+    for index, roomW in enumerate(result):
+        roomWaitings.append(find(roomW[0]))
+    return roomWaitings
 
 def set(waitingId):
     waiting = find(waitingId)
@@ -54,7 +62,7 @@ def done():
 
 # remove waiting instance from unit of work
 def delete(waitingId):
-    UnitOfWork.registerDeleted(Waiting(None,None,None,None,waitingId))
+    UnitOfWork.registerDeleted(find(waitingId))
 
 
 def save(waiting):
@@ -69,5 +77,5 @@ def update(waiting):
     WaitingTDG.update(waiting)
 
 # remove waiting instance from database
-def erase(waitingId):
-    WaitingTDG.delete(waitingId)
+def erase(waiting):
+    WaitingTDG.delete(waiting.getId())

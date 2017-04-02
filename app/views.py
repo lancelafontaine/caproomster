@@ -2,6 +2,7 @@ from app import app
 from .decorators import *
 from flask import request, jsonify
 from app.mapper import ReservationMapper
+from app.mapper import WaitingMapper
 from app.mapper import RoomMapper
 from app.mapper import UserMapper
 from app.mapper import TimeslotMapper
@@ -88,6 +89,12 @@ def get_reservations_by_room(roomId):
             'roomId': roomId,
             'reservations': reservations_data
         }
+        waitings = WaitingMapper.findByRoom(roomId)
+        waitings_data = []
+        if waitings:
+            for waiting in waitings:
+                waitings_data += [waiting.to_dict()]
+        data.update({'waitings': waitings_data})
         return jsonify(data)
 
 
@@ -105,6 +112,12 @@ def get_reservations_by_user(username):
             'username': username,
             'reservations': reservations_data
         }
+        waitings = WaitingMapper.findByUser(str(username))
+        waitings_data = []
+        if waitings:
+            for waiting in waitings:
+                waitings_data += [waiting.to_dict()]
+        data.update({'waitings': waitings_data})
         return jsonify(data)
 
 
@@ -120,6 +133,32 @@ def get_all_reservations():
                 reservations_data += [reservation.to_dict()]
         data = {
             'reservations': reservations_data
+        }
+        waitings = WaitingMapper.findAll()
+        waitings_data = []
+        if waitings:
+            for waiting in waitings:
+                waitings_data += [waiting.to_dict()]
+        data.update({'waitings': waitings_data})
+        return jsonify(data)
+
+
+@app.route('/reservations/<reservationId>', methods=['DELETE'])
+@nocache
+@require_login
+def delete_reservation(reservationId):
+    if request.method == 'DELETE':
+        reservation = ReservationMapper.find(reservationId)
+        if not reservation:
+            response = jsonify({'reservation error': 'that reservationId does not exist'})
+            response.status_code = STATUS_CODE['NOT_FOUND']
+            return response
+
+        ReservationMapper.delete(reservationId)
+        ReservationMapper.done()
+        data = {
+            'success': 'reservation successfully deleted',
+            'reservationId': reservationId
         }
         return jsonify(data)
 

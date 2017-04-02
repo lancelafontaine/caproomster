@@ -87,8 +87,6 @@ def test_cancel_reservation(monkeypatch):
 
 
 """Tests whether students get added to the appropriate waitlist based on capstone flag"""
-
-
 def test_add_to_appropriate_waiting_list(monkeypatch):
     # Initialization
     reservationBook = ReservationBook([], [], [])
