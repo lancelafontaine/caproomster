@@ -8,10 +8,11 @@
     '$state',
     'moment',
     'calendarConfig',
+    '$interval',
     'caproomster.api.ApiService',
     'caproomster.home.HomeService'];
 
-  function HomeController($state, moment, calendarConfig, ApiService, HomeService) {
+  function HomeController($state, moment, calendarConfig, $interval, ApiService, HomeService) {
 
     var vm = this;
     var currentUser = null;
@@ -46,6 +47,7 @@
       };
       vm.inAction = null;
       initData();
+      $interval(getRoomInfo, 1500);
     }
 
     // check login and init all data for the view
@@ -68,18 +70,19 @@
     // get ROOM reservations and waitings
 
     function getRoomInfo() {
-      vm.events = [];
+      var tempEvents = [];
       ApiService.booking('getAllReservation', {
         roomId: vm.roomNumber
       }).then(function(res){
         var reservations = res.reservations || [];
         var waitingList = res.waitingList || [];
         for (var i = 0; i < reservations.length; i++) {
-          vm.events.push(HomeService.createEvent(reservations[i], calendarConfig.colorTypes.info));
+          tempEvents.push(HomeService.createEvent(reservations[i], calendarConfig.colorTypes.info));
         }
         for (var j = 0; j < waitingList.length; j++) {
-          vm.events.push(HomeService.createEvent(reservations[i], calendarConfig.colorTypes.warning));
+          tempEvents.push(HomeService.createEvent(reservations[i], calendarConfig.colorTypes.warning));
         }
+        vm.events = tempEvents;
       });
     }
 
