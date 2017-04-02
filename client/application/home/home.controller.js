@@ -145,7 +145,7 @@
           date: vm.cache.date
         },
         equipment: vm.cache.equipment,
-        description: 'Reservations for user: ' + currentUser
+        description: currentUser + '\'s Reservation'
       };
     }
 
