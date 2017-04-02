@@ -92,7 +92,7 @@
           day-view-event-width="250"
           cell-modifier="vm.modifyCell(calendarCell)"
           on-date-range-select="
-            vm.newReservationCache.start = calendarRangeStartDate.getHours(); vm.newReservationCache.date = vm.dateToNumber(calendarRangeStartDate); vm.inAction = 'create'"
+            vm.cache.start = calendarRangeStartDate.getHours(); vm.cache.date = vm.dateToNumber(calendarRangeStartDate); vm.cache.inAction = 'create'"
           cell-auto-open-disabled="true"
         >
         </mwl-calendar>
@@ -117,13 +117,13 @@
               <i
                 class="fa fa-pencil"
                 aria-hidden="true"
-                ng-click="vm.inAction = 'modify'"
+                ng-click="vm.setCache(res, 'modify')"
               >
               </i>
               <i
                 class="fa fa-ban"
                 aria-hidden="true"
-                ng-click="vm.inAction = 'delete'"
+                ng-click="vm.setCache(res, 'delete')"
               >
               </i>
             </p>
@@ -137,29 +137,35 @@
     <!-- End User Reservation -->
     <!-- Room Specification Display -->
     <div class="col-md-4 console">
-      <h3 ng-if="!vm.inAction" class="message">
+      <h3 ng-if="!vm.cache.inAction" class="message">
         {{ vm.message }}
       </h3>
-      <div ng-if="vm.inAction" class="make-reservation">
+      <div ng-if="vm.cache.inAction" class="make-reservation">
         <h2>
-          <span ng-if="vm.inAction == 'create'">Create</span>
-          <span ng-if="vm.inAction == 'modify'">Modify</span>
-          <span ng-if="vm.inAction == 'delete'">Delete</span>
+          <span ng-if="vm.cache.inAction == 'create'">Create</span>
+          <span ng-if="vm.cache.inAction == 'modify'">Modify</span>
+          <span ng-if="vm.cache.inAction == 'delete'">Delete</span>
           Reservation
         </h2>
         <h3>Room {{ vm.roomNumber }}</h3>
-        <h3>{{ vm.newReservationCache.date }}</h3>
+        <h3>{{ vm.cache.date }}</h3>
         <h3>
-          Reserve <input type="text" ng-model="vm.newReservationCache.length"/> hours from {{ vm.newReservationCache.start }}:00 to {{ vm.newReservationCache.start + vm.newReservationCache.length }}:00
+          Reserve <input type="text" ng-model="vm.cache.length"/> hours from {{ vm.cache.start }}:00 to {{ vm.cache.start + vm.cache.length }}:00
         </h3>
         <i class="fa fa-laptop" aria-hidden="true"></i>
-        <input type="text" ng-model="vm.newReservationCache.equipment.laptop" />
+        <input type="text" ng-model="vm.cache.equipment.laptop" />
         <i class="fa fa-video-camera" aria-hidden="true"></i>
-        <input type="text" ng-model="vm.newReservationCache.equipment.projector" />
+        <input type="text" ng-model="vm.cache.equipment.projector" />
         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        <input type="text" ng-model="vm.newReservationCache.equipment.board" />
-        <button ng-click="vm.makeReservation()" class="btn-lg create-button">
+        <input type="text" ng-model="vm.cache.equipment.board" />
+        <button ng-if="vm.cache.inAction == 'create'" ng-click="vm.makeReservation()" class="btn-lg create-button">
           Confirm
+        </button>
+        <button ng-if="vm.cache.inAction == 'modify'" ng-click="vm.makeReservation()" class="btn-lg create-button">
+          Modify
+        </button>
+        <button ng-if="vm.cache.inAction == 'delete'" ng-click="vm.makeReservation()" class="btn-lg create-button">
+          Delete
         </button>
       </div>
     </div>
@@ -177,13 +183,13 @@
               <i
                 class="fa fa-pencil"
                 aria-hidden="true"
-                ng-click="vm.inAction = 'modify'"
+                ng-click="vm.setCache(res, 'modify')"
               >
               </i>
               <i
                 class="fa fa-ban"
                 aria-hidden="true"
-                ng-click="vm.inAction = 'delete'"
+                ng-click="vm.setCache(res, 'delete')"
               >
               </i>
             </p>

@@ -24,6 +24,8 @@
       vm.toggleMenu = toggleMenu;
       vm.changeRoom = changeRoom;
       vm.makeReservation = makeReservation;
+      vm.resetCache = resetCache;
+      vm.setCache = setCache;
       vm.dateToNumber = HomeService.dateToNumber;
       vm.calendarView = 'week';
       vm.viewDate = new Date();
@@ -35,17 +37,6 @@
       vm.events = [];
       vm.myReservations = [];
       vm.myWaitingList = [];
-      vm.newReservationCache = {
-        equipment: {
-          laptop: 0,
-          projector: 0,
-          board: 0
-        },
-        length: 1,
-        start: undefined,
-        date: undefined
-      };
-      vm.inAction = null;
       initData();
       $interval(getRoomInfo, 1500);
     }
@@ -53,6 +44,7 @@
     // check login and init all data for the view
 
     function initData() {
+      vm.resetCache();
       ApiService.account('checkLogin').then(function(loggedInUser) {
         currentUser = loggedInUser.success.username;
         vm.authenticated = true;
@@ -104,22 +96,21 @@
         roomId: vm.roomNumber,
         username: currentUser,
         timeslot: {
-          startTime: vm.newReservationCache.start,
-          endTime: parseInt(vm.newReservationCache.start) + parseInt(vm.newReservationCache.length),
-          date: vm.newReservationCache.date
+          startTime: vm.cache.start,
+          endTime: parseInt(vm.cache.start) + parseInt(vm.cache.length),
+          date: vm.cache.date
         },
-        equipment: vm.newReservationCache.equipment,
+        equipment: vm.cache.equipment,
         description: currentUser + '\'s Reservation'
       };
-      console.log(payload);
       ApiService.booking('reserve', payload).then(function() {
         showMessage('Successfully reserved.');
-        vm.inAction = null;
+        vm.resetCache();
         getRoomInfo();
         getMyInfo();
       }, function() {
+        vm.resetCache();
         showMessage('Fail to reserve, please try again.');
-        vm.inAction = null;
       });
     }
 
@@ -127,21 +118,48 @@
     Helper Functions
     */
 
+    // show message
+
     function showMessage(msg) {
       vm.message = msg;
-      vm.newReservationCache = {
+      setTimeout(function(){
+        vm.message = 'Select a timeslot to start reservation!';
+      }, 600);
+    }
+
+    // reset cache
+
+    function resetCache() {
+      vm.cache = {
         equipment: {
           laptop: 0,
           projector: 0,
           board: 0
         },
         length: 1,
-        start: undefined,
-        date: undefined
+        start: null,
+        date: null,
+        inAction: null,
+        reservationId: null
       };
-      setTimeout(function(){
-        vm.message = 'Select a timeslot to start reservation!';
-      }, 600);
+    }
+
+    // set cache
+
+    function setCache(res, action) {
+      console.log(res);
+      vm.cache = {
+        equipment: {
+          laptop: res.equipment.laptops,
+          projector: res.equipment.projectors,
+          board: res.equipment.whiteboards
+        },
+        length: parseInt(res.timeslot.endTime) - parseInt(res.timeslot.startTime),
+        start: parseInt(res.timeslot.startTime),
+        date: res.timeslot.date,
+        inAction: action,
+        reservationId: res.reservationId
+      };
     }
 
     // change room and fetch room data
