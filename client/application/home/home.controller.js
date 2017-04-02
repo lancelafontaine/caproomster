@@ -84,18 +84,7 @@
     }
 
     function makeReservation() {
-      var payload = {
-        roomId: vm.roomNumber,
-        username: currentUser,
-        timeslot: {
-          startTime: vm.cache.start,
-          endTime: parseInt(vm.cache.start) + parseInt(vm.cache.length),
-          date: vm.cache.date
-        },
-        equipment: vm.cache.equipment,
-        description: currentUser + '\'s Reservation'
-      };
-      ApiService.booking('reserve', payload).then(function() {
+      ApiService.booking('reserve', createPayload()).then(function() {
         showMessage('Successfully reserved.');
         vm.resetCache();
         getRoomInfo();
@@ -107,7 +96,23 @@
     }
 
     function modifyReservation() {
-
+      ApiService.booking('reserve', createPayload()).then(function() {
+        var payload = {
+          reservationId: vm.cache.reservationId
+        };
+        ApiService.booking('deleteMyReservation',payload).then(function() {
+          showMessage('Successfully modify.');
+          vm.resetCache();
+          getRoomInfo();
+          getMyInfo();
+        }, function() {
+          vm.resetCache();
+          showMessage('Fail to modify, please try again.');
+        });
+      }, function() {
+        vm.resetCache();
+        showMessage('Fail to modify, please try again.');
+      });
     }
 
     function deleteReservation() {
@@ -115,7 +120,7 @@
         reservationId: vm.cache.reservationId
       };
       ApiService.booking('deleteMyReservation', payload).then(function() {
-        if (vm.cache.inAction = 'modify') {
+        if (vm.cache.inAction == 'modify') {
           showMessage('Successfully modified.');
         } else {
           showMessage('Successfully deleted.');
@@ -127,6 +132,20 @@
         vm.resetCache();
         showMessage('Fail to reserve, please try again.');
       });
+    }
+
+    function createPayload() {
+      return {
+        roomId: vm.roomNumber,
+        username: currentUser,
+        timeslot: {
+          startTime: vm.cache.start,
+          endTime: parseInt(vm.cache.start) + parseInt(vm.cache.length),
+          date: vm.cache.date
+        },
+        equipment: vm.cache.equipment,
+        description: currentUser + '\'s Reservation'
+      };
     }
 
     function showMessage(msg) {

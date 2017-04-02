@@ -122,17 +122,23 @@
                 input:disabled {
                     border: none;
                 }
+                .modify-date{
+                    width: 50%;
+                }
                 h3 {
                     input {
                         width: 33px;
                     }
                 }
-                .create-button {
-                    margin: auto;
-                    margin-top: 11px;
+                .button-group {
                     display: block;
-                    background-color: #1b1f23;
-                    color: #fff;
+                    button {
+                        margin: auto;
+                        margin-top: 11px;
+                        display: inline-block;
+                        background-color: #1b1f23;
+                        color: #fff;
+                    }
                 }
             }
         }

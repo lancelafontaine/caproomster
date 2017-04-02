@@ -92,7 +92,10 @@
           day-view-event-width="250"
           cell-modifier="vm.modifyCell(calendarCell)"
           on-date-range-select="
-            vm.cache.start = calendarRangeStartDate.getHours(); vm.cache.date = vm.dateToNumber(calendarRangeStartDate); vm.cache.inAction = 'create'"
+            vm.resetCache();
+            vm.cache.start = calendarRangeStartDate.getHours();
+            vm.cache.date = vm.dateToNumber(calendarRangeStartDate);
+            vm.cache.inAction = 'create'"
           cell-auto-open-disabled="true"
         >
         </mwl-calendar>
@@ -148,25 +151,33 @@
           Reservation
         </h2>
         <h3>Room {{ vm.roomNumber }}</h3>
-        <h3>{{ vm.cache.date }}</h3>
         <h3>
-          Reserve <input type="text" ng-model="vm.cache.length" ng-disabled="vm.cache.inAction == 'delete'"/> hours from {{ vm.cache.start }}:00 to {{ vm.cache.start + vm.cache.length }}:00
+          <span ng-if="vm.cache.inAction != 'modify'">{{ vm.cache.date }}</span>
+          <input type="tel" ng-model="vm.cache.date" ng-if="vm.cache.inAction == 'modify'" class="modify-date"/>
+        </h3>
+        <h3>
+          Reserve <input type="tel" ng-model="vm.cache.length" ng-disabled="vm.cache.inAction == 'delete'"/> hours from {{ vm.cache.start }}:00 to {{ vm.cache.start + vm.cache.length }}:00
         </h3>
         <i class="fa fa-laptop" aria-hidden="true"></i>
-        <input type="text" ng-model="vm.cache.equipment.laptop" ng-disabled="vm.cache.inAction == 'delete'"/>
+        <input type="tel" ng-model="vm.cache.equipment.laptop" ng-disabled="vm.cache.inAction == 'delete'"/>
         <i class="fa fa-video-camera" aria-hidden="true"></i>
-        <input type="text" ng-model="vm.cache.equipment.projector" ng-disabled="vm.cache.inAction == 'delete'"/>
+        <input type="tel" ng-model="vm.cache.equipment.projector" ng-disabled="vm.cache.inAction == 'delete'"/>
         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        <input type="text" ng-model="vm.cache.equipment.board" ng-disabled="vm.cache.inAction == 'delete'"/>
-        <button ng-if="vm.cache.inAction == 'create'" ng-click="vm.makeReservation()" class="btn-lg create-button">
-          Confirm
-        </button>
-        <button ng-if="vm.cache.inAction == 'modify'" ng-click="vm.modifyReservation()" class="btn-lg create-button">
-          Modify
-        </button>
-        <button ng-if="vm.cache.inAction == 'delete'" ng-click="vm.deleteReservation()" class="btn-lg create-button">
-          Delete
-        </button>
+        <input type="tel" ng-model="vm.cache.equipment.board" ng-disabled="vm.cache.inAction == 'delete'"/>
+        <div class="button-group">
+          <button ng-click="vm.resetCache(); vm.cache.inAction = null" class="btn-lg cancel-button">
+            Cancel
+          </button>
+          <button ng-if="vm.cache.inAction == 'create'" ng-click="vm.makeReservation()" class="btn-lg">
+            Confirm
+          </button>
+          <button ng-if="vm.cache.inAction == 'modify'" ng-click="vm.modifyReservation()" class="btn-lg">
+            Modify
+          </button>
+          <button ng-if="vm.cache.inAction == 'delete'" ng-click="vm.deleteReservation()" class="btn-lg">
+            Delete
+          </button>
+        </div>
       </div>
     </div>
     <!-- End Room Specification Display -->
