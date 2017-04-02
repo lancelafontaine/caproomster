@@ -30,4 +30,4 @@ class User:
         return self.capstone
 
     def __str__(self):
-        return '<Id: ' + str(self.userId) + '>'
+        return '<Id: ' + str(self.username) + '>'

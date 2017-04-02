@@ -12,7 +12,7 @@ class Waiting:
 	# Print method for debugging
 	def __str__(self):
 		return "Waiting Info: \n Holder: " + \
-		       str(self.user.getName()) + \
+		       str(self.user.getId()) + \
 		       str(self.timeslot) + \
 		       "Description: " + str(self.description) + \
 		       "Equipment: " + str(self.equipment) + \
@@ -65,7 +65,7 @@ class Waiting:
 		waiting_data['room'] = {}
 		waiting_data['room']['roomId'] = self.getRoom().getId()
 		waiting_data['user'] = {}
-		waiting_data['user']['username'] = self.getUser().getName()
+		waiting_data['user']['username'] = self.getUser().getId()
 		waiting_data['user']['userId'] = self.getUser().getId()
 		waiting_data['timeslot'] = {}
 		waiting_data['timeslot']['startTime'] = self.getTimeslot().getStartTime()
@@ -77,5 +77,5 @@ class Waiting:
 		waiting_data['equipment']['projectors'] = self.getEquipment().equipment['projectors']
 		waiting_data['equipment']['whiteboards'] = self.getEquipment().equipment['whiteboards']
 		waiting_data['description'] = self.getDescription()
-		waiting_data['reservationId'] = self.getId()
+		waiting_data['waitingId'] = self.getId()
 		return waiting_data
