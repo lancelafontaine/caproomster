@@ -19,9 +19,9 @@ def find(object_class, objectId):
         objectMap[object_class] = []
         return
     else:
-    	  for object in objectMap[object_class]:
-    	  	  if objectId == object.getId():
-    	  		    return object
+        for object in objectMap[object_class]:
+            if objectId == object.getId():
+                return object
 
 # Clear the ID Map
 def clear(object_class):
