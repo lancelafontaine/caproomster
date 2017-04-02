@@ -512,7 +512,7 @@ def test_valid_make_new_reservation_timeslots_without_reservations():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result == None)
+            assert (result == False)
 
 
 def test_valid_make_new_reservation_timeslots_with_reservations():
@@ -533,7 +533,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result == None)
+            assert (result == False)
 
 
 def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
@@ -554,7 +554,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
             endTime = 5
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result == None)
+            assert (result == False)
 
 
 def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
@@ -573,7 +573,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
             endTime = 10
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result == None)
+            assert (result == False)
 
 
 def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
@@ -593,7 +593,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+            assert (result == True)
 
 
 def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
@@ -612,7 +612,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+            assert (result == True)
 
 
 def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
@@ -631,7 +631,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+            assert (result == True)
 
 
 def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
@@ -651,7 +651,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
             endTime = 9
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+            assert (result == True)
 
 
 def test_invalid_get_all_rooms_without_login(monkeypatch):
