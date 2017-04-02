@@ -12,8 +12,8 @@ class Reservation:
 	# Print method for debugging
 	def __str__(self):
 		return "Reservation Info" + \
-		       "Holder: " + str(self.user.getName()) + \
-		       self.timeslot + \
+		       "Holder: " + str(self.user.getId()) + \
+		       str(self.timeslot) + \
 		       "Description: " + str(self.description) + \
 		       "Equipment: " + str(self.equipment) + \
 		       "RID: " + str(self.reservationId)
@@ -72,7 +72,7 @@ class Reservation:
 		reservation_data['timeslot'] = {}
 		reservation_data['timeslot']['startTime'] = self.getTimeslot().getStartTime()
 		reservation_data['timeslot']['endTime'] = self.getTimeslot().getEndTime()
-		reservation_data['timeslot']['date'] = self.getTimeslot().getDate()
+		reservation_data['timeslot']['date'] = self.getTimeslot().getDate().strftime('%Y/%m/%d')
 		reservation_data['timeslot']['timeId'] = self.getTimeslot().getId()
 		reservation_data['equipment'] = {}
 		reservation_data['equipment']['laptops'] = self.getEquipment().equipment['laptops']

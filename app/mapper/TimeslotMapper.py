@@ -54,5 +54,5 @@ def save(timeslot):
 
 # remove waiting instance from database
 
-def erase(timeslotId):
-    TimeslotTDG.delete(timeslotId)
+def erase(timeslot):
+    TimeslotTDG.delete(timeslot.getId())

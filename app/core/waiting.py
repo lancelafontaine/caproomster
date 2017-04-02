@@ -70,7 +70,7 @@ class Waiting:
 		waiting_data['timeslot'] = {}
 		waiting_data['timeslot']['startTime'] = self.getTimeslot().getStartTime()
 		waiting_data['timeslot']['endTime'] = self.getTimeslot().getEndTime()
-		waiting_data['timeslot']['date'] = self.getTimeslot().getDate()
+		waiting_data['timeslot']['date'] = self.getTimeslot().getDate().strftime('%Y/%m/%d')
 		waiting_data['timeslot']['timeId'] = self.getTimeslot().getId()
 		waiting_data['equipment'] = {}
 		waiting_data['equipment']['laptops'] = self.getEquipment().equipment['laptops']

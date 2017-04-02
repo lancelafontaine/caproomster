@@ -33,10 +33,11 @@ def findAll():
         return
     else:
         for index, r in enumerate(result):
-            room = RoomMapper.find(result[0][1])
-            holder = UserMapper.find(result[0][3])
-            timeslot = TimeslotMapper.find(result[0][4])
-            reservation = Reservation(room, holder, timeslot, result[0][2], result[0][0])
+            room = RoomMapper.find(result[index][1])
+            holder = UserMapper.find(result[index][3])
+            timeslot = TimeslotMapper.find(result[index][4])
+            equipment = EquipmentMapper.find(result[index][5])
+            reservation = Reservation(room, holder, timeslot, result[index][2], equipment, result[index][0])
             allReservations.append(reservation)
         return allReservations
 
@@ -70,7 +71,7 @@ def setReservation(reservationId):
 
 
 def delete(reservationId):
-    UnitOfWork.registerDeleted(Reservation(None, None, None, None, None, reservationId))
+    UnitOfWork.registerDeleted(find(reservationId))
 
 
 # save all work
@@ -102,5 +103,5 @@ def update(reservation):
 
 
 # deletes room object
-def erase(reservationid):
-    ReservationTDG.delete(reservationid)
+def erase(reservation):
+    ReservationTDG.delete(reservation.getId())

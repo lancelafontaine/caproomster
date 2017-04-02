@@ -32,10 +32,10 @@ def delete(equipmentId):
 
 
 def save(equipment):
-    EquipmentTDG.insert(equipment.getId(),equipment.equipment['laptops'],equipment.equipment['projectors'],equipment.equipment['whitboards'])
+    EquipmentTDG.insert(equipment.getId(),equipment.equipment['laptops'],equipment.equipment['projectors'],equipment.equipment['whiteboards'])
 
 
 # remove waiting instance from database
 
-def erase(timeslotId):
-    TimeslotTDG.delete(timeslotId)
+def erase(equipment):
+    EquipmentTDG.delete(equipment.getId())

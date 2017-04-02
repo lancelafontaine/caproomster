@@ -8,7 +8,8 @@ from app.mapper import UserMapper
 from app.mapper import RoomMapper
 from app.mapper import ReservationMapper
 from app.mapper import TimeslotMapper
-
+from app.mapper import EquipmentMapper
+from datetime import datetime
 from flask import jsonify
 import json
 
@@ -202,7 +203,12 @@ def test_valid_validate_new_reservation(monkeypatch):
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
                 },
                 'description': 'cool meeting'
             }
@@ -217,18 +223,27 @@ def test_valid_validate_new_reservation(monkeypatch):
                 return
 
             def mock_reservation_add(*args):
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID", "timeslotID")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID", "timeslotID")
                 room = Room(1)
 
                 user = User('mr', 'pickles')
                 return Reservation(room, user, time, 'description', Equipment("EquipmentID"), "ReservationIDunique")
+
+            def mock_timeslot_add(*args):
+                return Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID", "timeslotID")
+
+            def mock_equipment_add(*args):
+                return Equipment('id', 1,1,1)
 
             def mock_reservation_find_all(*args):
                 return []
 
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
+            monkeypatch.setattr(TimeslotMapper, 'makeNew', mock_timeslot_add)
             monkeypatch.setattr(TimeslotMapper, 'done', mock_reservation_done)
+            monkeypatch.setattr(EquipmentMapper, 'makeNew', mock_equipment_add)
+            monkeypatch.setattr(EquipmentMapper, 'done', mock_reservation_done)
             monkeypatch.setattr(ReservationMapper, 'done', mock_reservation_done)
             monkeypatch.setattr(ReservationMapper, 'makeNew', mock_reservation_add)
             monkeypatch.setattr(ReservationMapper, 'findAll', mock_reservation_find_all)
@@ -240,15 +255,20 @@ def test_valid_validate_make_new_reservation_payload_format():
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'username': 'macaroni',
+                'username': 'mr',
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
                 },
                 'description': 'cool meeting'
             }
-            assert (views.validate_make_new_reservation_payload_format(data) is None)
+            assert (views.validate_reservation_payload_format(data) is None)
 
 
 def test_invalid_validate_make_new_reservation_payload_format_missing_key():
@@ -256,32 +276,20 @@ def test_invalid_validate_make_new_reservation_payload_format_missing_key():
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'username': 'peanut butter',
+                'username': 'mr',
                 'timeslot': {
                     'startTime': '14',
                     'endTime': '15',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
                 }
             }
             assert (
-                views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE[
-                    'UNPROCESSABLE'])
-
-
-def test_invalid_validate_make_new_reservation_payload_format_missing_timeslot_key():
-    with app.app_context():
-        with app.test_request_context():
-            data = {
-                'roomId': '1',
-                'username': 'kiwi',
-                'timeslot': {
-                    'startTime': '14',
-                    'endTime': '15'
-                },
-                'description': 'best workout'
-            }
-            assert (
-                views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE[
+                views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                     'UNPROCESSABLE'])
 
 
@@ -290,56 +298,100 @@ def test_invalid_validate_make_new_reservation_payload_format_not_digits():
         with app.test_request_context():
             data = {
                 'roomId': '1',
-                'username': 'asparagus',
+                'username': 'mr',
                 'timeslot': {
-                    'startTime': 'not a digit',
+                    'startTime': '14',
                     'endTime': '15',
-                    'date': '3000-03-19'
+                    'date': '3000/03/19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 'haha',
+                    'board': 1
                 },
                 'description': 'cool meeting'
             }
             assert (
-            views.validate_make_new_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
+            views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE['UNPROCESSABLE'])
 
 
 def test_valid_validate_make_new_reservation_times():
     with app.app_context():
         with app.test_request_context():
-            startTime = 1
-            endTime = 2
-            assert (views.validate_make_new_reservation_times(startTime, endTime) is None)
-            startTime = 23
-            endTime = 1
-            assert (views.validate_make_new_reservation_times(startTime, endTime) is None)
+            data = {
+                'roomId': '1',
+                'username': 'mr',
+                'timeslot': {
+                    'startTime': '1',
+                    'endTime': '2',
+                    'date': '3000/03/19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
+                },
+                'description': 'cool meeting'
+            }
+            assert (views.validate_reservation_payload_format(data) is None)
+            data['timeslot']['startTime'] = 23
+            data['timeslot']['startTime'] = 1
+            assert (views.validate_reservation_payload_format(data) is None)
 
 
 def test_invalid_validate_make_new_reservation_times_no_24_hour_format():
     with app.app_context():
         with app.test_request_context():
-            startTime = 13456
-            endTime = 1
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data = {
+                'roomId': '1',
+                'username': 'mr',
+                'timeslot': {
+                    'startTime': '1315432',
+                    'endTime': '1',
+                    'date': '3000/03/19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
+                },
+                'description': 'cool meeting'
+            }
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
-            startTime = 1
-            endTime = -12313
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data['timeslot']['startTime'] = '1'
+            data['timeslot']['startTime'] = '-12313'
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
 
 
 def test_invalid_validate_make_new_reservation_times_more_than_3_hours_long():
     with app.app_context():
         with app.test_request_context():
-            startTime = 1
-            endTime = 23
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data = {
+                'roomId': '1',
+                'username': 'mr',
+                'timeslot': {
+                    'startTime': '1',
+                    'endTime': '23',
+                    'date': '3000/03/19'
+                },
+                'equipment': {
+                    'laptop': 1,
+                    'projector': 1,
+                    'board': 1
+                },
+                'description': 'cool meeting'
+            }
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
-            startTime = 5
-            endTime = 1
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data['timeslot']['startTime'] = '5'
+            data['timeslot']['startTime'] = '1'
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
-            startTime = 23
-            endTime = 4
-            assert (views.validate_make_new_reservation_times(startTime, endTime).status_code is views.STATUS_CODE[
+            data['timeslot']['startTime'] = '23'
+            data['timeslot']['startTime'] = '4'
+            assert (views.validate_reservation_payload_format(data).status_code is views.STATUS_CODE[
                 'UNPROCESSABLE'])
 
 
@@ -410,7 +462,7 @@ def test_valid_make_new_reservation_room_user_exists(monkeypatch):
 
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
-            assert (views.validate_make_new_reservation_room_user_exists(roomId, username) is None)
+            assert (views.validate_reservation_room_user_exists(roomId, username) is None)
 
 
 def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch):
@@ -428,7 +480,7 @@ def test_invalid_make_new_reservation_room_user_exists_user_missing(monkeypatch)
             monkeypatch.setattr(UserMapper, 'find', mock_user_not_found)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_find)
             assert (
-            views.validate_make_new_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE[
+            views.validate_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE[
                 'NOT_FOUND'])
 
 
@@ -447,7 +499,7 @@ def test_invalid_make_new_reservation_room_user_exists_room_missing(monkeypatch)
             monkeypatch.setattr(RoomMapper, 'find', mock_room_not_found)
             monkeypatch.setattr(UserMapper, 'find', mock_user_find)
             assert (
-            views.validate_make_new_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE[
+            views.validate_reservation_room_user_exists(roomId, username).status_code is views.STATUS_CODE[
                 'NOT_FOUND'])
 
 
@@ -467,7 +519,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(1, 2, '2020-01-01', 1, "userID_ujhbknl", "timeslotID_tycuvi")
+            time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_ujhbknl", "timeslotID_tycuvi")
             room = Room(1)
 
             user = User('mr', 'pickles')
@@ -488,7 +540,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', 1, "userID_ytcuvib", "timeslotID_exrtcy")
+            time = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_ytcuvib", "timeslotID_exrtcy")
             room = Room(1)
 
             user = User('mr', 'pickles')
@@ -509,7 +561,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            timeslot = Timeslot(5, 8, '2020-01-01', 1, "userID_txcyvu", "timeslotID_ezwrxt")
+            timeslot = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_txcyvu", "timeslotID_ezwrxt")
             room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, timeslot, 'description', Equipment("equipmentID_jkljh"),
@@ -528,7 +580,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 7, '2020-01-01', 1, "userID_gfhasdh", "timeslotID_fgchgvjbk")
+            time = Timeslot(5, 7, datetime(2020, 01, 01), 1, "userID_gfhasdh", "timeslotID_fgchgvjbk")
             room = Room(1)
 
             user = User('mr', 'pickles')
@@ -548,7 +600,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', 1, "userID_fcghv", "timeslotID_fdxgch")
+            time = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_fcghv", "timeslotID_fdxgch")
             room = Room(1)
             user = User('mr', 'pickles')
             reservation1 = Reservation(room, user, time, 'description', Equipment("equipmentID_cghvjb"),
@@ -567,7 +619,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', 1, "userID_tcyvu", "timeslotID_fctygv")
+            time = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_tcyvu", "timeslotID_fctygv")
             room = Room(1)
 
             user = User('mr', 'pickles')
@@ -586,7 +638,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
     with app.app_context():
         with app.test_request_context():
             reservations = []
-            time = Timeslot(5, 8, '2020-01-01', 1, "userID_cghvjb", "timeslotID_hgvjbs")
+            time = Timeslot(5, 8, datetime(2020, 01, 01), 1, "userID_cghvjb", "timeslotID_hgvjbs")
             room = Room(1)
             user = User('mr', 'pickles')
 
@@ -648,12 +700,12 @@ def test_invalid_make_new_reservation_without_login(monkeypatch):
             def reservation_create(*args, **kwargs):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID_tyvub", "timeslotID_ugvhbjk")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_tyvub", "timeslotID_ugvhbjk")
                 return Reservation(room, user, time, 'description', Equipment("equipmentID_yvhjb"),
                                    "reservationID_vghjbk")
 
             def timeslot_create(_):
-                return Timeslot(1, 2, '2020-01-01', 1, "userID_vhbj", "timeslotID_iubno")
+                return Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_vhbj", "timeslotID_iubno")
 
                 monkeypatch.setattr(TimeslotMapper, 'makeNew', empty_return)
                 monkeypatch.setattr(ReservationMapper, 'makeNew', reservation_create)
@@ -680,7 +732,7 @@ def test_valid_get_reservations_by_room_with_login(monkeypatch):
             def find_by_room(*args, **kwargs):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID_ibun", "timeslotID_vuhbjk")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_ibun", "timeslotID_vuhbjk")
                 return [Reservation(room, user, time, 'description', Equipment("equipmentID_vguhbikjn"),
                                     "reservationID_tcytvuhb")]
 
@@ -713,7 +765,7 @@ def test_valid_get_reservations_by_user_with_login(monkeypatch):
             def find_by_user(*args, **kwargs):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID_bijknklm", "timeslotID_ghvjbk")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_bijknklm", "timeslotID_ghvjbk")
                 return [Reservation(room, user, time, 'description', Equipment("equipmentID_hgcvjb"),
                                     "reservationID_vuhbiuj")]
 
@@ -744,7 +796,7 @@ def test_valid_get_reservations_by_with_login(monkeypatch):
             def find_by_room(*args, **kwargs):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, "userID_vubin", "timeslotID_hbijkn")
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, "userID_vubin", "timeslotID_hbijkn")
                 return [Reservation(room, user, time, 'description', Equipment("equipmentID_uyvbin"),
                                     "reservationID_ygvuhjbk")]
 
@@ -777,7 +829,7 @@ def test_valid_get_all_reservations(monkeypatch):
             def reservations_found():
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', 1, 'buddy', 'timeslotID_7g8hij')
+                time = Timeslot(1, 2, datetime(2020, 01, 01), 1, 'buddy', 'timeslotID_7g8hij')
                 return [Reservation(room, user, time, 'description', Equipment("equipmentID_ionoi"),"reservationID")]
 
             monkeypatch.setattr(ReservationMapper, 'findAll', reservations_found)
@@ -820,7 +872,7 @@ def test_valid_delete_reservation(monkeypatch):
             def reservation_not_found(_):
                 room = Room(1)
                 user = User('buddy', 'boy')
-                time = Timeslot(1, 2, '2020-01-01', '', 1, 1)
+                time = Timeslot(1, 2, datetime(2020, 01, 01), '', 1, 1)
                 equipment = Equipment("EquipmentID_iionask")
                 return Reservation(room, user, time, 'description', equipment,'test')
 
