@@ -324,7 +324,7 @@ def validate_reservation_payload_format(data):
 
 def validate_make_new_reservation_date(dateList):
     def date_error():
-        response = jsonify({'makeNewReservation error': '`date` must be in the format 2034-03-03 and must be a valid date, today or in the future.'})
+        response = jsonify({'makeNewReservation error': '`date` must be in the format 2034/03/03 and must be a valid date, today or in the future.'})
         response.status_code = STATUS_CODE['UNPROCESSABLE']
         return response
 
