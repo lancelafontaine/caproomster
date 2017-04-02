@@ -119,6 +119,9 @@
                     text-align: center;
                     height: 28px;
                 }
+                input:disabled {
+                    border: none;
+                }
                 h3 {
                     input {
                         width: 33px;

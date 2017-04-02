@@ -16,7 +16,8 @@
       getRoomList: getRoomList,
       reserveSlot: reserveSlot,
       getAllReservation: getAllReservation,
-      getMyReservation: getMyReservation
+      getMyReservation: getMyReservation,
+      deleteMyReservation: deleteMyReservation
     };
 
     /* login factory */
@@ -85,6 +86,8 @@
       });
     }
 
+    /* getMyReservation factory */
+
     function getMyReservation() {
       var url = '/reservations/user/:userId';
       return $resource(baseUrl + url, {
@@ -92,6 +95,20 @@
       }, {
         get: {
           method: 'GET',
+          withCredentials: true
+        }
+      });
+    }
+
+    /* deleteReservation factory */
+
+    function deleteMyReservation() {
+      var url = '/reservations/:reservationId';
+      return $resource(baseUrl + url, {
+        reservationId: '@reservationId'
+      }, {
+        delete: {
+          method: 'DELETE',
           withCredentials: true
         }
       });

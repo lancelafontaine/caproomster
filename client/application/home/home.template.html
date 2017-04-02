@@ -150,21 +150,21 @@
         <h3>Room {{ vm.roomNumber }}</h3>
         <h3>{{ vm.cache.date }}</h3>
         <h3>
-          Reserve <input type="text" ng-model="vm.cache.length"/> hours from {{ vm.cache.start }}:00 to {{ vm.cache.start + vm.cache.length }}:00
+          Reserve <input type="text" ng-model="vm.cache.length" ng-disabled="vm.cache.inAction == 'delete'"/> hours from {{ vm.cache.start }}:00 to {{ vm.cache.start + vm.cache.length }}:00
         </h3>
         <i class="fa fa-laptop" aria-hidden="true"></i>
-        <input type="text" ng-model="vm.cache.equipment.laptop" />
+        <input type="text" ng-model="vm.cache.equipment.laptop" ng-disabled="vm.cache.inAction == 'delete'"/>
         <i class="fa fa-video-camera" aria-hidden="true"></i>
-        <input type="text" ng-model="vm.cache.equipment.projector" />
+        <input type="text" ng-model="vm.cache.equipment.projector" ng-disabled="vm.cache.inAction == 'delete'"/>
         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        <input type="text" ng-model="vm.cache.equipment.board" />
+        <input type="text" ng-model="vm.cache.equipment.board" ng-disabled="vm.cache.inAction == 'delete'"/>
         <button ng-if="vm.cache.inAction == 'create'" ng-click="vm.makeReservation()" class="btn-lg create-button">
           Confirm
         </button>
-        <button ng-if="vm.cache.inAction == 'modify'" ng-click="vm.makeReservation()" class="btn-lg create-button">
+        <button ng-if="vm.cache.inAction == 'modify'" ng-click="vm.modifyReservation()" class="btn-lg create-button">
           Modify
         </button>
-        <button ng-if="vm.cache.inAction == 'delete'" ng-click="vm.makeReservation()" class="btn-lg create-button">
+        <button ng-if="vm.cache.inAction == 'delete'" ng-click="vm.deleteReservation()" class="btn-lg create-button">
           Delete
         </button>
       </div>
