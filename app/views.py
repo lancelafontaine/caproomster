@@ -157,15 +157,27 @@ def delete_reservation(reservationId):
             return response
 
         if reservation:
+            timeslotId = reservation.getTimeslot().getId()
+            equipmentId = reservation.getEquipment().getId()
             ReservationMapper.delete(reservationId)
             ReservationMapper.done()
+            TimeslotMapper.delete(timeslotId)
+            TimeslotMapper.done()
+            EquipmentMapper.delete(equipmentId)
+            EquipmentMapper.done()
             data = {
                 'success': 'reservation successfully deleted',
                 'reservationId': reservationId
             }
         if waiting:
+            timeslotId = waiting.getTimeslot().getId()
+            equipmentId = waiting.getEquipment().getId()
             WaitingMapper.delete(reservationId)
             WaitingMapper.done()
+            TimeslotMapper.delete(timeslotId)
+            TimeslotMapper.done()
+            EquipmentMapper.delete(equipmentId)
+            EquipmentMapper.done()
             data = {
                 'success': 'reservation on waiting list successfully deleted',
                 'waitingId': reservationId
