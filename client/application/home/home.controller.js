@@ -18,12 +18,12 @@
     var currentUser = null;
     vm.$onInit = init;
 
-    // Init function
-
     function init() {
       vm.toggleMenu = toggleMenu;
       vm.changeRoom = changeRoom;
       vm.makeReservation = makeReservation;
+      vm.modifyReservation = modifyReservation;
+      vm.deleteReservation = deleteReservation;
       vm.resetCache = resetCache;
       vm.setCache = setCache;
       vm.dateToNumber = HomeService.dateToNumber;
@@ -41,8 +41,6 @@
       $interval(getRoomInfo, 1500);
     }
 
-    // check login and init all data for the view
-
     function initData() {
       vm.resetCache();
       ApiService.account('checkLogin').then(function(loggedInUser) {
@@ -58,8 +56,6 @@
         $state.go('login');
       });
     }
-
-    // get ROOM reservations and waitings
 
     function getRoomInfo() {
       var tempEvents = [];
@@ -78,8 +74,6 @@
       });
     }
 
-    // get USER reservations and waitings
-
     function getMyInfo() {
       ApiService.booking('getMyReservation', {
         userId: currentUser
@@ -88,8 +82,6 @@
         vm.myWaitingList = myReservations.waitings;
       });
     }
-
-    // Make one reservation
 
     function makeReservation() {
       var payload = {
@@ -114,11 +106,28 @@
       });
     }
 
-    /*
-    Helper Functions
-    */
+    function modifyReservation() {
 
-    // show message
+    }
+
+    function deleteReservation() {
+      var payload = {
+        reservationId: vm.cache.reservationId
+      };
+      ApiService.booking('deleteMyReservation', payload).then(function() {
+        if (vm.cache.inAction = 'modify') {
+          showMessage('Successfully modified.');
+        } else {
+          showMessage('Successfully deleted.');
+        }
+        vm.resetCache();
+        getRoomInfo();
+        getMyInfo();
+      }, function() {
+        vm.resetCache();
+        showMessage('Fail to reserve, please try again.');
+      });
+    }
 
     function showMessage(msg) {
       vm.message = msg;
@@ -126,8 +135,6 @@
         vm.message = 'Select a timeslot to start reservation!';
       }, 600);
     }
-
-    // reset cache
 
     function resetCache() {
       vm.cache = {
@@ -143,8 +150,6 @@
         reservationId: null
       };
     }
-
-    // set cache
 
     function setCache(res, action) {
       console.log(res);
@@ -162,14 +167,10 @@
       };
     }
 
-    // change room and fetch room data
-
     function changeRoom(room) {
       vm.roomNumber = room;
       getRoomInfo();
     }
-
-    // Toggle Menu
 
     function toggleMenu() {
       if (!vm.isToggled) {
