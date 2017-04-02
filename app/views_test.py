@@ -9,6 +9,7 @@ from app.mapper import RoomMapper
 from app.mapper import ReservationMapper
 from app.mapper import TimeslotMapper
 from app.mapper import EquipmentMapper
+from app.mapper import WaitingMapper
 from datetime import datetime
 from flask import jsonify
 import json
@@ -512,7 +513,7 @@ def test_valid_make_new_reservation_timeslots_without_reservations():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result == None)
+            assert (result == False)
 
 
 def test_valid_make_new_reservation_timeslots_with_reservations():
@@ -533,7 +534,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result == None)
+            assert (result == False)
 
 
 def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
@@ -554,7 +555,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_lower_bound():
             endTime = 5
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result == None)
+            assert (result == False)
 
 
 def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
@@ -573,7 +574,7 @@ def test_valid_make_new_reservation_timeslots_with_reservations_upper_bound():
             endTime = 10
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result == None)
+            assert (result == False)
 
 
 def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
@@ -593,7 +594,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_1():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+            assert (result == True)
 
 
 def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
@@ -612,7 +613,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_2():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+            assert (result == True)
 
 
 def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
@@ -631,7 +632,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_3():
             endTime = 7
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+            assert (result == True)
 
 
 def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
@@ -651,7 +652,7 @@ def test_invalid_make_new_reservation_timeslots_overlapping_time_4():
             endTime = 9
 
             result = views.validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime)
-            assert (result.status_code == views.STATUS_CODE['UNPROCESSABLE'])
+            assert (result == True)
 
 
 def test_invalid_get_all_rooms_without_login(monkeypatch):
@@ -882,6 +883,13 @@ def test_valid_delete_reservation(monkeypatch):
             monkeypatch.setattr(ReservationMapper, 'find', reservation_not_found)
             monkeypatch.setattr(ReservationMapper, 'delete', empty_return)
             monkeypatch.setattr(ReservationMapper, 'done', empty_return)
+            monkeypatch.setattr(WaitingMapper, 'find', reservation_not_found)
+            monkeypatch.setattr(WaitingMapper, 'delete', empty_return)
+            monkeypatch.setattr(WaitingMapper, 'done', empty_return)
+            monkeypatch.setattr(TimeslotMapper, 'delete', empty_return)
+            monkeypatch.setattr(TimeslotMapper, 'done', empty_return)
+            monkeypatch.setattr(EquipmentMapper, 'delete', empty_return)
+            monkeypatch.setattr(EquipmentMapper, 'done', empty_return)
 
             views.session.clear()
             views.session.update({'logged_in': True, 'username': 'pasta'})
@@ -889,4 +897,4 @@ def test_valid_delete_reservation(monkeypatch):
             assert (response.status_code == views.STATUS_CODE['OK'])
             response_data = json.loads(response.get_data())
             assert (isinstance(response_data, dict))
-            assert ('reservationId' in response_data)
+            assert ('reservationId' in response_data or 'waitingId' in response_data)

@@ -11,22 +11,22 @@ def find(id):
     else:
         return []
 
-def insert(room, reservee, description, timeslot):
+def insert(waitingId, room, reservee, description, timeslot, equipment):
     conn = connect_db()
     if conn:
 	cur = conn.cursor()
-	cur.execute("""INSERT INTO waitingTable(room, reservee, description, timeslot) VALUES
-		(%s, %s, %s, %s);""", (room, reservee, description, timeslot))
+	cur.execute("""INSERT INTO waitingTable(waitingId, room, reservee, description, timeslot, equipment) VALUES
+		(%s, %s, %s, %s, %s, %s);""", (waitingId, room, reservee, description, timeslot, equipment))
 	conn.commit()
 	conn.close()
 
-def update(id, roomId, userId, description, timeslotId):
+def update(id, roomId, userId, description, timeslotId, equipmentId):
     conn = connect_db()
     if conn:
 	cur = conn.cursor()
 	cur.execute("""UPDATE waitingTable SET room = %s, reservee = %s,
 		description = %s, timeslot = %s WHERE waitingId = %s;""",
-		(roomId, userId, description, timeslotId,id))
+		(roomId, userId, description, timeslotId, equipmentId,id))
 	conn.commit()
 	conn.close()
 
@@ -53,7 +53,7 @@ def findByRoom(roomId):
     conn = connect_db()
     if conn:
 	cur = conn.cursor()
-	cur.execute("""SELECT waitingId, room, reservee, description, timeslot, startTime, endTime FROM waitingTable LEFT OUTER JOIN timeslotTable
+	cur.execute("""SELECT waitingId, room, reservee, description, timeslot, equipment, startTime, endTime FROM waitingTable LEFT OUTER JOIN timeslotTable
 		ON (waitingTable.timeslot = timeslotTable.timeid) WHERE room = %s;""", (roomId))
 	data = cur.fetchall()
 	conn.close()

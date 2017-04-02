@@ -98,7 +98,8 @@ def update(reservation):
         reservation.getRoom().getId(),
         reservation.getUser().getId(),
         reservation.getDescription(),
-        reservation.getTimeslot().getId()
+        reservation.getTimeslot().getId(),
+        reservation.getEquipment().getId()
     )
 
 
