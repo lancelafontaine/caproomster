@@ -32,10 +32,7 @@
         vm.loginError = true;
       }
       else {
-        var payload = {
-          userId: vm.userInfo.username,
-          password: vm.userInfo.password
-        };
+        var payload = vm.userInfo;
         ApiService.account('login', payload).then(function() {
           $state.go('home');
         }, function(res) {

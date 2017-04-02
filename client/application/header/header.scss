@@ -1,10 +1,14 @@
 @import "../capRoomster.scss";
 
 .navbar {
-    background-color: #1b1f23;
+    background-color: $caproomster-grey;
     margin-bottom: 0px !important;
     span, a{
-        color: #fff;
+        color: $caproomster-white;
+    }
+    .logo {
+        font-family: $caproomster-logo-font;
+        font-size: 26px;
     }
 }
 
