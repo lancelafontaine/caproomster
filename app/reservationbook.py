@@ -42,7 +42,7 @@ class ReservationBook:
     def get_reservations_by_room(self, roomId):
         reservations_data = []
         for reservation in self.reservationList:
-            if reservation.getRoom().getId() == roomId:
+            if str(reservation.getRoom().getId()) == str(roomId):
                 reservations_data += [reservation.to_dict()]
         data = {
             'roomId': roomId,
