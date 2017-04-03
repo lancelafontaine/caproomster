@@ -1,4 +1,3 @@
-import pytest
 from app.core.equipment import Equipment
 
 def test_equipment_with_no_arguments_is_zero_length():

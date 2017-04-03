@@ -31,3 +31,10 @@ class User:
 
     def __str__(self):
         return '<Id: ' + str(self.username) + '>'
+
+    def to_dict(self):
+        user_data = {}
+        user_data['username'] = self.getId()
+        user_data['isCapstone'] = self.getId()
+        return user_data
+

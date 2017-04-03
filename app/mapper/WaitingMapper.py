@@ -30,7 +30,7 @@ def findAll():
     result = WaitingTDG.findAll()
     waitings = []
     if not result:
-        return
+        return []
     else:
         for _, r in enumerate(result):
             room = RoomMapper.find(r[1])
@@ -40,6 +40,39 @@ def findAll():
             waiting = Waiting(room, user, timeslot, r[3], equipment, r[0])
             waitings.append(waiting)
     return waitings
+
+def findAllCapstone():
+    result = WaitingTDG.findAll()
+    waitings = []
+    if not result:
+        return []
+    else:
+        for _, r in enumerate(result):
+            user = UserMapper.find(r[2])
+            if user.isCapstone():
+                room = RoomMapper.find(r[1])
+                timeslot = TimeslotMapper.find(r[4])
+                equipment = EquipmentMapper.find(r[5])
+                waiting = Waiting(room, user, timeslot, r[3], equipment, r[0])
+                waitings.append(waiting)
+    return waitings
+
+def findAllRegular():
+    result = WaitingTDG.findAll()
+    waitings = []
+    if not result:
+        return []
+    else:
+        for _, r in enumerate(result):
+            user = UserMapper.find(r[2])
+            if not user.isCapstone():
+                room = RoomMapper.find(r[1])
+                timeslot = TimeslotMapper.find(r[4])
+                equipment = EquipmentMapper.find(r[5])
+                waiting = Waiting(room, user, timeslot, r[3], equipment, r[0])
+                waitings.append(waiting)
+    return waitings
+
 
 def findByUser(userId):
     userWaitings = []
