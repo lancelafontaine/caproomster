@@ -51,10 +51,10 @@ class ReservationBook:
 
         waitings_data = []
         for waiting in self.waitingListCapstone:
-            if waiting.getRoom().getId() == roomId:
+            if str(waiting.getRoom().getId()) == str(roomId):
                 waitings_data += [waiting.to_dict()]
         for waiting in self.waitingListRegular:
-            if waiting.getRoom().getId() == roomId:
+            if str(waiting.getRoom().getId()) == str(roomId):
                 waitings_data += [waiting.to_dict()]
         data.update({'waitings': waitings_data})
 
