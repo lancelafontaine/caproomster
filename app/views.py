@@ -150,17 +150,40 @@ def get_all_reservations():
 def delete_reservation(reservationId):
     if request.method == 'DELETE':
         reservation = ReservationMapper.find(reservationId)
-        if not reservation:
+        waiting = WaitingMapper.find(reservationId)
+        if not reservation and not waiting:
             response = jsonify({'reservation error': 'that reservationId does not exist'})
             response.status_code = STATUS_CODE['NOT_FOUND']
             return response
 
-        ReservationMapper.delete(reservationId)
-        ReservationMapper.done()
-        data = {
-            'success': 'reservation successfully deleted',
-            'reservationId': reservationId
-        }
+        if reservation:
+            timeslotId = reservation.getTimeslot().getId()
+            equipmentId = reservation.getEquipment().getId()
+            ReservationMapper.delete(reservationId)
+            ReservationMapper.done()
+            TimeslotMapper.delete(timeslotId)
+            TimeslotMapper.done()
+            EquipmentMapper.delete(equipmentId)
+            EquipmentMapper.done()
+            data = {
+                'success': 'reservation successfully deleted',
+                'reservationId': reservationId
+            }
+        if waiting:
+            timeslotId = waiting.getTimeslot().getId()
+            equipmentId = waiting.getEquipment().getId()
+            WaitingMapper.delete(reservationId)
+            WaitingMapper.done()
+            TimeslotMapper.delete(timeslotId)
+            TimeslotMapper.done()
+            EquipmentMapper.delete(equipmentId)
+            EquipmentMapper.done()
+            data = {
+                'success': 'reservation on waiting list successfully deleted',
+                'waitingId': reservationId
+            }
+
+        # update reservation and waiting lists here
         return jsonify(data)
 
 
@@ -244,26 +267,41 @@ def validate_new_reservation(data):
     if response:
         return response
 
-    reservation = ReservationMapper.findAll()
-    response = validate_make_new_reservation_timeslots(reservation, dateList, startTime, endTime)
-    if response:
-        return response
+    reservations = ReservationMapper.findAll()
 
-    # no use for `block` parameter, for now, just passing empty string
+    # no use for `block` parameter, for now, just passing empty strin
     time = TimeslotMapper.makeNew(startTime, endTime, datetime(int(dateList[0]), int(dateList[1]), int(dateList[2])), '', username, str(uuid4()))
     TimeslotMapper.done()
     room = RoomMapper.find(roomId)
     user = UserMapper.find(username)
     equipment = EquipmentMapper.makeNew(laptop, projector, board, str(uuid4()))
     EquipmentMapper.done()
+
+
+    if validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime):
+        return jsonify(commit_new_waiting(room, user, time, description, equipment))
+    else:
+        return jsonify(commit_new_reservation(room, user, time, description, equipment))
+
+
+def commit_new_waiting(room, user, time, description, equipment):
+    waiting = WaitingMapper.makeNew(room, user, time, description, equipment, str(uuid4()))
+    WaitingMapper.done()
+    response_data = {
+        'makeNewReservation': 'there is a conflict: added to the waitlist',
+        'waitingId': waiting.getId()
+    }
+    return response_data
+
+
+def commit_new_reservation(room, user, time, description, equipment):
     reservation = ReservationMapper.makeNew(room, user, time, description, equipment, str(uuid4()))
     ReservationMapper.done()
-
     response_data = {
-        'makeNewReservation': 'successfully created the reservation',
-        'reservationId': reservation.getId()
+        'makeNewReservation': 'successfully created reservation',
+        'reservation': reservation.getId()
     }
-    return jsonify(response_data)
+    return response_data
 
 
 def validate_reservation_payload_format(data):
@@ -354,13 +392,6 @@ def validate_reservation_room_user_exists(roomId, username):
 
 
 def validate_make_new_reservation_timeslots(reservations, dateList, startTime, endTime):
-    # TO DO: check that the user's hours of reservation per week does not exceed 3
-
-    def time_overlap_error():
-        response = jsonify({'makeNewReservation error': 'This reservation\'s timeslot conflict with an existing reservation\'s timeslot. Calls the addToWaitingList endpoint with this data.'})
-        response.status_code = STATUS_CODE['UNPROCESSABLE']
-        return response
-
     def to_timestamp(date_list, time):
         return calendar.timegm(datetime(int(date_list[0]), int(date_list[1]), int(date_list[2]), int(time)).timetuple())
 
@@ -377,4 +408,5 @@ def validate_make_new_reservation_timeslots(reservations, dateList, startTime, e
 
             if (new_timestamp_start < existing_timestamp_end) and \
                     (new_timestamp_end > existing_timestamp_start):
-                return time_overlap_error()
+                return True
+    return False

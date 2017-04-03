@@ -8,8 +8,9 @@ from app.TDG import WaitingTDG
 
 from app.core.waiting import Waiting
 
-def makeNew(room, description, reservee, timeslot, waitingId):
-    waiting = Waiting(room, reservee, timeslot, description, waitingId)
+
+def makeNew(room, user, timeslot, description, equipment, waitingId):
+    waiting = Waiting(room, user, timeslot, description, equipment, waitingId)
     UnitOfWork.registerNew(waiting)
     return waiting
 
@@ -33,9 +34,10 @@ def findAll():
     else:
         for _, r in enumerate(result):
             room = RoomMapper.find(r[1])
-            reservee = UserMapper.find(r[2])
+            user = UserMapper.find(r[2])
             timeslot = TimeslotMapper.find(r[4])
-            waiting = Waiting(room, reservee, timeslot, r[3], r[0])
+            equipment = EquipmentMapper.find(r[5])
+            waiting = Waiting(room, user, timeslot, r[3], equipment, r[0])
             waitings.append(waiting)
     return waitings
 
@@ -67,10 +69,12 @@ def delete(waitingId):
 
 def save(waiting):
     WaitingTDG.insert(
+        waiting.getId(),
         waiting.getRoom().getId(),
         waiting.getUser().getId(),
         waiting.getDescription(),
-        waiting.getTimeslot().getId()
+        waiting.getTimeslot().getId(),
+        waiting.getEquipment().getId()
     )
 
 def update(waiting):
