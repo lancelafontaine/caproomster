@@ -39,7 +39,8 @@
       vm.myWaitingList = [];
       vm.parseInt = parseInt;
       initData();
-      $interval(getRoomInfo, 1500);
+      getRoomInfo();
+      //$interval(getRoomInfo, 1500);
     }
 
     function initData() {
@@ -64,7 +65,7 @@
         roomId: vm.roomNumber
       }).then(function(res){
         var reservations = res.reservations || [];
-        var waitingList = res.waitingList || [];
+        var waitingList = res.waitings || [];
         for (var resIndex = 0; resIndex < reservations.length; resIndex++) {
           tempEvents.push(HomeService.createEvent(reservations[resIndex], calendarConfig.colorTypes.info));
         }
@@ -88,7 +89,6 @@
       ApiService.booking('reserve', createPayload()).then(function() {
         showMessage('Successfully reserved.');
         vm.resetCache();
-        getRoomInfo();
         getMyInfo();
       }, function() {
         vm.resetCache();
@@ -104,7 +104,6 @@
         ApiService.booking('deleteMyReservation',payload).then(function() {
           showMessage('Successfully modified.');
           vm.resetCache();
-          getRoomInfo();
           getMyInfo();
         }, function() {
           vm.resetCache();
@@ -127,7 +126,6 @@
           showMessage('Successfully deleted.');
         }
         vm.resetCache();
-        getRoomInfo();
         getMyInfo();
       }, function() {
         vm.resetCache();
@@ -145,7 +143,8 @@
           date: vm.cache.date
         },
         equipment: vm.cache.equipment,
-        description: currentUser + '\'s Reservation'
+        description: currentUser + '\'s Reservation',
+        repeat: vm.cache.repeat || 0
       };
     }
 
@@ -167,7 +166,8 @@
         start: null,
         date: null,
         inAction: null,
-        reservationId: null
+        reservationId: null,
+        repeat: 0
       };
     }
 
@@ -183,7 +183,7 @@
         start: parseInt(res.timeslot.startTime),
         date: res.timeslot.date,
         inAction: action,
-        reservationId: res.reservationId
+        reservationId: res.reservationId || res.waitingId
       };
     }
 
