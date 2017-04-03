@@ -1,3 +1,6 @@
+from datetime import datetime
+import calendar
+
 # Timeslot object
 class Timeslot:
 
@@ -43,16 +46,18 @@ class Timeslot:
         self.block = block
 
     def overlaps(self, other_timeslot):
-        """
+        def to_timestamp(date_list, time):
+            return calendar.timegm(datetime(int(date_list[0]), int(date_list[1]), int(date_list[2]), int(time)).timetuple())
 
-        :type other_timeslot: Timeslot
-        """
-        if self.getDate() != other_timeslot.getDate():
-            return False
+        my_date_list = self.getDate().strftime('%Y/%m/%d').split('/')
+        my_timestamp_start = to_timestamp(my_date_list, self.getStartTime())
+        my_timestamp_end = to_timestamp(my_date_list, self.getEndTime())
 
-        return other_timeslot.getEndTime() > self.getStartTime() and other_timeslot.getStartTime() < self.getEndTime()
+        other_timeslot_date_list = other_timeslot.getDate().strftime('%Y/%m/%d').split('/')
+        other_timestamp_start = to_timestamp(other_timeslot_date_list, other_timeslot.getStartTime())
+        other_timestamp_end = to_timestamp(other_timeslot_date_list, other_timeslot.getEndTime())
 
-
+        return (my_timestamp_start < other_timestamp_end) and (my_timestamp_end > other_timestamp_start)
 
     def getId(self):
         return self.timeId
@@ -65,3 +70,13 @@ class Timeslot:
 
     def setUserId(self,userId):
         self.userId = userId
+
+    def to_dict(self):
+        timeslot_data = {}
+        timeslot_data['startTime'] = self.getStartTime()
+        timeslot_data['endTime'] = self.getEndTime()
+        timeslot_data['date'] = self.getDate().strftime('%Y/%m/%d')
+        timeslot_data['timeId'] = self.getId()
+        timeslot_data['userId'] = self.getUserId()
+        return timeslot_data
+
