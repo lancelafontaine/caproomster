@@ -65,19 +65,10 @@ class Reservation:
 
 	def to_dict(self):
 		reservation_data = {}
-		reservation_data['room'] = {}
-		reservation_data['room']['roomId'] = self.getRoom().getId()
-		reservation_data['user'] = {}
-		reservation_data['user']['userId'] = self.getUser().getId()
-		reservation_data['timeslot'] = {}
-		reservation_data['timeslot']['startTime'] = self.getTimeslot().getStartTime()
-		reservation_data['timeslot']['endTime'] = self.getTimeslot().getEndTime()
-		reservation_data['timeslot']['date'] = self.getTimeslot().getDate().strftime('%Y/%m/%d')
-		reservation_data['timeslot']['timeId'] = self.getTimeslot().getId()
-		reservation_data['equipment'] = {}
-		reservation_data['equipment']['laptops'] = self.getEquipment().equipment['laptops']
-		reservation_data['equipment']['projectors'] = self.getEquipment().equipment['projectors']
-		reservation_data['equipment']['whiteboards'] = self.getEquipment().equipment['whiteboards']
+		reservation_data['room'] = self.getRoom().to_dict()
+		reservation_data['user'] = self.getUser().to_dict()
+		reservation_data['timeslot'] = self.getTimeslot().to_dict()
+		reservation_data['equipment'] = self.getEquipment().to_dict()
 		reservation_data['description'] = self.getDescription()
 		reservation_data['reservationId'] = self.getId()
 		return reservation_data

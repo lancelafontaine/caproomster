@@ -14,7 +14,6 @@ app.config.from_object('config')
 app.secret_key = os.urandom(24)
 # create db instance
 db = SQLAlchemy(app)
-#import views
 from app import views, decorators
 
 import mapper.Aspect

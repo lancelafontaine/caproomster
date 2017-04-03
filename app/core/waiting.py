@@ -62,20 +62,10 @@ class Waiting:
 
 	def to_dict(self):
 		waiting_data = {}
-		waiting_data['room'] = {}
-		waiting_data['room']['roomId'] = self.getRoom().getId()
-		waiting_data['user'] = {}
-		waiting_data['user']['username'] = self.getUser().getId()
-		waiting_data['user']['userId'] = self.getUser().getId()
-		waiting_data['timeslot'] = {}
-		waiting_data['timeslot']['startTime'] = self.getTimeslot().getStartTime()
-		waiting_data['timeslot']['endTime'] = self.getTimeslot().getEndTime()
-		waiting_data['timeslot']['date'] = self.getTimeslot().getDate().strftime('%Y/%m/%d')
-		waiting_data['timeslot']['timeId'] = self.getTimeslot().getId()
-		waiting_data['equipment'] = {}
-		waiting_data['equipment']['laptops'] = self.getEquipment().equipment['laptops']
-		waiting_data['equipment']['projectors'] = self.getEquipment().equipment['projectors']
-		waiting_data['equipment']['whiteboards'] = self.getEquipment().equipment['whiteboards']
+		waiting_data['room'] = self.getRoom().to_dict()
+		waiting_data['user'] = self.getUser().to_dict()
+		waiting_data['timeslot'] = self.getTimeslot().to_dict()
+		waiting_data['equipment'] = self.getEquipment().to_dict()
 		waiting_data['description'] = self.getDescription()
 		waiting_data['waitingId'] = self.getId()
 		return waiting_data

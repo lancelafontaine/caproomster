@@ -14,3 +14,8 @@ class Room:
 
     def setId(self,roomId):
         self.roomId = roomId
+
+    def to_dict(self):
+        room_data = {}
+        room_data['roomId'] = self.getId()
+        return room_data

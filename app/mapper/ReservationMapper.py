@@ -16,7 +16,7 @@ def makeNew(room, user, timeslot, description, equipment, reservationId):
 def find(reservationId):
     result = ReservationTDG.find(reservationId)
     if not result:
-        return
+        return None
     else:
         # must make a reference to timeslottable and create a timeslot object
         room = RoomMapper.find(result[0][1])
@@ -30,7 +30,7 @@ def findAll():
     result = ReservationTDG.findAll()
     allReservations = []
     if not result:
-        return
+        return []
     else:
         for index, r in enumerate(result):
             room = RoomMapper.find(result[index][1])
