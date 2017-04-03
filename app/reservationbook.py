@@ -94,7 +94,7 @@ class ReservationBook:
         projector = str(data['equipment']['projector'])
 
         if not UserMapper.find(username) or not RoomMapper.find(roomId):
-            response = jsoeify({'makeNewReservation error': 'Either the room or user does not exist.'})
+            response = jsonify({'makeNewReservation error': 'Either the room or user does not exist.'})
             response.status_code = STATUS_CODE['NOT_FOUND']
             return response
 
@@ -127,29 +127,35 @@ class ReservationBook:
 
 
 
-    def commit_new_waiting(self, room, user, time, description, equipment, message):
+    def commit_new_waiting(self, room, user, time, description, equipment, message, http_response=True):
         waiting = WaitingMapper.makeNew(room, user, time, description, equipment, str(uuid4()))
         if waiting.getUser().isCapstone():
             self.waitingListCapstone.append(waiting)
         else:
             self.waitingListRegular.append(waiting)
         WaitingMapper.done()
-        response_data = {
-            'makeNewReservation': message,
-            'waitingId': waiting.getId()
-        }
-        return response_data
+        if http_response:
+            response_data = {
+                'makeNewReservation': message,
+                'waitingId': waiting.getId()
+            }
+            return response_data
+        else:
+            return waiting
 
 
-    def commit_new_reservation(self, room, user, time, description, equipment):
+    def commit_new_reservation(self, room, user, time, description, equipment, http_response=True):
         reservation = ReservationMapper.makeNew(room, user, time, description, equipment, str(uuid4()))
         self.reservationList.append(reservation)
         ReservationMapper.done()
-        response_data = {
-            'makeNewReservation': 'successfully created reservation',
-            'reservation': reservation.getId()
-        }
-        return response_data
+        if http_response:
+            response_data = {
+                'makeNewReservation': 'successfully created reservation',
+                'reservation': reservation.getId()
+            }
+            return response_data
+        else:
+            return reservation
 
     def delete_reservation(self, reservationId):
         reservation = ReservationMapper.find(reservationId)
@@ -275,6 +281,92 @@ class ReservationBook:
         self.waitingListCapstone = waitingList
 
 
+    def make_new_repeated_reservation(self, data, repeats):
+        startTime = int(data['timeslot']['startTime'])
+        endTime = int(data['timeslot']['endTime'])
+        date = str(data['timeslot']['date'])
+        dateList = date.split('/')
+        roomId = data['roomId']
+        username = data['username']
+        description = str(data['description'])
+        laptop = int(data['equipment']['laptop'])
+        board = int(data['equipment']['board'])
+        projector = str(data['equipment']['projector'])
+
+        if not UserMapper.find(username) or not RoomMapper.find(roomId):
+            response = jsonify({'makeNewReservation error': 'Either the room or user does not exist.'})
+            response.status_code = STATUS_CODE['NOT_FOUND']
+            return response
+
+        repeats = int(repeats)
+        max_repetition = 2
+        days_in_a_week = 7
+
+        # no use for `block` parameter, for now, just passing empty strin
+        room = RoomMapper.find(roomId)
+        user = UserMapper.find(username)
+        timeslot = TimeslotMapper.makeNewWithoutCommit(startTime, endTime, datetime(int(dateList[0]), int(dateList[1]), int(dateList[2])), '', username, str(uuid4()))
+
+        # safe guard if repeat amount is greater than max repetition
+        if int(repeats) > int(max_repetition):
+            repeats = int(max_repetition)
+
+        date_split_list = timeslot.getDate().strftime('%Y/%m/%d').split('/')
+        year = int(date_split_list[0])
+        month = int(date_split_list[1])
+        day = int(date_split_list[2])
+        reservation_date = datetime(year, month, day)
+
+        reservations_created = []
+        waitings_created = []
+
+        # repeatAmount + 1 : because at least 1 reservation should be made
+        for i in range(repeats + 1):
+            new_date_list = reservation_date.strftime('%Y/%m/%d').split('/')
+            new_date_list = [int(elem) for elem in new_date_list]
+            timeslot.setDate(datetime(*new_date_list))
+            timeslot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), timeslot.getDate(),
+                                              timeslot.getBlock(), username, str(uuid4()))
+            equipment = EquipmentMapper.makeNew(laptop, projector, board, str(uuid4()))
+
+            if self.find_total_reserved_time_for_user_for_a_given_week(user.getId(), timeslot.getDate().strftime('%Y/%m/%d')) >= 3:
+                TimeslotMapper.delete(timeslot.getId())
+                EquipmentMapper.delete(equipment.getId())
+                TimeslotMapper.done()
+                EquipmentMapper.done()
+                response = jsonify({'error': 'You have already booked for your maximum amount of time this week. Aborting.'})
+                response.status_code = STATUS_CODE['UNPROCESSABLE']
+                return response
+
+            TimeslotMapper.done()
+            EquipmentMapper.done()
+
+            if not self.isTimeslotAvailableforRoom(room, timeslot):
+                result = self.commit_new_waiting(room, user, timeslot, description, equipment,
+                                                 'There is a timeslot conflict: added to the waiting list', http_response=False)
+                waitings_created.append(result.to_dict())
+
+            elif not self.isEquipmentAvailableForTimeSlot(timeslot, equipment):
+                result = self.commit_new_waiting(room, user, timeslot, description, equipment,
+                                                 'There is not enough equipment: added to the waiting list', http_response=False)
+                waitings_created.append(result.to_dict())
+
+            else:
+                # Successfully adding a reservation
+                result = self.commit_new_reservation(room, user, timeslot, description, equipment, http_response=False)
+                reservations_created.append(result.to_dict())
+
+            # add a week to the current reservation date
+            reservation_date += timedelta(days=days_in_a_week)
+
+        response_data = {
+            'success': 'You have successfully repeated your reservations. Results are shown below.',
+            'reservations': reservations_created,
+            'waitings': waitings_created
+        }
+        return jsonify(response_data)
+
+
     ######################################################
 
 
@@ -336,37 +428,3 @@ class ReservationBook:
         return restrictions
 
 
-
-
-    def makeRepeatedReservation(self, room, user, timeslot, description, equipment, repeat_amount):
-        max_repetition = 2
-        days_in_a_week = 7
-
-        # safe guard if repeat amount is greater than max repetition
-        if repeat_amount > max_repetition:
-            repeat_amount = max_repetition
-
-        # filter date values
-        date_split_list = timeslot.getDate().split('/')
-        year = int(date_split_list[0])
-        month = int(date_split_list[1])
-        day = int(date_split_list[2])
-
-        # Create datetime object
-        reservation_date = datetime(year, month, day)
-
-        # repeatAmount + 1 : because at least 1 reservation should be made
-        for i in range(repeat_amount + 1):
-            # create and register a timeslot object
-            timeslot.setDate(reservation_date.strftime('%Y/%m/%d'))
-            timeslot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), timeslot.getDate(),
-                                              timeslot.getBlock(), user.getId())
-            TimeslotMapper.save(timeslot)
-            timeslot_id = TimeslotMapper.findId(user.getId())
-            timeslot.setId(timeslot_id)
-
-            # create and register a reservation object
-            reservation = ReservationMapper.makeNew(room, user, timeslot, description, equipment, timeslot_id)
-            self.reservationList.append(reservation)
-            # add a week to the current reservation date
-            reservation_date += timedelta(days=days_in_a_week)
