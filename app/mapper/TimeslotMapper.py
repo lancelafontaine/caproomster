@@ -9,6 +9,8 @@ def makeNew(st, et, date, block, userId, timeId):
     UnitOfWork.registerNew(timeslot)
     return timeslot
 
+def makeNewWithoutCommit(st, et, date, block, userId, timeId):
+    return Timeslot(st, et, date, block, userId, timeId)
 
 def find(timeslotId):
     result = TimeslotTDG.find(timeslotId)
@@ -18,9 +20,12 @@ def find(timeslotId):
         return Timeslot(result[0][1], result[0][2], result[0][3], result[0][4], result[0][5], result[0][0])
 
 
+# Returns the most-recently created timeslot of a user
 def findId(userId):
     result = TimeslotTDG.findUser(userId)
-    return result[-1][0]
+    if len(result) > 0:
+        return result[-1][0]
+    return None
 
 
 def find_all_timeslots_for_user(user_id):
