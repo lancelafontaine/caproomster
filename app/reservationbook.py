@@ -104,7 +104,9 @@ class ReservationBook:
         user = UserMapper.find(username)
         equipment = EquipmentMapper.makeNew(laptop, projector, board, str(uuid4()))
 
-        if self.find_total_reserved_time_for_user_for_a_given_week(user.getId(), timeslot.getDate().strftime('%Y/%m/%d')) >= 3:
+
+        duration = int(timeslot.getEndTime()) - int(timeslot.getStartTime())
+        if self.find_total_reserved_time_for_user_for_a_given_week(user.getId(), timeslot.getDate().strftime('%Y/%m/%d')) + duration > 3:
             TimeslotMapper.delete(timeslot.getId())
             EquipmentMapper.delete(equipment.getId())
             TimeslotMapper.done()
@@ -178,7 +180,9 @@ class ReservationBook:
         user = UserMapper.find(username)
         equipment = EquipmentMapper.makeNew(laptop, projector, board, str(uuid4()))
 
-        if self.find_total_reserved_time_for_user_for_a_given_week(user.getId(), timeslot.getDate().strftime('%Y/%m/%d')) >= 3:
+
+        duration = int(timeslot.getEndTime()) - int(timeslot.getStartTime())
+        if self.find_total_reserved_time_for_user_for_a_given_week(user.getId(), timeslot.getDate().strftime('%Y/%m/%d')) + duration > 3:
             # delete newly create things
             TimeslotMapper.delete(timeslot.getId())
             EquipmentMapper.delete(equipment.getId())
@@ -427,7 +431,8 @@ class ReservationBook:
                                               timeslot.getBlock(), username, str(uuid4()))
             equipment = EquipmentMapper.makeNew(laptop, projector, board, str(uuid4()))
 
-            if self.find_total_reserved_time_for_user_for_a_given_week(user.getId(), timeslot.getDate().strftime('%Y/%m/%d')) >= 3:
+            duration = int(timeslot.getEndTime()) - int(timeslot.getStartTime())
+            if self.find_total_reserved_time_for_user_for_a_given_week(user.getId(), timeslot.getDate().strftime('%Y/%m/%d')) + duration > 3:
                 TimeslotMapper.delete(timeslot.getId())
                 EquipmentMapper.delete(equipment.getId())
                 TimeslotMapper.done()
