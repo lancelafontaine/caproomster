@@ -45,12 +45,17 @@ Checks if the current user is logged in or not.
 Login attempt. Returns a session token.
 
 #### Expected Request Payload
+
+John is a regular student.
 ```
 {
-	"username":"iscapstone",
-	"password":"soen344"
+	"username":"John",
+	"password":"pass"
 }
 ```
+
+Other valid `username` are Emily (regular), Hans (capstone), Jackie (regular), Mary (capstone) and Rudy (regular)
+All have `pass` as the password.
 
 #### Success Response
 
