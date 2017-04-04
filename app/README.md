@@ -247,6 +247,46 @@ If your are trying to reserve for more than 3 hours in a given week, this call w
 		}
 	]
 }
+```
+
+## Resource - `reservations/modify/:reservationId`
+
+### `PUT`
+
+Modifies the existing reservation with `reservationId` and replaces it with the new reservation in the `PUT` payload.
+
+If your new reservation makes you exceed your allowed 3 hours per week of reservations, the creation of the new reservation with abort and the old reservation will be placed back.
+
+Hitting this endpoint cause an update of all the waiting list reservations to successful reservations if possible.
+
+
+
+#### Expected Payload
+
+```
+{
+  	"roomId":"1",
+  	"username": "Mary",
+	"timeslot":  {
+		"startTime": "4",
+		"endTime": "5",
+		"date": "2020/03/19"
+	},
+	"equipment":  {
+		"laptop": 1,
+		"projector": 1,
+		"board": 1
+	},
+  	"description": "cool meeting"
+}
+```
+
+#### Success Response
+
+```
+{
+	"makeNewReservation": "successfully created reservation",
+	"reservation": "83e51d8f-d1d7-4a9b-aa06-ae29db717c46"
 }
 ```
 
@@ -453,6 +493,8 @@ Gets all the reservations in the system
 ### `DELETE`
 
 Deletes a reservation or waiting based on the specified ID. Returns `404` if no reservation or waiting is found with that ID.
+
+Hitting this endpoint causes an update of all the waiting list reservations to successful reservations if possible.
 
 #### Success Response
 

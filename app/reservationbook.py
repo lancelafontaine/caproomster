@@ -125,6 +125,81 @@ class ReservationBook:
         # Successfully adding a reservation
         return jsonify(self.commit_new_reservation(room, user, timeslot, description, equipment))
 
+    def modify_reservation(self, data, reservationId):
+        startTime = int(data['timeslot']['startTime'])
+        endTime = int(data['timeslot']['endTime'])
+        date = str(data['timeslot']['date'])
+        dateList = date.split('/')
+        roomId = data['roomId']
+        username = data['username']
+        description = str(data['description'])
+        laptop = int(data['equipment']['laptop'])
+        board = int(data['equipment']['board'])
+        projector = str(data['equipment']['projector'])
+
+        print(reservationId)
+        print(reservationId)
+        print(reservationId)
+
+        old_reservation = ReservationMapper.find(reservationId)
+        if not old_reservation:
+            old_waiting = WaitingMapper.find(reservationId)
+            if not old_waiting:
+                response = jsonify({'makeNewReservation error': 'The specified reservation or waiting to modify does not exist.'})
+                response.status_code = STATUS_CODE['NOT_FOUND']
+                return response
+
+        if not UserMapper.find(username) or not RoomMapper.find(roomId):
+            response = jsonify({'makeNewReservation error': 'Either the room or user does not exist.'})
+            response.status_code = STATUS_CODE['NOT_FOUND']
+            return response
+
+        if old_reservation:
+            ReservationMapper.delete(old_reservation.getId())
+            ReservationMapper.done()
+        if old_waiting:
+            WaitingMapper.delete(old_waiting.getId())
+            WaitingMapper.done()
+
+        # no use for `block` parameter, for now, just passing empty strin
+        timeslot = TimeslotMapper.makeNew(startTime, endTime, datetime(int(dateList[0]), int(dateList[1]), int(dateList[2])), '', username, str(uuid4()))
+        room = RoomMapper.find(roomId)
+        user = UserMapper.find(username)
+        equipment = EquipmentMapper.makeNew(laptop, projector, board, str(uuid4()))
+
+        if self.find_total_reserved_time_for_user_for_a_given_week(user.getId(), timeslot.getDate().strftime('%Y/%m/%d')) >= 3:
+            TimeslotMapper.delete(timeslot.getId())
+            EquipmentMapper.delete(equipment.getId())
+            TimeslotMapper.done()
+            EquipmentMapper.done()
+            # add the old reservation back
+            if old_reservation:
+                ReservationMapper.makeNew(old_reservation.getRoom(), old_reservation.getUser(), old_reservation.getTimeslot(),
+                                          old_reservation.getDescription(), old_reservation.getEquipment(), str(uuid4()))
+                ReservationMapper.done()
+            if old_waiting:
+                WaitingMapper.makeNew(old_waiting.getRoom(), old_waiting.getUser(), old_waiting.getTimeslot(),
+                                          old_waiting.getDescription(), old_waiting.getEquipment(), str(uuid4()))
+                WaitingMapper.done()
+            response = jsonify({'error': 'You have already booked for your maximum amount of time this week. Aborting new reservation, replacing old reservation.'})
+            response.status_code = STATUS_CODE['UNPROCESSABLE']
+            return response
+
+        TimeslotMapper.done()
+        EquipmentMapper.done()
+
+        # Update the waiting lists here
+
+        if not self.isTimeslotAvailableforRoom(room, timeslot):
+            return jsonify(self.commit_new_waiting(room, user, timeslot, description, equipment, 'There is a timeslot conflict: added to the waiting list'))
+
+        if not self.isEquipmentAvailableForTimeSlot(timeslot, equipment):
+            return jsonify(self.commit_new_waiting(room, user, timeslot, description, equipment, 'There is not enough equipment: added to the waiting list'))
+
+        # Successfully adding a reservation
+        return jsonify(self.commit_new_reservation(room, user, timeslot, description, equipment))
+
+
 
 
     def commit_new_waiting(self, room, user, time, description, equipment, message, http_response=True):
