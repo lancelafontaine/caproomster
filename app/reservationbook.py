@@ -169,10 +169,7 @@ class ReservationBook:
         TimeslotMapper.done()
         EquipmentMapper.done()
 
-        # update lists
-        self.reservationList = ReservationMapper.findAll()
-        self.waitingListRegular = WaitingMapper.findAllRegular()
-        self.waitingListCapstone = WaitingMapper.findAllCapstone()
+        self.update_internal_lists()
 
         # no use for `block` parameter, for now, just passing empty strin
         timeslot = TimeslotMapper.makeNew(startTime, endTime, datetime(int(dateList[0]), int(dateList[1]), int(dateList[2])), '', username, str(uuid4()))
@@ -220,11 +217,9 @@ class ReservationBook:
             # Successfully adding a reservation
             response = jsonify(self.commit_new_reservation(room, user, timeslot, description, equipment))
 
-        # Update the waiting lists here
-
-        self.reservationList = ReservationMapper.findAll()
-        self.waitingListRegular = WaitingMapper.findAllRegular()
-        self.waitingListCapstone = WaitingMapper.findAllCapstone()
+        self.update_internal_lists()
+        self.update_waiting_to_reserved()
+        self.update_internal_lists()
 
         return response
 
@@ -292,11 +287,9 @@ class ReservationBook:
         EquipmentMapper.delete(equipmentId)
         EquipmentMapper.done()
 
-        # update reservation and waiting lists here
-
-        self.reservationList = ReservationMapper.findAll()
-        self.waitingListRegular = WaitingMapper.findAllRegular()
-        self.waitingListCapstone = WaitingMapper.findAllCapstone()
+        self.update_internal_lists()
+        self.update_waiting_to_reserved()
+        self.update_internal_lists()
 
         return jsonify(data)
 
@@ -470,64 +463,41 @@ class ReservationBook:
         return jsonify(response_data)
 
 
-    ######################################################
-
-
-
-
     # Method to update the waiting list
-    def updateWaiting(self, roomId):
-        # Iterate over a queue of all reservations in specify room
-        for w in self.getWaitlistForRoom(roomId):
-            if self.isTimeslotAvailableforRoom(w.getRoom(), w.getTimeslot()) \
-                    and self.isEquipmentAvailableForTimeSlot(w.getTimeslot(), w.getEquipment()):
-                if not self.isRestricted(w.getUser(), w.getTimeslot()):
-                    r = Reservation(w.getRoom(), w.getUser(), w.getTimeslot(), w.getDescription(), w.getEquipment(),
-                                    str(uuid4()))
-                    self.reservationList.append(r)
-                    if w.getUser().isCapstone():
-                        self.waitingListCapstone.remove(w)
-                    else:
-                        self.waitingListRegular.remove(w)
-                    break
+    def update_waiting_to_reserved(self):
+        def should_update(waiting):
+            if self.find_total_reserved_time_for_user_for_a_given_week(waiting.getUser().getId(),
+                                                                       waiting.getTimeslot().getDate().strftime('%Y/%m/%d')) > 3:
+                return False
 
+            if not self.isTimeslotAvailableforRoom(waiting.getRoom(), waiting.getTimeslot()):
+                return False
 
+            if not self.isEquipmentAvailableForTimeSlot(waiting.getTimeslot(), waiting.getEquipment()):
+                return False
 
+            return True
 
-    # Method for restriction
-    def isRestricted(self, user, time):
-        restrictions = False
-        nbMyReservationInWeek = 0
+        def update(waiting):
+            WaitingMapper.delete(waiting.getId())
+            WaitingMapper.done()
+            self.update_internal_lists()
+            ReservationMapper.makeNew(waiting.getRoom(), waiting.getUser(), waiting.getTimeslot(), waiting.getDescription(),
+                                      waiting.getEquipment(), waiting.getId())
+            ReservationMapper.done()
+            self.update_internal_lists()
 
-        # Get week nb of specify Timeslot
-        date1 = time.getDate()
-        day1 = int(date1[8:10])
-        month1 = int(date1[5:7])
-        year1 = int(date1[0:4])
-        dt1 = datetime(year1, month1, day1)
-        wk1 = dt1.isocalendar()[1]
+        # priority is given to capstone students
+        for waiting in self.waitingListCapstone:
+            if should_update(waiting):
+                update(waiting)
 
-        for r in self.getUserReservations(user):
-            # Get week nb
-            date2 = r.getTimeslot().getDate()
-            day2 = int(date2[8:10])
-            month2 = int(date2[5:7])
-            year2 = int(date2[0:4])
-            dt2 = datetime(year2, month2, day2)
-            wk2 = dt2.isocalendar()[1]
-            # Compare if week nb matches
-            if wk1 == wk2:
-                nbMyReservationInWeek = nbMyReservationInWeek + 1
-            # Check if user is attempting to make another reservation on same day
-            if r.getTimeslot().getDate() == time.getDate():
-                restrictions = True
-                print("Request Failed: Only one reservation per day.")
-                break
-        # Check if user is at max reservation
-        if nbMyReservationInWeek >= 3:
-            restrictions = True
-            print("Request Failed: At maximum number of reservations for this week.")
+        for waiting in self.waitingListRegular:
+            if should_update(waiting):
+                update(waiting)
 
-        return restrictions
-
+    def update_internal_lists(self):
+        self.reservationList = ReservationMapper.findAll()
+        self.waitingListRegular = WaitingMapper.findAllRegular()
+        self.waitingListCapstone = WaitingMapper.findAllCapstone()
 
