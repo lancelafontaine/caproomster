@@ -100,11 +100,14 @@
     }
 
     function modifyReservation() {
-      ApiService.booking('createReservation', createPayload()).then(function() {
+      var param = {
+        repeat: vm.cache.repeat
+      };
+      ApiService.booking('createReservation', createPayload(), param).then(function() {
         var payload = {
           reservationId: vm.cache.reservationId
         };
-        ApiService.booking('deleteMyReservation',payload).then(function() {
+        ApiService.booking('deleteMyReservation', payload).then(function() {
           showMessage('Successfully modified.');
           vm.resetCache();
           getMyInfo();
