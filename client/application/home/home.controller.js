@@ -39,8 +39,8 @@
       vm.myWaitingList = [];
       vm.parseInt = parseInt;
       initData();
-      getRoomInfo();
-      //$interval(getRoomInfo, 1500);
+      //getRoomInfo();
+      $interval(getRoomInfo, 1500);
     }
 
     function initData() {
@@ -69,8 +69,9 @@
         for (var resIndex = 0; resIndex < reservations.length; resIndex++) {
           tempEvents.push(HomeService.createEvent(reservations[resIndex], calendarConfig.colorTypes.info));
         }
+        vm.events = tempEvents;
         for (var wtIndex = 0; wtIndex < waitingList.length; wtIndex++) {
-          tempEvents.push(HomeService.createEvent(reservations[wtIndex], calendarConfig.colorTypes.warning));
+          tempEvents.push(HomeService.createEvent(waitingList[wtIndex], calendarConfig.colorTypes.warning));
         }
         vm.events = tempEvents;
       });
@@ -172,7 +173,6 @@
     }
 
     function setCache(res, action) {
-      console.log(res);
       vm.cache = {
         equipment: {
           laptop: res.equipment.laptops,
