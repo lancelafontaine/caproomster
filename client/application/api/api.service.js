@@ -25,12 +25,12 @@
       return undefined;
     }
 
-    function booking(action, payload) {
+    function booking(action, payload, param) {
       if (action === 'getRoomList') {
         return ApiFactory.getRoomList().get({}).$promise;
       }
       if (action === 'reserve') {
-        return ApiFactory.reserveSlot().reserve({}, payload).$promise;
+        return ApiFactory.reserveSlot().reserve(param, payload).$promise;
       }
       if (action === 'getAllReservation') {
         return ApiFactory.getAllReservation().get(payload).$promise;

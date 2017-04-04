@@ -69,7 +69,6 @@
         for (var resIndex = 0; resIndex < reservations.length; resIndex++) {
           tempEvents.push(HomeService.createEvent(reservations[resIndex], calendarConfig.colorTypes.info));
         }
-        vm.events = tempEvents;
         for (var wtIndex = 0; wtIndex < waitingList.length; wtIndex++) {
           tempEvents.push(HomeService.createEvent(waitingList[wtIndex], calendarConfig.colorTypes.warning));
         }
@@ -87,7 +86,10 @@
     }
 
     function makeReservation() {
-      ApiService.booking('reserve', createPayload()).then(function() {
+      var param = {
+        repeat: vm.cache.repeat
+      }
+      ApiService.booking('reserve', createPayload(), param).then(function() {
         showMessage('Successfully reserved.');
         vm.resetCache();
         getMyInfo();
@@ -144,8 +146,7 @@
           date: vm.cache.date
         },
         equipment: vm.cache.equipment,
-        description: currentUser + '\'s Reservation',
-        repeat: vm.cache.repeat || 0
+        description: currentUser + '\'s Reservation'
       };
     }
 
@@ -183,7 +184,8 @@
         start: parseInt(res.timeslot.startTime),
         date: res.timeslot.date,
         inAction: action,
-        reservationId: res.reservationId || res.waitingId
+        reservationId: res.reservationId || res.waitingId,
+        repeat: 0
       };
     }
 

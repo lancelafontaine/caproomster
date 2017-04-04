@@ -63,8 +63,10 @@
     /* creaeReservation factory */
 
     function reserveSlot() {
-      var url = '/reservations/create';
-      return $resource(baseUrl + url, {}, {
+      var url = '/reservations/repeat/:repeat';
+      return $resource(baseUrl + url, {
+        repeat: '@repeat'
+      }, {
         reserve: {
           method: 'POST',
           withCredentials: true
