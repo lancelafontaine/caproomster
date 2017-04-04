@@ -101,20 +101,12 @@
 
     function modifyReservation() {
       var param = {
-        repeat: vm.cache.repeat
+        reservationId: vm.cache.reservationId
       };
-      ApiService.booking('createReservation', createPayload(), param).then(function() {
-        var payload = {
-          reservationId: vm.cache.reservationId
-        };
-        ApiService.booking('deleteMyReservation', payload).then(function() {
-          showMessage('Successfully modified.');
-          vm.resetCache();
-          getMyInfo();
-        }, function() {
-          vm.resetCache();
-          showMessage('Failed to modify, please try again.');
-        });
+      ApiService.booking('modifyReservation', createPayload(), param).then(function() {
+        showMessage('Successfully modified.');
+        vm.resetCache();
+        getMyInfo();
       }, function() {
         vm.resetCache();
         showMessage('Failed to modify, please try again.');
