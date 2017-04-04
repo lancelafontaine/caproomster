@@ -35,6 +35,6 @@ class User:
     def to_dict(self):
         user_data = {}
         user_data['username'] = self.getId()
-        user_data['isCapstone'] = self.getId()
+        user_data['isCapstone'] = self.isCapstone()
         return user_data
 

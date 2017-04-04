@@ -92,6 +92,16 @@ def make_new_reservation():
             return response
         return reservationbook.make_new_reservation(data)
 
+@app.route('/reservations/repeat/<repeats>', methods=['POST'])
+@nocache
+@require_login
+def make_new_repeated_reservation(repeats):
+    if request.method == 'POST':
+        data = request.get_json()
+        response = validate_reservation_payload_format(data, repeats)
+        if response:
+            return response
+        return reservationbook.make_new_repeated_reservation(data, repeats)
 
 @app.route('/reservations/room/<roomId>', methods=['GET'])
 @nocache
@@ -148,7 +158,7 @@ def unauthorized():
     return response
 
 
-def validate_reservation_payload_format(data):
+def validate_reservation_payload_format(data, repeats=None):
 
     response_data = {'error': ''}
 
@@ -227,3 +237,15 @@ def validate_reservation_payload_format(data):
     current_date = datetime(now.year, now.month, now.day)
     if payload_date < current_date:
         return date_error()
+
+    if repeats:
+        if not str(repeats).isdigit():
+            response = jsonify({'makeNewReservation error': 'Provided repeats value must be an integer.'})
+            response.status_code = STATUS_CODE['UNPROCESSABLE']
+            return response
+
+        if int(repeats) < 0 or int(repeats) > 2:
+            response = jsonify({'makeNewReservation error': 'Provided repeats values must be an integer between 0 and 2.'})
+            response.status_code = STATUS_CODE['UNPROCESSABLE']
+            return response
+
