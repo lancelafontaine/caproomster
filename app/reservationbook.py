@@ -137,10 +137,6 @@ class ReservationBook:
         board = int(data['equipment']['board'])
         projector = str(data['equipment']['projector'])
 
-        print(reservationId)
-        print(reservationId)
-        print(reservationId)
-
         old_reservation = ReservationMapper.find(reservationId)
         if not old_reservation:
             old_waiting = WaitingMapper.find(reservationId)
@@ -399,8 +395,7 @@ class ReservationBook:
         for i in range(repeats + 1):
             new_date_list = reservation_date.strftime('%Y/%m/%d').split('/')
             new_date_list = [int(elem) for elem in new_date_list]
-            timeslot.setDate(datetime(*new_date_list))
-            timeslot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), timeslot.getDate(),
+            timeslot = TimeslotMapper.makeNew(timeslot.getStartTime(), timeslot.getEndTime(), datetime(*new_date_list),
                                               timeslot.getBlock(), username, str(uuid4()))
             equipment = EquipmentMapper.makeNew(laptop, projector, board, str(uuid4()))
 
@@ -435,7 +430,7 @@ class ReservationBook:
             reservation_date += timedelta(days=days_in_a_week)
 
         response_data = {
-            'success': 'You have successfully repeated your reservations. Results are shown below.',
+            'success': 'You have successfully repeated your reservations.',
             'reservations': reservations_created,
             'waitings': waitings_created
         }
