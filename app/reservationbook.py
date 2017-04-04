@@ -137,25 +137,40 @@ class ReservationBook:
         board = int(data['equipment']['board'])
         projector = str(data['equipment']['projector'])
 
-        old_reservation = ReservationMapper.find(reservationId)
-        if not old_reservation:
-            old_waiting = WaitingMapper.find(reservationId)
-            if not old_waiting:
+        old_booking = ReservationMapper.find(reservationId)
+        if not old_booking:
+            old_booking = WaitingMapper.find(reservationId)
+            if not old_booking:
                 response = jsonify({'makeNewReservation error': 'The specified reservation or waiting to modify does not exist.'})
                 response.status_code = STATUS_CODE['NOT_FOUND']
                 return response
+            type = 'waiting'
+        else:
+            type = 'reservation'
 
         if not UserMapper.find(username) or not RoomMapper.find(roomId):
             response = jsonify({'makeNewReservation error': 'Either the room or user does not exist.'})
             response.status_code = STATUS_CODE['NOT_FOUND']
             return response
 
-        if old_reservation:
-            ReservationMapper.delete(old_reservation.getId())
+        # delete old but save information first
+        old_timeslot = TimeslotMapper.find(old_booking.getTimeslot().getId())
+        old_equipment = EquipmentMapper.find(old_booking.getEquipment().getId())
+        if type == 'reservation':
+            ReservationMapper.delete(old_booking.getId())
             ReservationMapper.done()
-        if old_waiting:
-            WaitingMapper.delete(old_waiting.getId())
+        if type == 'waiting':
+            WaitingMapper.delete(old_booking.getId())
             WaitingMapper.done()
+        TimeslotMapper.delete(old_booking.getTimeslot().getId())
+        EquipmentMapper.delete(old_booking.getEquipment().getId())
+        TimeslotMapper.done()
+        EquipmentMapper.done()
+
+        # update lists
+        self.reservationList = ReservationMapper.findAll()
+        self.waitingListRegular = WaitingMapper.findAllRegular()
+        self.waitingListCapstone = WaitingMapper.findAllCapstone()
 
         # no use for `block` parameter, for now, just passing empty strin
         timeslot = TimeslotMapper.makeNew(startTime, endTime, datetime(int(dateList[0]), int(dateList[1]), int(dateList[2])), '', username, str(uuid4()))
@@ -164,19 +179,28 @@ class ReservationBook:
         equipment = EquipmentMapper.makeNew(laptop, projector, board, str(uuid4()))
 
         if self.find_total_reserved_time_for_user_for_a_given_week(user.getId(), timeslot.getDate().strftime('%Y/%m/%d')) >= 3:
+            # delete newly create things
             TimeslotMapper.delete(timeslot.getId())
             EquipmentMapper.delete(equipment.getId())
+
+            # add the old reservation back
+            TimeslotMapper.makeNew(old_timeslot.getStartTime(), old_timeslot.getEndTime(), old_timeslot.getDate(),
+                                   old_timeslot.getBlock(), old_timeslot.getUserId(), old_timeslot.getId())
+            EquipmentMapper.makeNew(old_equipment.getNumLaptops(), old_equipment.getNumProjectors(),
+                                    old_equipment.getNumWhiteboards(), old_equipment.getId())
+
+            if type == 'reservation':
+                ReservationMapper.makeNew(old_booking.getRoom(), old_booking.getUser(), old_booking.getTimeslot(),
+                                          old_booking.getDescription(), old_booking.getEquipment(), old_booking.getId())
+            if type == 'waiting':
+                WaitingMapper.makeNew(old_booking.getRoom(), old_booking.getUser(), old_booking.getTimeslot(),
+                                      old_booking.getDescription(), old_booking.getEquipment(), old_booking.getId())
+
             TimeslotMapper.done()
             EquipmentMapper.done()
-            # add the old reservation back
-            if old_reservation:
-                ReservationMapper.makeNew(old_reservation.getRoom(), old_reservation.getUser(), old_reservation.getTimeslot(),
-                                          old_reservation.getDescription(), old_reservation.getEquipment(), str(uuid4()))
-                ReservationMapper.done()
-            if old_waiting:
-                WaitingMapper.makeNew(old_waiting.getRoom(), old_waiting.getUser(), old_waiting.getTimeslot(),
-                                          old_waiting.getDescription(), old_waiting.getEquipment(), str(uuid4()))
-                WaitingMapper.done()
+            ReservationMapper.done()
+            WaitingMapper.done()
+
             response = jsonify({'error': 'You have already booked for your maximum amount of time this week. Aborting new reservation, replacing old reservation.'})
             response.status_code = STATUS_CODE['UNPROCESSABLE']
             return response
@@ -184,18 +208,21 @@ class ReservationBook:
         TimeslotMapper.done()
         EquipmentMapper.done()
 
+        if not self.isTimeslotAvailableforRoom(room, timeslot):
+            response = jsonify(self.commit_new_waiting(room, user, timeslot, description, equipment, 'There is a timeslot conflict: added to the waiting list'))
+        elif not self.isEquipmentAvailableForTimeSlot(timeslot, equipment):
+            response = jsonify(self.commit_new_waiting(room, user, timeslot, description, equipment, 'There is not enough equipment: added to the waiting list'))
+        else:
+            # Successfully adding a reservation
+            response = jsonify(self.commit_new_reservation(room, user, timeslot, description, equipment))
+
         # Update the waiting lists here
 
-        if not self.isTimeslotAvailableforRoom(room, timeslot):
-            return jsonify(self.commit_new_waiting(room, user, timeslot, description, equipment, 'There is a timeslot conflict: added to the waiting list'))
+        self.reservationList = ReservationMapper.findAll()
+        self.waitingListRegular = WaitingMapper.findAllRegular()
+        self.waitingListCapstone = WaitingMapper.findAllCapstone()
 
-        if not self.isEquipmentAvailableForTimeSlot(timeslot, equipment):
-            return jsonify(self.commit_new_waiting(room, user, timeslot, description, equipment, 'There is not enough equipment: added to the waiting list'))
-
-        # Successfully adding a reservation
-        return jsonify(self.commit_new_reservation(room, user, timeslot, description, equipment))
-
-
+        return response
 
 
     def commit_new_waiting(self, room, user, time, description, equipment, message, http_response=True):
@@ -245,8 +272,6 @@ class ReservationBook:
                 'success': 'reservation successfully deleted',
                 'reservationId': reservationId
             }
-            self.reservationList = ReservationMapper.findAll()
-
 
         if waiting:
             timeslotId = waiting.getTimeslot().getId()
@@ -257,8 +282,6 @@ class ReservationBook:
                 'success': 'reservation on waiting list successfully deleted',
                 'waitingId': reservationId
             }
-            self.waitingListRegular = WaitingMapper.findAllRegular()
-            self.waitingListCapstone = WaitingMapper.findAllCapstone()
 
         TimeslotMapper.delete(timeslotId)
         TimeslotMapper.done()
@@ -266,6 +289,11 @@ class ReservationBook:
         EquipmentMapper.done()
 
         # update reservation and waiting lists here
+
+        self.reservationList = ReservationMapper.findAll()
+        self.waitingListRegular = WaitingMapper.findAllRegular()
+        self.waitingListCapstone = WaitingMapper.findAllCapstone()
+
         return jsonify(data)
 
     def isEquipmentAvailableForTimeSlot(self, timeslot, equipment):
