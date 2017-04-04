@@ -40,7 +40,8 @@
       vm.parseInt = parseInt;
       initData();
       //getRoomInfo();
-      $interval(getRoomInfo, 500);
+      $interval(getRoomInfo, 1500);
+      $interval(getMyInfo, 1500);
     }
 
     function initData() {
