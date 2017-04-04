@@ -103,6 +103,17 @@ def make_new_repeated_reservation(repeats):
             return response
         return reservationbook.make_new_repeated_reservation(data, repeats)
 
+@app.route('/reservations/modify/<reservationId>', methods=['PUT'])
+@nocache
+@require_login
+def modify_reservation(reservationId):
+    if request.method == 'PUT':
+        data = request.get_json()
+        response = validate_reservation_payload_format(data)
+        if response:
+            return response
+        return reservationbook.modify_reservation(data, reservationId)
+
 @app.route('/reservations/room/<roomId>', methods=['GET'])
 @nocache
 @require_login
