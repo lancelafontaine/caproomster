@@ -88,8 +88,8 @@
     function makeReservation() {
       var param = {
         repeat: vm.cache.repeat
-      }
-      ApiService.booking('reserve', createPayload(), param).then(function() {
+      };
+      ApiService.booking('createReservation', createPayload(), param).then(function() {
         showMessage('Successfully reserved.');
         vm.resetCache();
         getMyInfo();
@@ -100,7 +100,7 @@
     }
 
     function modifyReservation() {
-      ApiService.booking('reserve', createPayload()).then(function() {
+      ApiService.booking('createReservation', createPayload()).then(function() {
         var payload = {
           reservationId: vm.cache.reservationId
         };

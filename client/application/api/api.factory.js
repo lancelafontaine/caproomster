@@ -14,7 +14,8 @@
       login: login,
       logout: logout,
       getRoomList: getRoomList,
-      reserveSlot: reserveSlot,
+      createReservation: createReservation,
+      modifyReservation: modifyReservation,
       getAllReservation: getAllReservation,
       getMyReservation: getMyReservation,
       deleteMyReservation: deleteMyReservation
@@ -62,13 +63,27 @@
 
     /* creaeReservation factory */
 
-    function reserveSlot() {
+    function createReservation() {
       var url = '/reservations/repeat/:repeat';
       return $resource(baseUrl + url, {
         repeat: '@repeat'
       }, {
         reserve: {
           method: 'POST',
+          withCredentials: true
+        }
+      });
+    }
+
+    /* modifyReservation factory */
+
+    function modifyReservation() {
+      var url = '/reservations/modify/:reservationId';
+      return $resource(baseUrl + url, {
+        reservationId: '@reservationId'
+      }, {
+        modify: {
+          method: 'PUT',
           withCredentials: true
         }
       });

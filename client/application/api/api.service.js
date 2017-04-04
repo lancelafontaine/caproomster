@@ -29,8 +29,11 @@
       if (action === 'getRoomList') {
         return ApiFactory.getRoomList().get({}).$promise;
       }
-      if (action === 'reserve') {
-        return ApiFactory.reserveSlot().reserve(param, payload).$promise;
+      if (action === 'createReservation') {
+        return ApiFactory.createReservation().reserve(param, payload).$promise;
+      }
+      if (action === 'modifyReservation') {
+        return ApiFactory.modifyReservation().modify(param, payload).$promise;
       }
       if (action === 'getAllReservation') {
         return ApiFactory.getAllReservation().get(payload).$promise;
