@@ -8,10 +8,6 @@ This repository was received from another team and ultimately refactored, mainta
 
 CapRoomster is a web application that allows Concordia students to reserve a CAPSTONE room for their projects.
 
-# Documentation
-
-TBD
-
 # Installation and Development
 
 ## Client
@@ -42,14 +38,15 @@ See [client-side README](https://github.com/lancelafontaine/caproomster/tree/mas
 # Additional Information
 
 ## Login Credentials
-- UserId: `1`, Username: `John`, Password: `pass`
-- UserId: `2`, Username: `Emily`, Password: `pass`
-- UserId: `3`, Username: `Rudy`, Password: `pass`
-- UserId: `4`, Username: `Jackie`, Password: `pass`
 
-## Assumptions and Constraints
-
-TBD
+| username | password | capstone |
+|:--------:|:--------:|:--------:|
+| John | pass | false |
+| Emily| pass | false |
+| Rudy | pass | false |
+| Jackie | pass | false |
+| Mary | pass | true |
+| Hans | pass | true |
 
 
 # Team Members

@@ -89,7 +89,7 @@ Allows the current user to log out.
 
 <hr/>
 
-## Resource  - `/rooms/all` - :warning:
+## Resource  - `/rooms/all`
 
 ### `GET`
 
@@ -113,7 +113,7 @@ Retrieves all CAPSTONE rooms in the system.
 
 <hr/>
 
-## Resource - `reservations/create` - :warning:
+## Resource - `reservations/create`
 
 ### `POST`
 
