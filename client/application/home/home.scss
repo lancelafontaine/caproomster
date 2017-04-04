@@ -103,6 +103,9 @@
             background-color: darkgray;
             height: 100%;
             border-right: solid 1px $caproomster-white;
+            h2 {
+                padding-bottom: 18px;
+            }
             .message {
                 margin-top: 22%;
             }
@@ -112,10 +115,10 @@
                     font-size: 30px;
                 }
                 input {
-                    font-size: 30px;
+                    font-size: 22px;
                     background: transparent;
                     border: 1px solid;
-                    width: 33px;
+                    width: 30px;
                     text-align: center;
                     height: 28px;
                 }
@@ -124,11 +127,6 @@
                 }
                 .modify-date{
                     width: 50%;
-                }
-                h3 {
-                    input {
-                        width: 33px;
-                    }
                 }
                 .button-group {
                     display: block;

@@ -39,7 +39,8 @@
       vm.myWaitingList = [];
       vm.parseInt = parseInt;
       initData();
-      $interval(getRoomInfo, 1500);
+      //getRoomInfo();
+      $interval(getRoomInfo, 500);
     }
 
     function initData() {
@@ -64,12 +65,12 @@
         roomId: vm.roomNumber
       }).then(function(res){
         var reservations = res.reservations || [];
-        var waitingList = res.waitingList || [];
+        var waitingList = res.waitings || [];
         for (var resIndex = 0; resIndex < reservations.length; resIndex++) {
           tempEvents.push(HomeService.createEvent(reservations[resIndex], calendarConfig.colorTypes.info));
         }
         for (var wtIndex = 0; wtIndex < waitingList.length; wtIndex++) {
-          tempEvents.push(HomeService.createEvent(reservations[wtIndex], calendarConfig.colorTypes.warning));
+          tempEvents.push(HomeService.createEvent(waitingList[wtIndex], calendarConfig.colorTypes.warning));
         }
         vm.events = tempEvents;
       });
@@ -85,10 +86,12 @@
     }
 
     function makeReservation() {
-      ApiService.booking('reserve', createPayload()).then(function() {
+      var param = {
+        repeat: vm.cache.repeat
+      };
+      ApiService.booking('createReservation', createPayload(), param).then(function() {
         showMessage('Successfully reserved.');
         vm.resetCache();
-        getRoomInfo();
         getMyInfo();
       }, function() {
         vm.resetCache();
@@ -97,19 +100,13 @@
     }
 
     function modifyReservation() {
-      ApiService.booking('reserve', createPayload()).then(function() {
-        var payload = {
-          reservationId: vm.cache.reservationId
-        };
-        ApiService.booking('deleteMyReservation',payload).then(function() {
-          showMessage('Successfully modified.');
-          vm.resetCache();
-          getRoomInfo();
-          getMyInfo();
-        }, function() {
-          vm.resetCache();
-          showMessage('Failed to modify, please try again.');
-        });
+      var param = {
+        reservationId: vm.cache.reservationId
+      };
+      ApiService.booking('modifyReservation', createPayload(), param).then(function() {
+        showMessage('Successfully modified.');
+        vm.resetCache();
+        getMyInfo();
       }, function() {
         vm.resetCache();
         showMessage('Failed to modify, please try again.');
@@ -127,7 +124,6 @@
           showMessage('Successfully deleted.');
         }
         vm.resetCache();
-        getRoomInfo();
         getMyInfo();
       }, function() {
         vm.resetCache();
@@ -167,12 +163,12 @@
         start: null,
         date: null,
         inAction: null,
-        reservationId: null
+        reservationId: null,
+        repeat: 0
       };
     }
 
     function setCache(res, action) {
-      console.log(res);
       vm.cache = {
         equipment: {
           laptop: res.equipment.laptops,
@@ -183,7 +179,8 @@
         start: parseInt(res.timeslot.startTime),
         date: res.timeslot.date,
         inAction: action,
-        reservationId: res.reservationId
+        reservationId: res.reservationId || res.waitingId,
+        repeat: 0
       };
     }
 

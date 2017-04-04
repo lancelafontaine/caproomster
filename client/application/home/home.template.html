@@ -86,8 +86,8 @@
           view-title="vm.calendarTitle"
           view-date="vm.viewDate"
           cell-is-open="vm.cellIsOpen"
-          day-view-start="08:00"
-          day-view-end="23:00"
+          day-view-start="00:00"
+          day-view-end="24:00"
           day-view-split="60"
           day-view-event-width="250"
           cell-modifier="vm.modifyCell(calendarCell)"
@@ -150,14 +150,14 @@
           <span ng-if="vm.cache.inAction == 'delete'">Delete</span>
           Reservation
         </h2>
-        <h3>Room {{ vm.roomNumber }}</h3>
-        <h3>
-          <span ng-if="vm.cache.inAction != 'modify'">{{ vm.cache.date }}</span>
-          <input type="tel" ng-model="vm.cache.date" ng-if="vm.cache.inAction == 'modify'" class="modify-date"/>
-        </h3>
-        <h3>
+        <h4>Room {{ vm.roomNumber }} - <span ng-if="vm.cache.inAction != 'modify'">{{ vm.cache.date }}</span>
+          <input type="tel" ng-model="vm.cache.date" ng-if="vm.cache.inAction == 'modify'" class="modify-date"/></h4>
+        <h4>
           Reserve <input type="tel" ng-model="vm.cache.length" ng-disabled="vm.cache.inAction == 'delete'"/> hours from {{ vm.cache.start }}:00 to {{ vm.parseInt(vm.cache.start) + vm.parseInt(vm.cache.length) }}:00
-        </h3>
+        </h4>
+        <h4 ng-if="vm.cache.inAction == 'create'">
+          Repeat for <input type="tel" ng-model="vm.cache.repeat"/> Weeks
+        </h4>
         <i class="fa fa-laptop" aria-hidden="true"></i>
         <input type="tel" ng-model="vm.cache.equipment.laptop" ng-disabled="vm.cache.inAction == 'delete'"/>
         <i class="fa fa-video-camera" aria-hidden="true"></i>
